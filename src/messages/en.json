@@ -1,0 +1,576 @@
+{
+  "Metadata": {
+    "title": "Kenjutsu Academy | The Samurai Path",
+    "description": "Specialized training in Japanese martial arts and Samurai culture"
+  },
+  "Home": {
+    "sections": {
+      "academy": {
+        "title": "Kenjutsu Academy",
+        "kanji": "師範",
+        "desc": "Introducing Shihan Ashrafi"
+      },
+      "about": {
+        "title": "About Us",
+        "kanji": "私たち",
+        "desc": "History and philosophy of the dojo"
+      },
+      "contact": {
+        "title": "Contact",
+        "kanji": "連絡",
+        "desc": "Ways to reach the dojo"
+      },
+      "courses": {
+        "title": "Courses",
+        "kanji": "級",
+        "desc": "Training levels"
+      },
+      "gallery": {
+        "title": "Gallery",
+        "kanji": "美術館",
+        "desc": "Artifacts & heritage"
+      },
+      "katuri": {
+        "title": "Katuri",
+        "kanji": "美術館",
+        "desc": "Artifacts & heritage"
+      },
+      "store": {
+        "title": "Store",
+        "kanji": "美術館",
+        "desc": "Artifacts & heritage"
+      },
+      "members": {
+        "title": "Members",
+        "kanji": "美術館",
+        "desc": "Artifacts & heritage"
+      }
+    }
+  },
+  "SectionShop": {
+    "allKey": "All",
+    "heading": {
+      "title": "Kenjutsu Gear Shop",
+      "subtitle": "Tools & Equipment"
+    },
+    "categories": ["All", "Weapons", "Training Weapons", "Armor", "Art"],
+    "ui": {
+      "searchPlaceholder": "Search...",
+      "sortLabel": "Sort",
+      "sortPopular": "Popular",
+      "sortNewest": "Newest",
+      "sortPriceLow": "Price: Low",
+      "sortPriceHigh": "Price: High",
+      "addToCart": "Call",
+      "outOfStock": "Out of stock",
+      "details": "Details",
+      "close": "Close",
+      "currency": "Toman"
+    },
+    "items": [
+      {
+        "id": 1,
+        "name": "Ancient Katana",
+        "kanji": "刀",
+        "description": "A Tamahagane steel blade, a relic from battles of the Edo era.",
+        "origin": "Edo period",
+        "material": "Tamahagane steel",
+        "image": "/product_1.jpg",
+        "category": "Weapons",
+        "price": 24500000,
+        "inStock": true,
+        "badge": "Special"
+      },
+      {
+        "id": 2,
+        "name": "Bamboo Shinai",
+        "kanji": "竹刀",
+        "description": "A Kendo practice sword—symbol of discipline and sportsmanship.",
+        "origin": "Kyoto",
+        "material": "Bamboo, leather",
+        "image": "/product_2.jpg",
+        "category": "Training Weapons",
+        "price": 1850000,
+        "inStock": true,
+        "badge": "Best"
+      },
+      {
+        "id": 3,
+        "name": "Bamboo Shinai",
+        "kanji": "竹刀",
+        "description": "A Kendo practice sword—symbol of discipline and sportsmanship.",
+        "origin": "Kyoto",
+        "material": "Bamboo, leather",
+        "image": "/product_3.jpg",
+        "category": "Training Weapons",
+        "price": 1850000,
+        "inStock": true,
+        "badge": "Best"
+      }
+    ]
+  },
+  "Section1": {
+    "master": {
+      "titlePrefix": "Shihan",
+      "name": "Ashrafi",
+      "quote": "The warrior’s path passes through facing death; one who does not flee from it ultimately embraces life in full.",
+      "imageAlt": "Shihan"
+    },
+    "header": {
+      "titlePart1": "Way",
+      "titlePart2": "of the Samurai",
+      "floatingKanjiTop": "武",
+      "floatingKanjiBottom": "士",
+      "headerKanji": "侍"
+    },
+    "slides": [
+      {
+        "id": 1,
+        "title": "Bushido Code",
+        "desc": "The warrior’s way emphasizes honor, courage, and compassion.",
+        "image": "/pic_1.jpg",
+        "kanji": "武士道"
+      },
+      {
+        "id": 2,
+        "title": "Mastery of the Katana",
+        "desc": "The katana is more than a weapon—it is an extension of the samurai spirit.",
+        "image": "/pic_2.jpg",
+        "kanji": "刀"
+      },
+      {
+        "id": 3,
+        "title": "Zen Philosophy",
+        "desc": "Training the mind to gain clarity in battle and in life.",
+        "image": "/pic_3.jpg",
+        "kanji": "禅"
+      },
+      {
+        "id": 4,
+        "title": "Honor Above All",
+        "desc": "A samurai’s reputation is his most valuable possession.",
+        "image": "/pic_4.jpg",
+        "kanji": "名誉"
+      }
+    ]
+  },
+  "Katuri": {
+    "master": {
+      "titlePrefix": "Katuri",
+      "name": "Style",
+      "quote": "In kenjutsu, speed matters—but precision matters more. Distance and timing decide before strength.",
+      "imageAlt": "Shihan Kenjutsu"
+    },
+    "header": {
+      "titlePart1": "Style",
+      "titlePart2": "Katori",
+      "floatingKanjiTop": "香",
+      "floatingKanjiBottom": "取",
+      "headerKanji": "剣術"
+    },
+    "slides": [
+      {
+        "id": 1,
+        "title": "Katori Shintō-ryū",
+        "desc": "A classical koryū focused on distance, angles, and timing—making the right decision before speed or power.",
+        "image": "https://images.unsplash.com/photo-1544979590-37e9b47e0d92?auto=format&fit=crop&w=1200&q=80",
+        "kanji": "香取神道流"
+      },
+      {
+        "id": 2,
+        "title": "Paired Kumitachi",
+        "desc": "Two-person kata to understand real rhythm: safe entry, line control, and a clean exit—calm and precise.",
+        "image": "https://images.unsplash.com/photo-1520975958225-9b1fcb7a26a3?auto=format&fit=crop&w=1200&q=80",
+        "kanji": "組太刀"
+      },
+      {
+        "id": 3,
+        "title": "Ma-ai Principle",
+        "desc": "Ma-ai is the correct distance: not reckless closeness, not useless range—distance that creates results.",
+        "image": "https://images.unsplash.com/photo-1541414771867-7e6c07a93a85?auto=format&fit=crop&w=1200&q=80",
+        "kanji": "間合"
+      },
+      {
+        "id": 4,
+        "title": "Etiquette & Discipline",
+        "desc": "Reigi is not decoration—it’s the backbone of training: respect, focus, and responsibility in every motion.",
+        "image": "https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=1200&q=80",
+        "kanji": "礼儀"
+      }
+    ]
+  },
+  "Section2": {
+    "heading": { "title": "About Us", "kanji": "私たち" },
+    "founded": { "label": "Founded:", "value": "1971 (Solar Hijri 1350)" },
+    "moreInfo": "Learn more",
+    "tabs": [
+      {
+        "id": 0,
+        "title": "History",
+        "kanji": "歴史",
+        "content": "Our dojo has been active for over 50 years in Japanese martial arts. It was founded by our first master, who returned to Iran after years of training in Japan to share his knowledge.",
+        "image": "/history.jpg"
+      },
+      {
+        "id": 1,
+        "title": "Our Philosophy",
+        "kanji": "哲学",
+        "content": "We emphasize the principles of Bushido—the way of the warrior: honesty, courage, respect, and loyalty. These principles shape both training and everyday life.",
+        "image": "/philosophy.jpg"
+      },
+      {
+        "id": 2,
+        "title": "Our Masters",
+        "kanji": "師範",
+        "content": "Our team consists of experienced instructors with years of practice across various martial arts. Each master specializes in a specific discipline and teaches with passion.",
+        "image": "/masters.jpg"
+      },
+      {
+        "id": 3,
+        "title": "Achievements",
+        "kanji": "成果",
+        "content": "Our students have won many awards in national and international competitions. Our greatest achievement, however, is the personal growth of hundreds of students.",
+        "image": "/achievements.jpg"
+      }
+    ]
+  },
+
+  "Section3": {
+    "heading": { "title": "Contact the Dojo", "kanji": "連絡" },
+    "messengerAlt": "Samurai Messenger",
+    "contactInfo": [
+      {
+        "id": 1,
+        "label": "Address",
+        "text": "Tehran, Valiasr St., Bushido Dojo"
+      },
+      { "id": 2, "label": "Phone", "text": "+98 21 88XX XXXX" },
+      { "id": 3, "label": "Email", "text": "info@bushido-dojo.ir" }
+    ],
+    "form": {
+      "title": "Send a Message",
+      "nameLabel": "Your name",
+      "namePlaceholder": "Enter your name...",
+      "emailLabel": "Email",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Write your message...",
+      "submit": "Send",
+      "sent": "Sent",
+      "thanksTitle": "Arigatou Gozaimasu!",
+      "thanksBody": "Your message was received."
+    }
+  },
+
+  "Section4": {
+    "heading": {
+      "title": "Training Levels",
+      "subtitle": "The path to mastery"
+    },
+    "roadmapTitle": "Roadmap",
+    "labels": {
+      "prereqTitle": "Requirements",
+      "skillsTitle": "Skills you gain",
+      "enrollCta": "Enroll in this course",
+      "skillLevelLabel": "Skill level"
+    },
+    "levels": [
+      {
+        "id": 0,
+        "title": "Beginner Level",
+        "kanji": "初級",
+        "description": "At this level, students learn the fundamentals of Japanese martial arts. The focus is on basic forms, defensive techniques, and building a strong foundation for progress.",
+        "duration": "6 months",
+        "requirements": [
+          "Minimum age 16",
+          "Basic physical fitness",
+          "Commitment to weekly practice"
+        ],
+        "skills": [
+          "Basic forms (Kata)",
+          "Defensive techniques",
+          "Intro to Bushido",
+          "Familiarity with traditional weapons"
+        ],
+        "image": "/beginner-level.jpg",
+        "progress": 30
+      },
+      {
+        "id": 1,
+        "title": "Advanced Level",
+        "kanji": "上級",
+        "description": "At this level, students develop advanced skills and prepare for official certification. The focus is on complex techniques, practical sparring, and deeper philosophy.",
+        "duration": "12 months",
+        "requirements": [
+          "Completion of beginner level",
+          "At least 1 year of consistent practice",
+          "Instructor recommendation"
+        ],
+        "skills": [
+          "Advanced Kata",
+          "Combat techniques",
+          "Weapon proficiency",
+          "Deeper understanding of Samurai philosophy"
+        ],
+        "image": "/advanced-level.jpg",
+        "progress": 85
+      }
+    ],
+    "milestones": [
+      { "title": "Start the journey", "kanji": "始", "completed": true },
+      { "title": "Core training", "kanji": "基", "completed": true },
+      { "title": "Master the forms", "kanji": "形", "completed": false },
+      { "title": "Practical combat", "kanji": "実", "completed": false },
+      { "title": "Certification", "kanji": "免", "completed": false }
+    ]
+  },
+
+  "Section5": {
+    "allKey": "All",
+    "heading": { "title": "Dojo Treasury", "subtitle": "Artifacts & Weapons" },
+    "categories": ["All", "Weapons", "Training Weapons", "Armor", "Art"],
+    "items": [
+      {
+        "id": 1,
+        "name": "Ancient Katana",
+        "kanji": "刀",
+        "description": "A Tamahagane steel blade, a relic from battles of the Edo era.",
+        "origin": "Edo period",
+        "material": "Tamahagane steel",
+        "image": "/katana.jpg",
+        "category": "Weapons"
+      },
+      {
+        "id": 2,
+        "name": "Bamboo Shinai",
+        "kanji": "竹刀",
+        "description": "A Kendo practice sword—symbol of discipline and sportsmanship.",
+        "origin": "Kyoto",
+        "material": "Bamboo, leather",
+        "image": "/shinai.jpg",
+        "category": "Training Weapons"
+      },
+      {
+        "id": 3,
+        "name": "Wooden Bokken",
+        "kanji": "木剣",
+        "description": "A white oak wooden sword for kata practice and focus training.",
+        "origin": "Okinawa",
+        "material": "White oak wood",
+        "image": "/bokken.jpg",
+        "category": "Training Weapons"
+      },
+      {
+        "id": 4,
+        "name": "Menpo Mask",
+        "kanji": "面",
+        "description": "A fearsome warrior mask for protection and intimidation.",
+        "origin": "Sengoku period",
+        "material": "Iron & lacquer",
+        "image": "/menpo.jpg",
+        "category": "Armor"
+      },
+      {
+        "id": 5,
+        "name": "Bushido Calligraphy",
+        "kanji": "書道",
+        "description": "Black-ink artwork reflecting the warrior’s spirit and way.",
+        "origin": "Tokyo",
+        "material": "Washi paper",
+        "image": "/calligraphy.jpg",
+        "category": "Art"
+      },
+      {
+        "id": 6,
+        "name": "Yoroi Armor",
+        "kanji": "鎧",
+        "description": "Full commander armor—where artistry meets resilience.",
+        "origin": "Sengoku period",
+        "material": "Iron, silk",
+        "image": "/armor.jpg",
+        "category": "Armor"
+      }
+    ]
+  },
+  "SectionMembers": {
+    "heading": {
+      "title": "Members",
+      "subtitle": "All members, visible in a fast, responsive grid."
+    },
+    "ui": {
+      "searchPlaceholder": "Search name, code, level, tags...",
+      "levelLabel": "Level",
+      "sortLabel": "Sort",
+      "sortNewest": "Newest",
+      "sortName": "Name",
+      "sortCode": "Code",
+      "allLabel": "All"
+    },
+    "decor": {
+      "floatingKanjiTop": "名",
+      "floatingKanjiBottom": "簿",
+      "headerKanji": "師範",
+      "bgImage": "/sec1_bg.webp"
+    },
+    "members": [
+      {
+        "id": 1,
+        "name": "Alireza Jaberi",
+        "code": "IR174",
+        "level": "Advanced",
+        "kanji": "剣",
+        "bio": "Focused on kata and ma-ai (distance).",
+        "tags": ["Kata", "Kenjutsu"],
+        "avatar": "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?auto=format&fit=crop&w=900&q=80"
+      }
+    ]
+  },
+  "GlobalLayout": {
+    "brand": { "title": "Kenjutsu Academy", "subtitle": "Kenjutsu Academy" },
+    "navLinks": [
+      { "name": "Blog", "path": "/blog" },
+      { "name": "Join", "path": "/join" },
+      { "name": "Members", "path": "/members" },
+      { "name": "Courses", "path": "/courses" }
+    ],
+    "backHome": "Back to Home",
+    "footer": {
+      "title": "Kenjutsu Academy",
+      "quote": "The warrior’s path is not only mastery of the sword, but mastery of the self.",
+      "copyright": "© 2026 Kenjutsu Academy. All rights reserved.",
+      "credit": "Designed with Honor ⚔️ - Alireza Sarizadeh"
+    }
+  },
+  "JoinPage": {
+    "meta": {
+      "title": "Join | The Pact",
+      "description": "Student registration form to join Kenjutsu Academy."
+    },
+    "ui": {
+      "title": "Become a Samurai!",
+      "body": "The way of the samurai is open only to those with a hungry spirit and iron will. By signing this pact, you join not just a martial class, but a way of life.",
+      "benefits": [
+        "Training under senior masters (Shihan)",
+        "Access to traditional gear and weapons",
+        "Rank exams (Kyu/Dan)",
+        "A culture of respect and discipline (Rei)"
+      ],
+      "conductLabel": "Code of Conduct",
+      "conductQuote": "\"True courage is not blind; it is intelligent and powerful.\"",
+      "footerBrand": "Kenjutsu Academy"
+    },
+    "validation": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email",
+      "phoneRequired": "Phone is required"
+    },
+    "form": {
+      "heading": "Student Registration",
+      "pledgeHint": "By clicking, I accept the dojo rules and pledge my commitment.",
+      "submit": "Sign & Submit",
+      "loading": "Sealing...",
+      "labels": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "phone": "Phone",
+        "age": "Age",
+        "experience": "Experience level",
+        "motivation": "Why do you want to join?"
+      },
+      "placeholders": {
+        "email": "example@mail.com"
+      },
+      "options": {
+        "experience": [
+          { "value": "", "label": "Select..." },
+          { "value": "beginner", "label": "Beginner (White)" },
+          { "value": "intermediate", "label": "Intermediate (Colored)" },
+          { "value": "advanced", "label": "Advanced (Black)" }
+        ]
+      }
+    },
+    "success": {
+      "title": "Request Accepted",
+      "body": "Your request will be reviewed. We’ll contact you soon."
+    },
+    "BlogPage": {
+      "meta": {
+        "title": "Samurai Chronicle | Kenjutsu Academy Blog",
+        "description": "Articles on samurai history, Bushido, katana technique, and Zen philosophy.",
+        "keywords": [
+          "samurai",
+          "bushido",
+          "martial arts",
+          "katana",
+          "zen",
+          "japanese history",
+          "training"
+        ]
+      },
+      "ui": {
+        "headingTitle": "Dojo Chronicle",
+        "headingSubtitle": "A journey through words and ancient wisdom for modern warriors",
+        "kanjiLarge": "知識"
+      }
+    }
+  },
+  "BlogPostPage": {
+    "meta": {
+      "siteTitle": "Dojo Chronicle",
+      "notFoundTitle": "Post not found",
+      "notFoundDescription": "This post does not exist."
+    }
+  },
+  "BlogPostContent": {
+    "ui": {
+      "opening": "Unrolling the scroll...",
+      "backToArchive": "Back to archive",
+      "minRead": "min read",
+      "relatedTitle": "Related posts"
+    }
+  },
+  "ProductPage": {
+    "meta": {
+      "brand": "Kenjutsu Academy",
+      "title": "Product | Shop",
+      "description": "Product details in the Kenjutsu gear shop."
+    },
+    "ui": {
+      "pageTitle": "Product Details",
+      "gallery": "Gallery",
+      "specs": "Specs",
+      "reviews": "Reviews",
+      "addToCart": "Call",
+      "outOfStock": "Out of stock",
+      "currency": "Toman",
+      "writeReview": "Write a review",
+      "yourName": "Your name",
+      "yourReview": "Your review",
+      "rating": "Rating",
+      "submit": "Submit",
+      "emptyProduct": "Product not found."
+    }
+  },
+  "BlogPostList": {
+    "ui": {
+      "loading": "Loading...",
+      "readTimeSuffix": "min read"
+    },
+    "categories": [
+      { "key": "all", "label": "All", "matches": ["All", "همه"] },
+      { "key": "history", "label": "History", "matches": ["History", "تاریخ"] },
+      {
+        "key": "philosophy",
+        "label": "Philosophy",
+        "matches": ["Philosophy", "فلسفه"]
+      },
+      {
+        "key": "martialArts",
+        "label": "Martial Arts",
+        "matches": ["Martial Arts", "هنرهای رزمی"]
+      }
+    ]
+  }
+}

@@ -33,7 +33,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-# test internet 2
+# test internet 3
 
 # vercel
 .vercel

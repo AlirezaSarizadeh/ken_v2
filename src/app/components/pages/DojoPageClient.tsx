@@ -15,6 +15,7 @@ import Section7 from "../sections/Members";
 import Section8 from "../sections/Katuri";
 import CutVideo from "../ui/sections/CutVideo";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
+import SideNavigation from "../ui/navigation/SideNavigation";
 
 const TRANSITION_VIDEOS: Record<string, string> = {
   // Section 1 - Academy
@@ -177,6 +178,7 @@ export default function DojoPageClient({
   const [videoSrc, setVideoSrc] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [transitionId, setTransitionId] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -195,10 +197,8 @@ export default function DojoPageClient({
       const key = `${fromSection.id}-${toSection.id}`;
       const customTransitionVideo = TRANSITION_VIDEOS[key];
 
-      // فقط همان ویدیویی که واقعاً لازم داریم انتخاب می‌شود
       const selectedVideoSrc = customTransitionVideo ?? toSection.video;
 
-      // نکته: با حذف preload جمعی، دانلود ویدیو از همین لحظه (mount شدن CutVideo) شروع می‌شود
       setExiting(true);
       setVideoSrc(selectedVideoSrc);
       setTransitionId((prev) => prev + 1);
@@ -208,6 +208,7 @@ export default function DojoPageClient({
         setTimeout(() => {
           setCurrentIndex(nextIndex);
           setExiting(false);
+          setMobileMenuOpen(false); // Close menu after selection
         }, 300);
       }, 500);
     },
@@ -236,7 +237,7 @@ export default function DojoPageClient({
           handlePrev();
           break;
         default:
-          if (e.key >= "1" && e.key <= "5")
+          if (e.key >= "1" && e.key <= "8")
             startTransition(parseInt(e.key) - 1);
       }
     };
@@ -250,9 +251,7 @@ export default function DojoPageClient({
 
   return (
     <main className="w-screen h-[100dvh] relative overflow-hidden bg-black text-white flex flex-col font-sans">
-      {/* ✅ حذف شد: preload همه ویدیوها (علت دانلود شدن همگی در ورود) */}
-
-      {/* 1. Video Overlay (Cinematic Cut) */}
+      {/* Video Overlay (Cinematic Cut) */}
       <AnimatePresence mode="wait">
         {cutting && (
           <div className="absolute inset-0 z-50 pointer-events-none bg-black">
@@ -265,44 +264,40 @@ export default function DojoPageClient({
         )}
       </AnimatePresence>
 
-      {/* 2. Content Layer */}
+      {/* Content Layer */}
       <div className="relative z-0 flex-1 w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
         <div className="min-h-full w-full flex flex-col items-center justify-center pb-20 md:py-0 px-4 md:px-0">
           <ActiveComponent exiting={exiting} messages={messages} />
         </div>
       </div>
 
-      {/* 3. UI Overlay Layer */}
+      {/* UI Overlay Layer */}
       <div className="absolute inset-0 z-20 pointer-events-none flex flex-col justify-between">
-        {/* Top row: switcher (left) + header info (right) */}
-        <div className="w-full p-6 flex items-start justify-between">
-          {/* Language Switcher */}
+        {/* Top row: switcher (left) + header info (right) + mobile menu */}
+        <div className="w-full p-4 md:p-6 flex items-start justify-between">
+          {/* Language Switcher - Hidden on mobile if menu is open */}
           <motion.div
-            className="pointer-events-auto"
+            className={`pointer-events-auto ${mobileMenuOpen ? "hidden" : "block"}`}
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <LanguageSwitcher compact={isMobile} />
           </motion.div>
 
-          {/* Header Info */}
+          {/* Header Info - Hidden on mobile */}
           <motion.header
-            className="flex justify-end items-start"
+            className="hidden md:flex justify-end items-start"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="bg-black/60 backdrop-blur-md border hidden border-red-900/30 p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-red-900/10">
-              {!isMobile && (
-                <span
-                  className="text-4xl text-red-600 font-black tracking-tighter"
-                  style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
-                >
-                  {activeSection.kanji}
-                </span>
-              )}
-              <div
-                className={`flex flex-col ${!isMobile && "border-l border-red-800/50 pl-4"}`}
+            <div className="bg-black/60 backdrop-blur-md border border-red-900/30 p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-red-900/10">
+              <span
+                className="text-4xl text-red-600 font-black tracking-tighter"
+                style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
               >
+                {activeSection.kanji}
+              </span>
+              <div className="flex flex-col border-l border-red-800/50 pl-4">
                 <h1
                   className="text-red-500 font-bold uppercase tracking-widest text-sm md:text-lg"
                   style={{ fontFamily: "'Vazirmatn', sans-serif" }}
@@ -312,58 +307,183 @@ export default function DojoPageClient({
               </div>
             </div>
           </motion.header>
-        </div>
 
-        {/* Bottom Navigation */}
-        <motion.footer
-          className="w-full p-6 pb-8 md:pb-6 flex justify-center items-end pointer-events-auto"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div
-            className={`
-              relative flex items-center justify-between
-              bg-black/80 backdrop-blur-xl border border-red-900/50 
-              shadow-[0_0_30px_rgba(220,38,38,0.2)]
-              transition-all duration-500 ease-out
-              ${isMobile ? "w-full max-w-sm rounded-2xl px-4 py-3" : "w-auto gap-8 rounded-full px-8 py-3"}
-            `}
+          {/* Mobile Hamburger Menu - Enhanced */}
+          <motion.button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden pointer-events-auto ml-auto relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 group bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/40 rounded-xl hover:from-red-600/30 hover:to-red-700/20 transition-all duration-300"
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            <NavButton
-              direction="prev"
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-              isMobile={isMobile}
+            {/* Glow effect */}
+            <motion.div
+              className="absolute inset-0 rounded-xl bg-red-600/0 group-hover:bg-red-600/10 blur transition-all duration-300"
             />
 
-            <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
-              {SECTIONS.map((section, idx) => {
-                const isActive = idx === currentIndex;
-                if (isMobile && !isActive) return null;
+            {/* Hamburger lines */}
+            <motion.span
+              className="w-6 h-0.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full transition-all duration-300 relative z-10"
+              animate={
+                mobileMenuOpen
+                  ? { rotate: 45, y: 8, width: 24 }
+                  : { rotate: 0, y: 0, width: 24 }
+              }
+            />
+            <motion.span
+              className="w-6 h-0.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full transition-all duration-300 relative z-10"
+              animate={mobileMenuOpen ? { opacity: 0, scale: 0.5 } : { opacity: 1, scale: 1 }}
+            />
+            <motion.span
+              className="w-6 h-0.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full transition-all duration-300 relative z-10"
+              animate={
+                mobileMenuOpen
+                  ? { rotate: -45, y: -8, width: 24 }
+                  : { rotate: 0, y: 0, width: 24 }
+              }
+            />
 
-                return (
-                  <motion.div
-                    key={section.id}
-                    layout
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => startTransition(idx)}
+            {/* Pulse effect when menu is open */}
+            {mobileMenuOpen && (
+              <motion.div
+                className="absolute inset-0 rounded-xl border border-red-500/50"
+                animate={{ boxShadow: ['0 0 0 2px rgba(239, 68, 68, 0.5)', '0 0 0 8px rgba(239, 68, 68, 0)'] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+            )}
+          </motion.button>
+        </div>
+
+        {/* Mobile Menu Drawer */}
+        <AnimatePresence>
+          {isMobile && mobileMenuOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto z-40"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setMobileMenuOpen(false)}
+              />
+
+              {/* Menu Panel */}
+              <motion.div
+                className="absolute inset-x-0 top-0 bg-black/95 border-b border-red-900/50 backdrop-blur-xl pointer-events-auto z-40 max-h-[80vh] overflow-y-auto"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="p-6 space-y-2">
+                  {/* Menu Title */}
+                  <h2
+                    className="text-sm font-bold text-gray-400 mb-4"
+                    style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                   >
-                    {isMobile ? (
-                      <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300 min-w-[100px]">
-                        <span
-                          className="text-2xl text-red-500 font-bold drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]"
-                          style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
-                        >
-                          {section.kanji}
-                        </span>
-                        <span
-                          className="text-sm text-red-100 mt-1 font-bold whitespace-nowrap"
-                          style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                        >
-                          {section.title}
-                        </span>
-                      </div>
-                    ) : (
+                    سکشن‌ها
+                  </h2>
+
+                  {/* Menu Items */}
+                  {SECTIONS.map((section, idx) => {
+                    const isActive = idx === currentIndex;
+
+                    return (
+                      <motion.button
+                        key={section.id}
+                        onClick={() => startTransition(idx)}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className={`
+                          w-full flex items-center gap-4 p-4 rounded-lg
+                          transition-all duration-200
+                          ${
+                            isActive
+                              ? 'bg-red-900/40 border border-red-600/60'
+                              : 'border border-white/10 hover:bg-white/5 active:scale-95'
+                          }
+                        `}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {/* Icon */}
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          isActive
+                            ? 'bg-red-600/30'
+                            : 'bg-white/10'
+                        }`}>
+                          <span
+                            className={`text-lg font-bold ${
+                              isActive ? 'text-red-500' : 'text-gray-400'
+                            }`}
+                            style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
+                          >
+                            {section.kanji}
+                          </span>
+                        </div>
+
+                        {/* Text */}
+                        <div className="text-left flex-1">
+                          <p
+                            className={`text-sm font-bold ${
+                              isActive ? 'text-white' : 'text-gray-300'
+                            }`}
+                            style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                          >
+                            {section.title}
+                          </p>
+                        </div>
+
+                        {/* Active indicator */}
+                        {isActive && (
+                          <motion.div
+                            className="w-2 h-2 rounded-full bg-red-500"
+                            layoutId="activeMenuIndicator"
+                          />
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Bottom Navigation (Desktop Only) */}
+        {!isMobile && (
+          <motion.footer
+            className="w-full p-6 pb-8 flex justify-center items-end pointer-events-auto"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div
+              className="
+                relative flex items-center justify-between
+                bg-black/80 backdrop-blur-xl border border-red-900/50 
+                shadow-[0_0_30px_rgba(220,38,38,0.2)]
+                transition-all duration-500 ease-out
+                w-auto gap-8 rounded-full px-8 py-3
+              "
+            >
+              <NavButton
+                direction="prev"
+                onClick={handlePrev}
+                disabled={currentIndex === 0}
+                isMobile={false}
+              />
+
+              <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
+                {SECTIONS.map((section, idx) => {
+                  const isActive = idx === currentIndex;
+
+                  return (
+                    <motion.div
+                      key={section.id}
+                      layout
+                      className="flex flex-col items-center cursor-pointer group"
+                      onClick={() => startTransition(idx)}
+                    >
                       <div
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
                           isActive
@@ -380,37 +500,29 @@ export default function DojoPageClient({
                           {section.title}
                         </span>
                       </div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
 
-            <NavButton
-              direction="next"
-              onClick={handleNext}
-              disabled={currentIndex === SECTIONS.length - 1}
-              isMobile={isMobile}
-            />
-          </div>
-        </motion.footer>
+              <NavButton
+                direction="next"
+                onClick={handleNext}
+                disabled={currentIndex === SECTIONS.length - 1}
+                isMobile={false}
+              />
+            </div>
+          </motion.footer>
+        )}
       </div>
 
-      {!isMobile && (
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-4 bg-black/30 p-2 rounded-full backdrop-blur border border-white/5">
-          {SECTIONS.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => startTransition(idx)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                idx === currentIndex
-                  ? "bg-red-500 h-6"
-                  : "bg-gray-600 hover:bg-gray-400"
-              }`}
-            />
-          ))}
-        </div>
-      )}
+      {/* Side Navigation (Desktop Only) */}
+      <SideNavigation
+        sections={SECTIONS.map(s => ({ id: s.id, title: s.title, kanji: s.kanji }))}
+        currentIndex={currentIndex}
+        onSectionChange={startTransition}
+        isMobile={isMobile}
+      />
     </main>
   );
 }

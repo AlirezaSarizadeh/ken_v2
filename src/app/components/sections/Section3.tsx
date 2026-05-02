@@ -52,11 +52,12 @@ export default function Section3({
   messages,
 }: {
   exiting: boolean;
-  messages?: GlobalMessages; // ✅ همسان با بقیه سکشن‌ها
+  messages?: GlobalMessages; 
 }) {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSectionOpen, setIsSectionOpen] = useState(false); 
 
   const t = (messages?.Section3 as any) ?? {};
 
@@ -107,7 +108,6 @@ export default function Section3({
 
   return (
     <div className="w-full min-h-full flex flex-col items-center justify-center relative py-16 md:py-0" id="contact">
-      {/* BG */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10" />
         <motion.div
@@ -118,217 +118,268 @@ export default function Section3({
           transition={{ duration: 0.5, ease: "easeOut" }}
         />
 
-        {/* ✅ start/end به جای left/right */}
         <div className="absolute top-10 start-10 text-red-950/20 text-9xl font-black select-none z-0">連</div>
         <div className="absolute bottom-10 end-10 text-red-950/20 text-9xl font-black select-none z-0">絡</div>
       </div>
 
-      <motion.div
-        className="
-          relative z-10 w-full max-w-6xl flex flex-col md:flex-row
-          bg-[#0a0a0a]
-          border-y-2 md:border-y-0 md:border-x-2 border-[#3a0a0a]
-          rounded-xl md:rounded-3xl
-          shadow-[0_20px_60px_-10px_rgba(0,0,0,1)]
-          overflow-hidden mx-4
-        "
-        initial={{ opacity: 0, y: 50, scale: 0.98 }}
-        animate={{ opacity: exiting ? 0 : 1, y: exiting ? -50 : 0, scale: exiting ? 0.95 : 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+      {/* --- BUTTON --- */}
+      <motion.button
+        onClick={() => setIsSectionOpen(!isSectionOpen)}
+        className="relative z-50 mb-6 group cursor-pointer outline-none overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.6),inset_0_2px_4px_rgba(255,255,255,0.1)] border border-[#5a1a1a]"
+        style={{ 
+          width: '280px', 
+          height: '64px',
+          background: 'linear-gradient(to bottom, #4a1111 0%, #2d0808 50%, #140303 100%)',
+        }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: exiting ? 0 : 1, opacity: exiting ? 0 : 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
-        <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_10px_red]" />
-
-        {/* Left */}
-        <div className="w-full md:w-5/12 p-8 flex flex-col items-center justify-center bg-[#0f0f0f] relative border-b md:border-b-0 md:border-s border-red-900/30">
-          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] pointer-events-none" />
-
-          <h2 className="relative z-10 text-3xl font-bold text-red-100/90 mb-8 text-center" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-            {headingTitle}
-            <span className="block text-5xl text-red-900/30 mt-2 font-black select-none" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
-              {headingKanji}
-            </span>
-          </h2>
-
-          <motion.div
-            className="relative w-48 h-48 md:w-56 md:h-56 mb-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#ff5555]/50 to-transparent opacity-70"></div>
+        <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-black/80 to-transparent opacity-80"></div>
+        <div className="relative z-10 flex items-center justify-center gap-4 h-full w-full text-red-50">
+          <motion.div 
+            className="w-10 h-10 rounded-full border border-[#ffd700]/40 bg-[#1a0505] flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"
+            animate={{ rotate: isSectionOpen ? 180 : 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <div className="absolute inset-4 rounded-full bg-red-900/20 blur-2xl" />
-            <img
-              src="/pic_1.jpg"
-              alt={messengerAlt}
-              className="w-full h-full object-contain relative z-10"
-              onError={(e) => {
-                e.currentTarget.src = "https://picsum.photos/seed/messenger/400/400.jpg";
-              }}
-            />
+            <span className="text-[#ffd700] font-bold text-xl" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
+              {isSectionOpen ? "閉" : "開"}
+            </span>
           </motion.div>
-
-          <div className="w-full space-y-4 relative z-10">
-            {CONTACT_INFO.map((info) => {
-              const kind = inferKind(info);
-              return (
-                <div
-                  key={info.id}
-                  className="group flex items-center p-4 bg-white/5 rounded-lg border border-white/5 hover:border-red-900/50 hover:bg-white/10 transition-all duration-300"
-                >
-                  <div className="text-red-500 group-hover:text-red-400 group-hover:scale-110 transition-transform duration-300">
-                    {ICONS[kind]}
-                  </div>
-
-                  {/* ✅ ms به جای mr */}
-                  <div className="ms-4 min-w-0">
-                    <p className="text-xs text-gray-500 mb-0.5" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                      {info.label}
-                    </p>
-
-                    {/* ✅ ایمیل/شماره بهتره همیشه LTR باشه */}
-                    <p
-                      className={`text-sm md:text-base text-gray-200 truncate ${
-                        kind === "email" || kind === "phone" ? "dir-ltr text-start" : ""
-                      }`}
-                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                    >
-                      {info.text}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="flex flex-col items-start">
+            <span className="text-[10px] text-red-300/60 uppercase tracking-widest font-semibold">
+              {isSectionOpen ? "بستن" : "دستور استاد"}
+            </span>
+            <span className="text-lg font-bold tracking-wide text-red-100 drop-shadow-md" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+              {isSectionOpen ? "مخفی کردن بخش" : "باز کردن طومار"}
+            </span>
           </div>
         </div>
+      </motion.button>
 
-        {/* Right Form */}
-        <div className="w-full md:w-7/12 p-6 md:p-12 relative flex flex-col justify-center items-center bg-[#080808]">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-[0.05]" />
+      {/* --- CONTENT WRAPPER --- */}
+      <motion.div
+        layout
+        className="w-full flex justify-center overflow-hidden"
+        initial={{ height: 0, opacity: 0 }}
+        animate={{
+          height: (isSectionOpen && !exiting) ? "auto" : 0,
+          opacity: (isSectionOpen && !exiting) ? 1 : 0,
+        }}
+        transition={{ 
+          height: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }, 
+          opacity: { duration: 0.5, delay: isSectionOpen ? 0.2 : 0 } 
+        }}
+      >
+        <motion.div
+          layout
+          className="
+            relative z-10 w-full max-w-6xl flex flex-col md:flex-row
+            bg-[#0a0a0a]
+            border-y-2 md:border-y-0 md:border-x-2 border-[#3a0a0a]
+            rounded-xl md:rounded-3xl
+            shadow-[0_20px_60px_-10px_rgba(0,0,0,1)]
+            overflow-hidden mx-4
+          "
+          initial={{ opacity: 0, y: 50, scale: 0.98 }}
+          animate={{ opacity: exiting ? 0 : 1, y: exiting ? -50 : 0, scale: exiting ? 0.95 : 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_10px_red]" />
 
-          <div className="w-full max-w-lg relative bg-[#f2e8d5] text-gray-800 rounded-sm shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] opacity-60 mix-blend-multiply pointer-events-none z-10" />
-            <div className="absolute top-0 w-full h-2 bg-red-900/80 z-20" />
-            <div className="absolute bottom-0 w-full h-2 bg-red-900/80 z-20" />
+          {/* Left */}
+          <div className="w-full md:w-5/12 p-8 flex flex-col items-center justify-center bg-[#0f0f0f] relative border-b md:border-b-0 md:border-s border-red-900/30">
+            <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] pointer-events-none" />
 
-            <div className="relative z-20 p-8 md:p-10">
-              <h3 className="text-2xl font-bold text-red-900/90 text-center mb-8 flex items-center justify-center gap-3" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                <span className="h-[1px] w-8 bg-red-900/30" />
-                {formTitle}
-                <span className="h-[1px] w-8 bg-red-900/30" />
-              </h3>
+            <h2 className="relative z-10 text-3xl font-bold text-red-100/90 mb-8 text-center" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+              {headingTitle}
+              <span className="block text-5xl text-red-900/30 mt-2 font-black select-none" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
+                {headingKanji}
+              </span>
+            </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="group">
-                  <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                    {nameLabel}
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full bg-transparent border-b-2 border-red-900/20 py-2 px-1 text-gray-800 focus:border-red-800 focus:outline-none transition-colors placeholder-red-900/20"
-                    placeholder={namePlaceholder}
-                    style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                  />
-                </div>
+            <motion.div
+              className="relative w-48 h-48 md:w-56 md:h-56 mb-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <div className="absolute inset-4 rounded-full bg-red-900/20 blur-2xl" />
+              <img
+                src="/pic_1.jpg"
+                alt={messengerAlt}
+                className="w-full h-full object-contain relative z-10"
+                onError={(e) => {
+                  e.currentTarget.src = "https://picsum.photos/seed/messenger/400/400.jpg";
+                }}
+              />
+            </motion.div>
 
-                <div className="group">
-                  <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                    {emailLabel}
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    dir="ltr"
-                    className="w-full bg-transparent border-b-2 border-red-900/20 py-2 px-1 text-gray-800 focus:border-red-800 focus:outline-none transition-colors placeholder-red-900/20 text-start"
-                    placeholder={emailPlaceholder}
-                    style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                  />
-                </div>
-
-                <div className="group">
-                  <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                    {messageLabel}
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    rows={3}
-                    required
-                    className="w-full bg-transparent border-b-2 border-red-900/20 py-2 px-1 text-gray-800 focus:border-red-800 focus:outline-none transition-colors placeholder-red-900/20 resize-none"
-                    placeholder={messagePlaceholder}
-                    style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                  />
-                </div>
-
-                <div className="pt-4 flex justify-center relative">
-                  <motion.button
-                    type="submit"
-                    disabled={isLoading || isSubmitted}
-                    className={`
-                      relative w-20 h-20 rounded-full flex items-center justify-center 
-                      text-white shadow-lg border-4 transition-all duration-300
-                      ${isSubmitted ? "bg-green-700 border-green-800" : "bg-red-800 border-red-900"}
-                      ${isLoading ? "opacity-80 cursor-wait" : "hover:shadow-xl cursor-pointer"}
-                    `}
-                    style={{ boxShadow: "0 5px 15px rgba(0,0,0,0.3)" }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+            <div className="w-full space-y-4 relative z-10">
+              {CONTACT_INFO.map((info) => {
+                const kind = inferKind(info);
+                return (
+                  <div
+                    key={info.id}
+                    className="group flex items-center p-4 bg-white/5 rounded-lg border border-white/5 hover:border-red-900/50 hover:bg-white/10 transition-all duration-300"
                   >
-                    <div className="absolute inset-0 rounded-full border border-white/20 m-1" />
-                    {isLoading ? (
-                      <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                    ) : isSubmitted ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                    ) : (
-                      <span className="text-3xl font-black select-none" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
-                        印
-                      </span>
-                    )}
-                  </motion.button>
-
-                  <span className="absolute -bottom-8 text-xs text-red-900/50 font-bold tracking-widest">
-                    {isSubmitted ? sentText : submitText}
-                  </span>
-                </div>
-              </form>
-
-              <AnimatePresence>
-                {isSubmitted && (
-                  <motion.div
-                    className="absolute inset-0 z-30 flex items-center justify-center bg-[#f2e8d5]/90 backdrop-blur-sm"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <div className="text-center">
-                      <div className="text-5xl mb-2">🙏</div>
-                      <h4 className="text-xl font-bold text-red-900" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                        {thanksTitle}
-                      </h4>
-                      <p className="text-red-800/70 text-sm mt-1">{thanksBody}</p>
+                    <div className="text-red-500 group-hover:text-red-400 group-hover:scale-110 transition-transform duration-300">
+                      {ICONS[kind]}
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+
+                    <div className="ms-4 min-w-0">
+                      <p className="text-xs text-gray-500 mb-0.5" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                        {info.label}
+                      </p>
+
+                      <p
+                        className={`text-sm md:text-base text-gray-200 truncate ${
+                          kind === "email" || kind === "phone" ? "dir-ltr text-start" : ""
+                        }`}
+                        style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                      >
+                        {info.text}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
 
-        <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900 to-transparent z-30 opacity-50" />
+          {/* Right Form */}
+          <div className="w-full md:w-7/12 p-6 md:p-12 relative flex flex-col justify-center items-center bg-[#080808]">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] opacity-[0.05]" />
+
+            <div className="w-full max-w-lg relative bg-[#f2e8d5] text-gray-800 rounded-sm shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden">
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] opacity-60 mix-blend-multiply pointer-events-none z-10" />
+              <div className="absolute top-0 w-full h-2 bg-red-900/80 z-20" />
+              <div className="absolute bottom-0 w-full h-2 bg-red-900/80 z-20" />
+
+              <div className="relative z-20 p-8 md:p-10">
+                <h3 className="text-2xl font-bold text-red-900/90 text-center mb-8 flex items-center justify-center gap-3" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                  <span className="h-[1px] w-8 bg-red-900/30" />
+                  {formTitle}
+                  <span className="h-[1px] w-8 bg-red-900/30" />
+                </h3>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="group">
+                    <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                      {nameLabel}
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full bg-transparent border-b-2 border-red-900/20 py-2 px-1 text-gray-800 focus:border-red-800 focus:outline-none transition-colors placeholder-red-900/20"
+                      placeholder={namePlaceholder}
+                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                    />
+                  </div>
+
+                  <div className="group">
+                    <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                      {emailLabel}
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      dir="ltr"
+                      className="w-full bg-transparent border-b-2 border-red-900/20 py-2 px-1 text-gray-800 focus:border-red-800 focus:outline-none transition-colors placeholder-red-900/20 text-start"
+                      placeholder={emailPlaceholder}
+                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                    />
+                  </div>
+
+                  <div className="group">
+                    <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                      {messageLabel}
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      rows={3}
+                      required
+                      className="w-full bg-transparent border-b-2 border-red-900/20 py-2 px-1 text-gray-800 focus:border-red-800 focus:outline-none transition-colors placeholder-red-900/20 resize-none"
+                      placeholder={messagePlaceholder}
+                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                    />
+                  </div>
+
+                  <div className="pt-4 flex justify-center relative">
+                    <motion.button
+                      type="submit"
+                      disabled={isLoading || isSubmitted}
+                      className={`
+                        relative w-20 h-20 rounded-full flex items-center justify-center 
+                        text-white shadow-lg border-4 transition-all duration-300
+                        ${isSubmitted ? "bg-green-700 border-green-800" : "bg-red-800 border-red-900"}
+                        ${isLoading ? "opacity-80 cursor-wait" : "hover:shadow-xl cursor-pointer"}
+                      `}
+                      style={{ boxShadow: "0 5px 15px rgba(0,0,0,0.3)" }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div className="absolute inset-0 rounded-full border border-white/20 m-1" />
+                      {isLoading ? (
+                        <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                      ) : isSubmitted ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                      ) : (
+                        <span className="text-3xl font-black select-none" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
+                          印
+                        </span>
+                      )}
+                    </motion.button>
+
+                    <span className="absolute -bottom-8 text-xs text-red-900/50 font-bold tracking-widest">
+                      {isSubmitted ? sentText : submitText}
+                    </span>
+                  </div>
+                </form>
+
+                <AnimatePresence>
+                  {isSubmitted && (
+                    <motion.div
+                      className="absolute inset-0 z-30 flex items-center justify-center bg-[#f2e8d5]/90 backdrop-blur-sm"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <div className="text-center">
+                        <div className="text-5xl mb-2">🙏</div>
+                        <h4 className="text-xl font-bold text-red-900" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                          {thanksTitle}
+                        </h4>
+                        <p className="text-red-800/70 text-sm mt-1">{thanksBody}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900 to-transparent z-30 opacity-50" />
+        </motion.div>
       </motion.div>
     </div>
   );

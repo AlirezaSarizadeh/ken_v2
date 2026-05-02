@@ -8,12 +8,12 @@ import Image from "next/image";
 type Member = {
   id: number;
   name: string;
-  code: string; // IR174
+  code: string; 
   level: "Beginner" | "Intermediate" | "Advanced" | "Master" | string;
-  kanji?: string; // optional (unused in card now)
-  bio?: string; // short
+  kanji?: string; 
+  bio?: string; 
   tags?: string[];
-  avatar?: string; // CDN
+  avatar?: string; 
 };
 
 function isLikelyEnglish(text?: string) {
@@ -120,6 +120,7 @@ export default function SectionMembers({
   messages?: GlobalMessages;
 }) {
   const t = (messages as any)?.SectionMembers;
+  const [isSectionOpen, setIsSectionOpen] = useState(false); 
 
   const inferredIsEn = useMemo(() => {
     return (
@@ -141,11 +142,6 @@ export default function SectionMembers({
     t?.ui?.searchPlaceholder ??
     (inferredIsEn ? "Search name, code, level, tags..." : "جستجو: نام، کد، سطح، برچسب‌ها...");
   const levelLabel = t?.ui?.levelLabel ?? (inferredIsEn ? "Level" : "سطح");
-  const sortLabel = t?.ui?.sortLabel ?? (inferredIsEn ? "Sort" : "مرتب‌سازی");
-  const sortNewest =
-    t?.ui?.sortNewest ?? (inferredIsEn ? "Newest" : "جدیدترین");
-  const sortName = t?.ui?.sortName ?? (inferredIsEn ? "Name" : "نام");
-  const sortCode = t?.ui?.sortCode ?? (inferredIsEn ? "Code" : "کد");
   const allLabel = t?.ui?.allLabel ?? (inferredIsEn ? "All" : "همه");
 
   const floatTop = t?.decor?.floatingKanjiTop ?? "名";
@@ -165,7 +161,6 @@ export default function SectionMembers({
 
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState(levelOptions[0] ?? allLabel);
-  const [sortKey, setSortKey] = useState<SortKey>("newest");
 
   const filtered = useMemo(() => {
     const q = normalize(query);
@@ -192,18 +187,11 @@ export default function SectionMembers({
       return hay.includes(q);
     });
 
-    const sorted = [...base].sort((a, b) => {
-      if (sortKey === "name") return a.name.localeCompare(b.name);
-      if (sortKey === "code") return a.code.localeCompare(b.code);
-      return (b.id ?? 0) - (a.id ?? 0);
-    });
-
-    return sorted;
-  }, [members, query, levelFilter, sortKey, allLabel]);
+    return base;
+  }, [members, query, levelFilter, allLabel]);
 
   return (
     <div className="w-full min-h-full flex flex-col items-center justify-center relative py-12 md:py-0">
-      {/* Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10"></div>
 
@@ -233,202 +221,220 @@ export default function SectionMembers({
         </motion.div>
       </div>
 
-      {/* Shell */}
-      <motion.div
-        className="
-          relative z-10 
-          w-full max-w-6xl 
-          bg-[#0a0a0a]
-          border-y-2 md:border-2 border-[#3a0a0a]
-          rounded-xl md:rounded-3xl 
-          shadow-[0_10px_60px_-10px_rgba(0,0,0,1),0_0_20px_rgba(139,0,0,0.3)_inset]
-          overflow-hidden
-        "
-        initial={{ opacity: 0, scale: 0.985, y: 40 }}
-        animate={{
-          opacity: exiting ? 0 : 1,
-          scale: exiting ? 0.95 : 1,
-          y: exiting ? 40 : 0,
+      {/* --- BUTTON --- */}
+      <motion.button
+        onClick={() => setIsSectionOpen(!isSectionOpen)}
+        className="relative z-50 mb-6 group cursor-pointer outline-none overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.6),inset_0_2px_4px_rgba(255,255,255,0.1)] border border-[#5a1a1a]"
+        style={{ 
+          width: '280px', 
+          height: '64px',
+          background: 'linear-gradient(to bottom, #4a1111 0%, #2d0808 50%, #140303 100%)',
         }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: exiting ? 0 : 1, opacity: exiting ? 0 : 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
-        <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_10px_red]"></div>
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#ff5555]/50 to-transparent opacity-70"></div>
+        <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-black/80 to-transparent opacity-80"></div>
+        <div className="relative z-10 flex items-center justify-center gap-4 h-full w-full text-red-50">
+          <motion.div 
+            className="w-10 h-10 rounded-full border border-[#ffd700]/40 bg-[#1a0505] flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"
+            animate={{ rotate: isSectionOpen ? 180 : 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#ffd700] font-bold text-xl" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
+              {isSectionOpen ? "閉" : "開"}
+            </span>
+          </motion.div>
+          <div className="flex flex-col items-start">
+            <span className="text-[10px] text-red-300/60 uppercase tracking-widest font-semibold">
+              {isSectionOpen ? "بستن" : "دستور استاد"}
+            </span>
+            <span className="text-lg font-bold tracking-wide text-red-100 drop-shadow-md" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+              {isSectionOpen ? "مخفی کردن بخش" : "باز کردن طومار"}
+            </span>
+          </div>
+        </div>
+      </motion.button>
 
-        {/* Header */}
-        <div className="relative z-10 p-6 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <div className="relative">
-              <h2
-                className="text-2xl md:text-4xl font-black text-red-50 tracking-tight"
-                style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-              >
-                {headingTitle}
-              </h2>
-              <p
-                className="mt-2 text-red-100/65 text-sm md:text-base leading-7 max-w-2xl"
-                style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-              >
-                {headingSubtitle}
-              </p>
-            </div>
+      {/* --- CONTENT WRAPPER --- */}
+      <motion.div
+        layout
+        className="w-full flex justify-center overflow-hidden"
+        initial={{ height: 0, opacity: 0 }}
+        animate={{
+          height: (isSectionOpen && !exiting) ? "auto" : 0,
+          opacity: (isSectionOpen && !exiting) ? 1 : 0,
+        }}
+        transition={{ 
+          height: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }, 
+          opacity: { duration: 0.5, delay: isSectionOpen ? 0.2 : 0 } 
+        }}
+      >
+        <motion.div
+          layout
+          className="
+            relative z-10 
+            w-full max-w-6xl 
+            bg-[#0a0a0a]
+            border-y-2 md:border-2 border-[#3a0a0a]
+            rounded-xl md:rounded-3xl 
+            shadow-[0_10px_60px_-10px_rgba(0,0,0,1),0_0_20px_rgba(139,0,0,0.3)_inset]
+            overflow-hidden
+          "
+          initial={{ opacity: 0, scale: 0.985, y: 40 }}
+          animate={{
+            opacity: exiting ? 0 : 1,
+            scale: exiting ? 0.95 : 1,
+            y: exiting ? 40 : 0,
+          }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_10px:red]"></div>
 
-            {/* Controls */}
-            <div className="w-full md:w-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Header */}
+          <div className="relative z-10 p-6 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <div className="relative">
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={searchPlaceholder}
-                  className="
-                    w-full
-                    bg-black/60
-                    border border-red-900/40
-                    rounded-2xl
-                    px-4 py-3
-                    text-red-50/90
-                    placeholder:text-red-200/35
-                    outline-none
-                    focus:border-red-600/60
-                    focus:ring-2 focus:ring-red-900/30
-                  "
-                  style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                />
-              </div>
-
-              <div className="relative">
-                <select
-                  value={levelFilter}
-                  onChange={(e) => setLevelFilter(e.target.value)}
-                  className="
-                    w-full
-                    bg-black/60
-                    border border-red-900/40
-                    rounded-2xl
-                    px-4 py-3
-                    pe-12
-                    text-red-50/90
-                    outline-none
-                    focus:border-red-600/60
-                    focus:ring-2 focus:ring-red-900/30
-                    appearance-none
-                  "
+                <h2
+                  className="text-2xl md:text-4xl font-black text-red-50 tracking-tight"
                   style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                 >
-                  {levelOptions.map((lvl) => (
-                    <option key={lvl} value={lvl} className="bg-black text-white">
-                      {levelLabel}: {lvl}
-                    </option>
-                  ))}
-                </select>
+                  {headingTitle}
+                </h2>
+                <p
+                  className="mt-2 text-red-100/65 text-sm md:text-base leading-7 max-w-2xl"
+                  style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                >
+                  {headingSubtitle}
+                </p>
+              </div>
 
-                <span className="pointer-events-none absolute inset-y-0 end-4 flex items-center text-red-200/70">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="h-5 w-5"
-                    aria-hidden="true"
+              {/* Controls */}
+              <div className="w-full md:w-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="relative">
+                  <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={searchPlaceholder}
+                    className="
+                      w-full
+                      bg-black/60
+                      border border-red-900/40
+                      rounded-2xl
+                      px-4 py-3
+                      text-red-50/90
+                      placeholder:text-red-200/35
+                      outline-none
+                      focus:border-red-600/60
+                      focus:ring-2 focus:ring-red-900/30
+                    "
+                    style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                  />
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={levelFilter}
+                    onChange={(e) => setLevelFilter(e.target.value)}
+                    className="
+                      w-full
+                      bg-black/60
+                      border border-red-900/40
+                      rounded-2xl
+                      px-4 py-3
+                      pe-12
+                      text-red-50/90
+                      outline-none
+                      focus:border-red-600/60
+                      focus:ring-2 focus:ring-red-900/30
+                      appearance-none
+                    "
+                    style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                    {levelOptions.map((lvl) => (
+                      <option key={lvl} value={lvl} className="bg-black text-white">
+                        {levelLabel}: {lvl}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span className="pointer-events-none absolute inset-y-0 end-4 flex items-center text-red-200/70">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-center justify-between text-xs text-red-100/40">
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-red-600/70 shadow-[0_0_12px_rgba(220,38,38,0.6)]" />
+                <span style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                  {inferredIsEn
+                    ? `${filtered.length} of ${members.length} visible`
+                    : `${filtered.length} از ${members.length} عضو نمایش داده شد`}
                 </span>
               </div>
-
-              <div className="relative hidden">
-                <select
-                  value={sortKey}
-                  onChange={(e) => setSortKey(e.target.value as SortKey)}
-                  className="
-                    w-full
-                    bg-black/60
-                    border border-red-900/40
-                    rounded-2xl
-                    px-4 py-3
-                    text-red-50/90
-                    outline-none
-                    focus:border-red-600/60
-                    focus:ring-2 focus:ring-red-900/30
-                  "
-                  style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                >
-                  <option value="newest" className="bg-black text-white">
-                    {sortLabel}: {sortNewest}
-                  </option>
-                  <option value="name" className="bg-black text-white">
-                    {sortLabel}: {sortName}
-                  </option>
-                  <option value="code" className="bg-black text-white">
-                    {sortLabel}: {sortCode}
-                  </option>
-                </select>
+              <div className="hidden md:block" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                {inferredIsEn ? "Scroll the grid to browse." : "برای مشاهده، گرید را اسکرول کنید."}
               </div>
             </div>
           </div>
 
-          <div className="mt-5 flex items-center justify-between text-xs text-red-100/40">
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-red-600/70 shadow-[0_0_12px_rgba(220,38,38,0.6)]" />
-              <span style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                {inferredIsEn
-                  ? `${filtered.length} of ${members.length} visible`
-                  : `${filtered.length} از ${members.length} عضو نمایش داده شد`}
-              </span>
-            </div>
-            <div className="hidden md:block" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-              {inferredIsEn ? "Scroll the grid to browse." : "برای مشاهده، گرید را اسکرول کنید."}
-            </div>
-          </div>
-        </div>
-
-        {/* Grid */}
-        <div className="relative z-10 px-4 md:px-8 pb-8">
-          <div
-            className="
-              rounded-3xl
-              border border-red-900/30
-              bg-black/35
-              backdrop-blur-md
-              shadow-[inset_0_0_40px_rgba(0,0,0,0.6)]
-              overflow-hidden
-            "
-          >
-            <div className="max-h-[62vh] md:max-h-[58vh] overflow-y-auto overflow-x-hidden no-scrollbar p-4 md:p-5">
-              <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {filtered.map((m) => (
-                  <MemberCard key={m.id} member={m} />
-                ))}
-              </div>
-
-              {filtered.length === 0 && (
-                <div className="py-16 text-center text-red-100/55">
-                  <div className="text-3xl mb-2">⛩️</div>
-                  <div style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                    {inferredIsEn
-                      ? "No members match your search."
-                      : "عضوی با این جستجو پیدا نشد."}
-                  </div>
+          {/* Grid */}
+          <div className="relative z-10 px-4 md:px-8 pb-8">
+            <div
+              className="
+                rounded-3xl
+                border border-red-900/30
+                bg-black/35
+                backdrop-blur-md
+                shadow-[inset_0_0_40px_rgba(0,0,0,0.6)]
+                overflow-hidden
+              "
+            >
+              <div className="max-h-[62vh] md:max-h-[58vh] overflow-y-auto overflow-x-hidden no-scrollbar p-4 md:p-5">
+                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {filtered.map((m) => (
+                    <MemberCard key={m.id} member={m} />
+                  ))}
                 </div>
-              )}
+
+                {filtered.length === 0 && (
+                  <div className="py-16 text-center text-red-100/55">
+                    <div className="text-3xl mb-2">⛩️</div>
+                    <div style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                      {inferredIsEn
+                        ? "No members match your search."
+                        : "عضوی با این جستجو پیدا نشد."}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900/80 to-transparent z-30 shadow-[0_0_15px_rgba(139,0,0,0.5)]"></div>
+          <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900/80 to-transparent z-30 shadow-[0_0_15px_rgba(139,0,0,0.5)]"></div>
+        </motion.div>
       </motion.div>
     </div>
   );
 }
 
-/**
- * ✅ White paper member card (portrait)
- * - No left JP badge
- * - Better avatar area: Enso brush ring + subtle seal
- * - Minimal: name, role line, code
- */
 function MemberCard({ member }: { member: Member }) {
   return (
     <div

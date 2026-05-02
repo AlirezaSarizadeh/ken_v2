@@ -10,16 +10,11 @@ import type { GlobalMessages } from "@/types/messages";
 import "swiper/css";
 import "swiper/css/effect-cards";
 
-/**
- * Fallbacks are bilingual (FA/EN).
- * We do NOT change your app logic; we infer language from the loaded JSON content.
- */
-
 type Slide = {
   id: number;
   title: string;
   desc: string;
-  image: string; // CDN
+  image: string; 
   kanji: string;
 };
 
@@ -94,7 +89,6 @@ const FALLBACK_SLIDES_EN: Slide[] = [
 ];
 
 function isLikelyEnglish(text?: string) {
-  // If it contains Latin letters, assume EN. Otherwise FA.
   return !!text && /[A-Za-z]/.test(text);
 }
 
@@ -106,9 +100,9 @@ export default function Section8({
   messages?: GlobalMessages;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isSectionOpen, setIsSectionOpen] = useState(false); 
   const t = messages?.Katuri as any;
 
-  // Infer language ONLY for fallbacks (doesn't affect JSON-driven content)
   const inferredIsEn = useMemo(() => {
     return (
       isLikelyEnglish(t?.header?.titlePart1) ||
@@ -124,7 +118,6 @@ export default function Section8({
     return inferredIsEn ? FALLBACK_SLIDES_EN : FALLBACK_SLIDES_FA;
   }, [t?.slides, inferredIsEn]);
 
-  // Copy tuned for Katori / Kenjutsu (still overrideable by JSON)
   const masterTitlePrefix = t?.master?.titlePrefix ?? (inferredIsEn ? "Shihan" : "شیهان");
   const masterName = t?.master?.name ?? (inferredIsEn ? "Ashrafi" : "اشرفی");
   const masterQuote =
@@ -171,200 +164,254 @@ export default function Section8({
         </motion.div>
       </div>
 
-      <motion.div
-        className="
-          relative z-10 
-          w-full max-w-5xl 
-          flex flex-col md:flex-row 
-          bg-[#0a0a0a]
-          border-y-2 md:border-y-0 md:border-x-2 border-[#3a0a0a]
-          rounded-xl md:rounded-3xl 
-          shadow-[0_10px_60px_-10px_rgba(0,0,0,1),0_0_20px_rgba(139,0,0,0.3)_inset]
-          overflow-hidden
-        "
-        initial={{ opacity: 0, scale: 0.98, y: 40 }}
-        animate={{
-          opacity: exiting ? 0 : 1,
-          scale: exiting ? 0.95 : 1,
-          y: exiting ? 40 : 0,
+      {/* --- BUTTON --- */}
+      <motion.button
+        onClick={() => setIsSectionOpen(!isSectionOpen)}
+        className="relative z-50 mb-6 group cursor-pointer outline-none overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.6),inset_0_2px_4px_rgba(255,255,255,0.1)] border border-[#5a1a1a]"
+        style={{ 
+          width: '280px', 
+          height: '64px',
+          background: 'linear-gradient(to bottom, #4a1111 0%, #2d0808 50%, #140303 100%)',
         }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: exiting ? 0 : 1, opacity: exiting ? 0 : 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
-        <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_10px_red]"></div>
-
-        {/* LEFT */}
-        <div className="w-full md:w-2/5 p-8 flex flex-col items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#2d0808_0%,#000000_100%)] opacity-80 z-0"></div>
-          <div className="absolute right-0 h-full w-[2px] bg-gradient-to-b from-transparent via-red-900/50 to-transparent hidden md:block z-10"></div>
-
-          <motion.h2
-            className="relative z-10 text-2xl md:text-3xl font-bold text-red-100/90 mb-8 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
-            style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#ff5555]/50 to-transparent opacity-70"></div>
+        <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-black/80 to-transparent opacity-80"></div>
+        <div className="relative z-10 flex items-center justify-center gap-4 h-full w-full text-red-50">
+          <motion.div 
+            className="w-10 h-10 rounded-full border border-[#ffd700]/40 bg-[#1a0505] flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"
+            animate={{ rotate: isSectionOpen ? 180 : 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <span className="text-red-600">{masterTitlePrefix}</span> {masterName}
-          </motion.h2>
+            <span className="text-[#ffd700] font-bold text-xl" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
+              {isSectionOpen ? "閉" : "開"}
+            </span>
+          </motion.div>
+          <div className="flex flex-col items-start">
+            <span className="text-[10px] text-red-300/60 uppercase tracking-widest font-semibold">
+              {isSectionOpen ? "بستن" : "دستور استاد"}
+            </span>
+            <span className="text-lg font-bold tracking-wide text-red-100 drop-shadow-md" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+              {isSectionOpen ? "مخفی کردن بخش" : "باز کردن طومار"}
+            </span>
+          </div>
+        </div>
+      </motion.button>
 
-          <div className="relative z-10 w-48 h-48 md:w-60 md:h-60 rounded-full group">
-            <motion.div
-              className="absolute -inset-3 rounded-full border-[3px] border-red-900/60"
-              style={{
-                boxShadow:
-                  "0 0 20px rgba(139,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.8)",
-              }}
-              animate={{
-                borderColor: [
-                  "rgba(127, 29, 29, 0.6)",
-                  "rgba(185, 28, 28, 0.8)",
-                  "rgba(127, 29, 29, 0.6)",
-                ],
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
+      {/* --- CONTENT WRAPPER --- */}
+      <motion.div
+        layout
+        className="w-full flex justify-center overflow-hidden"
+        initial={{ height: 0, opacity: 0 }}
+        animate={{
+          height: (isSectionOpen && !exiting) ? "auto" : 0,
+          opacity: (isSectionOpen && !exiting) ? 1 : 0,
+        }}
+        transition={{ 
+          height: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }, 
+          opacity: { duration: 0.5, delay: isSectionOpen ? 0.2 : 0 } 
+        }}
+      >
+        <motion.div
+          layout
+          className="
+            relative z-10 
+            w-full max-w-5xl 
+            flex flex-col md:flex-row 
+            bg-[#0a0a0a]
+            border-y-2 md:border-y-0 md:border-x-2 border-[#3a0a0a]
+            rounded-xl md:rounded-3xl 
+            shadow-[0_10px_60px_-10px_rgba(0,0,0,1),0_0_20px_rgba(139,0,0,0.3)_inset]
+            overflow-hidden
+          "
+          initial={{ opacity: 0, scale: 0.98, y: 40 }}
+          animate={{
+            opacity: exiting ? 0 : 1,
+            scale: exiting ? 0.95 : 1,
+            y: exiting ? 40 : 0,
+          }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_10px:red]"></div>
 
-            <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#1a1a1a] relative z-10 bg-black shadow-[0_0_30px_black_inset]">
-              <img
-                // CDN placeholder (can be moved into JSON later if you add master.image)
-                src="https://bazeh.com/blog/wp-content/uploads/2025/11/Nobutoshi-sensei-doing-iaijutsu-e1433761410130.jpg"
-                alt={masterAlt}
-                className="w-full h-full object-cover grayscale-[30%] contrast-125 group-hover:grayscale-0 transition-all duration-500"
-                onError={(e) => {
-                  e.currentTarget.src = "https://picsum.photos/seed/koryu/500/500.jpg";
+          {/* LEFT */}
+          <div className="w-full md:w-2/5 p-8 flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#2d0808_0%,#000000_100%)] opacity-80 z-0"></div>
+            <div className="absolute right-0 h-full w-[2px] bg-gradient-to-b from-transparent via-red-900/50 to-transparent hidden md:block z-10"></div>
+
+            <motion.h2
+              className="relative z-10 text-2xl md:text-3xl font-bold text-red-100/90 mb-8 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+              style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+            >
+              <span className="text-red-600">{masterTitlePrefix}</span> {masterName}
+            </motion.h2>
+
+            <div className="relative z-10 w-48 h-48 md:w-60 md:h-60 rounded-full group">
+              <motion.div
+                className="absolute -inset-3 rounded-full border-[3px] border-red-900/60"
+                style={{
+                  boxShadow:
+                    "0 0 20px rgba(139,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.8)",
                 }}
+                animate={{
+                  borderColor: [
+                    "rgba(127, 29, 29, 0.6)",
+                    "rgba(185, 28, 28, 0.8)",
+                    "rgba(127, 29, 29, 0.6)",
+                  ],
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-red-950/50 to-transparent mix-blend-overlay"></div>
+
+              <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#1a1a1a] relative z-10 bg-black shadow-[0_0_30px:black_inset]">
+                <img
+                  src="https://bazeh.com/blog/wp-content/uploads/2025/11/Nobutoshi-sensei-doing-iaijutsu-e1433761410130.jpg"
+                  alt={masterAlt}
+                  className="w-full h-full object-cover grayscale-[30%] contrast-125 group-hover:grayscale-0 transition-all duration-500"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://picsum.photos/seed/koryu/500/500.jpg";
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-red-950/50 to-transparent mix-blend-overlay"></div>
+              </div>
+            </div>
+
+            <motion.div
+              className="relative z-10 mt-8 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <p
+                className="text-red-50/70 text-sm md:text-base leading-relaxed italic max-w-xs mx-auto relative px-4 py-2"
+                style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+              >
+                <span className="absolute top-0 left-0 text-2xl text-red-800 opacity-50">
+                  "
+                </span>
+                {masterQuote}
+                <span className="absolute bottom-0 right-0 text-2xl text-red-800 opacity-50 translate-y-2">
+                  "
+                </span>
+              </p>
+            </motion.div>
+          </div>
+
+          {/* RIGHT */}
+          <div className="w-full md:w-3/5 p-6 md:p-10 flex flex-col justify-center items-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[#050505] z-0"></div>
+            <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] z-0"></div>
+
+            <div className="w-full relative z-10 flex justify-between items-end mb-8 pb-3 border-b-2 border-red-900/30 shadow-[0_2px_0_black]">
+              <h2
+                className="text-2xl md:text-3xl font-bold text-red-50"
+                style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+              >
+                <span className="text-red-700">{headerP1}</span> {headerP2}
+              </h2>
+              <span
+                className="text-6xl text-red-950/50 font-black select-none absolute left-0 -bottom-3 -z-10"
+                style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
+              >
+                {headerKanji}
+              </span>
+            </div>
+
+            <div className="w-full max-w-[280px] sm:max-w-[320px] h-[420px] z-10">
+              <Swiper
+                key={isSectionOpen ? "open" : "closed"}
+                effect={"cards"}
+                grabCursor
+                modules={[EffectCards]}
+                className="mySwiper w-full h-full py-4"
+                onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+              >
+                {SLIDE_DATA.map((slide: any) => (
+                  <SwiperSlide
+                    key={slide.id}
+                    className="rounded-lg overflow-hidden bg-[#0c0c0c] border-[1px] border-[#2a0a0a] shadow-[0_5px_20px_-5px_rgba(0,0,0,1)]"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(135deg, #1a0505 0%, #000000 100%)",
+                    }}
+                  >
+                    <div className="h-full flex flex-col relative">
+                      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/leather.png')] mix-blend-overlay z-20"></div>
+
+                      <div className="h-[52%] relative group overflow-hidden border-b-2 border-red-900/50">
+                        <div
+                          className="absolute top-1 right-2 z-10 text-7xl text-red-950/80 font-black drop-shadow-lg select-none opacity-70"
+                          style={{
+                            fontFamily: "'Noto Sans JP', sans-serif",
+                            transform: "rotate(-10deg)",
+                          }}
+                        >
+                          {slide.kanji}
+                        </div>
+
+                        <img
+                          src={slide.image}
+                          alt={slide.title}
+                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 brightness-[0.8] contrast-125 sepia-[0.3] saturate-[0.8]"
+                          onError={(e) => {
+                            e.currentTarget.src = `https://picsum.photos/seed/katori${slide.id}/1200/800.jpg`;
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0000] via-transparent to-black/40 opacity-90"></div>
+                        <div className="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-red-900/40 to-transparent"></div>
+                      </div>
+
+                      <div className="h-[48%] p-5 flex flex-col justify-between relative z-10 bg-gradient-to-b from-[#0a0000] to-[#050505]">
+                        <div>
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-8 h-8 flex items-center justify-center bg-red-900/20 border border-red-800/60 rounded-sm transform rotate-45">
+                              <span className="text-red-500 text-sm font-mono font-bold transform -rotate-45">
+                                0{slide.id}
+                              </span>
+                            </div>
+                            <h3
+                              className="text-xl font-bold text-red-50/90 tracking-wide"
+                              style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                            >
+                              {slide.title}
+                            </h3>
+                          </div>
+                          <div className="w-full h-[2px] bg-gradient-to-r from-red-900/80 via-red-700/40 to-transparent mb-3 opacity-70"></div>
+                          <p
+                            className="text-red-100/60 text-sm leading-7 font-light"
+                            style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                          >
+                            {slide.desc}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2 mt-auto pt-4 items-center justify-end opacity-60">
+                          {SLIDE_DATA.map((_: any, i: number) => (
+                            <div
+                              key={i}
+                              className={`h-1.5 rounded-sm transition-all duration-500 ${
+                                i === activeIndex
+                                  ? "w-8 bg-red-600/80"
+                                  : "w-3 bg-red-950"
+                              }`}
+                              style={{ borderRadius: "2px 8px 4px 6px" }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </div>
           </div>
 
-          <motion.div
-            className="relative z-10 mt-8 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <p
-              className="text-red-50/70 text-sm md:text-base leading-relaxed italic max-w-xs mx-auto relative px-4 py-2"
-              style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-            >
-              <span className="absolute top-0 left-0 text-2xl text-red-800 opacity-50">
-                "
-              </span>
-              {masterQuote}
-              <span className="absolute bottom-0 right-0 text-2xl text-red-800 opacity-50 translate-y-2">
-                "
-              </span>
-            </p>
-          </motion.div>
-        </div>
-
-        {/* RIGHT */}
-        <div className="w-full md:w-3/5 p-6 md:p-10 flex flex-col justify-center items-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-[#050505] z-0"></div>
-          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] z-0"></div>
-
-          <div className="w-full relative z-10 flex justify-between items-end mb-8 pb-3 border-b-2 border-red-900/30 shadow-[0_2px_0_black]">
-            <h2
-              className="text-2xl md:text-3xl font-bold text-red-50"
-              style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-            >
-              <span className="text-red-700">{headerP1}</span> {headerP2}
-            </h2>
-            <span
-              className="text-6xl text-red-950/50 font-black select-none absolute left-0 -bottom-3 -z-10"
-              style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
-            >
-              {headerKanji}
-            </span>
-          </div>
-
-          <div className="w-full max-w-[280px] sm:max-w-[320px] h-[420px] z-10">
-            <Swiper
-              effect={"cards"}
-              grabCursor
-              modules={[EffectCards]}
-              className="mySwiper w-full h-full py-4"
-              onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-            >
-              {SLIDE_DATA.map((slide: any) => (
-                <SwiperSlide
-                  key={slide.id}
-                  className="rounded-lg overflow-hidden bg-[#0c0c0c] border-[1px] border-[#2a0a0a] shadow-[0_5px_20px_-5px_rgba(0,0,0,1)]"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(135deg, #1a0505 0%, #000000 100%)",
-                  }}
-                >
-                  <div className="h-full flex flex-col relative">
-                    <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/leather.png')] mix-blend-overlay z-20"></div>
-
-                    <div className="h-[52%] relative group overflow-hidden border-b-2 border-red-900/50">
-                      <div
-                        className="absolute top-1 right-2 z-10 text-7xl text-red-950/80 font-black drop-shadow-lg select-none opacity-70"
-                        style={{
-                          fontFamily: "'Noto Sans JP', sans-serif",
-                          transform: "rotate(-10deg)",
-                        }}
-                      >
-                        {slide.kanji}
-                      </div>
-
-                      <img
-                        src={slide.image}
-                        alt={slide.title}
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 brightness-[0.8] contrast-125 sepia-[0.3] saturate-[0.8]"
-                        onError={(e) => {
-                          e.currentTarget.src = `https://picsum.photos/seed/katori${slide.id}/1200/800.jpg`;
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0000] via-transparent to-black/40 opacity-90"></div>
-                      <div className="absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-red-900/40 to-transparent"></div>
-                    </div>
-
-                    <div className="h-[48%] p-5 flex flex-col justify-between relative z-10 bg-gradient-to-b from-[#0a0000] to-[#050505]">
-                      <div>
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-8 h-8 flex items-center justify-center bg-red-900/20 border border-red-800/60 rounded-sm transform rotate-45">
-                            <span className="text-red-500 text-sm font-mono font-bold transform -rotate-45">
-                              0{slide.id}
-                            </span>
-                          </div>
-                          <h3
-                            className="text-xl font-bold text-red-50/90 tracking-wide"
-                            style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                          >
-                            {slide.title}
-                          </h3>
-                        </div>
-                        <div className="w-full h-[2px] bg-gradient-to-r from-red-900/80 via-red-700/40 to-transparent mb-3 opacity-70"></div>
-                        <p
-                          className="text-red-100/60 text-sm leading-7 font-light"
-                          style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                        >
-                          {slide.desc}
-                        </p>
-                      </div>
-
-                      <div className="flex gap-2 mt-auto pt-4 items-center justify-end opacity-60">
-                        {SLIDE_DATA.map((_: any, i: number) => (
-                          <div
-                            key={i}
-                            className={`h-1.5 rounded-sm transition-all duration-500 ${
-                              i === activeIndex
-                                ? "w-8 bg-red-600/80"
-                                : "w-3 bg-red-950"
-                            }`}
-                            style={{ borderRadius: "2px 8px 4px 6px" }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        </div>
-
-        <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900/80 to-transparent z-30 shadow-[0_0_15px_rgba(139,0,0,0.5)]"></div>
+          <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900/80 to-transparent z-30 shadow-[0_0_15px_rgba(139,0,0,0.5)]"></div>
+        </motion.div>
       </motion.div>
     </div>
   );

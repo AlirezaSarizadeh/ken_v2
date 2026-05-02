@@ -311,7 +311,7 @@ export default function DojoPageClient({
           {/* Mobile Hamburger Menu - Enhanced */}
           <motion.button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden pointer-events-auto ml-auto relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 group bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/40 rounded-xl hover:from-red-600/30 hover:to-red-700/20 transition-all duration-300"
+            className="md:hidden pointer-events-auto relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 group bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/40 rounded-xl hover:from-red-600/30 hover:to-red-700/20 transition-all duration-300"
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -453,7 +453,7 @@ export default function DojoPageClient({
         {/* Bottom Navigation (Desktop Only) */}
         {!isMobile && (
           <motion.footer
-            className="w-full p-6 pb-8 flex justify-center items-end pointer-events-auto"
+            className="w-full p-6 pb-8 flex justify-center items-end pointer-events-auto hidden"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
           >

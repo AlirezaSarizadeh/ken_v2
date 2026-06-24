@@ -112,7 +112,7 @@ export default function SectionShop({
   exiting: boolean;
   messages?: GlobalMessages;
 }) {
-  const [isSectionOpen, setIsSectionOpen] = useState(false);
+  const [isSectionOpen, setIsSectionOpen] = useState(false); 
   const t = (messages?.SectionShop ?? {}) as any;
 
   const allKey: string = t?.allKey ?? "همه";
@@ -185,12 +185,12 @@ export default function SectionShop({
 
   return (
     <div
-      className="w-full min-h-full flex flex-col items-center justify-center relative py-16 md:py-0 overflow-hidden"
+      className="w-full min-h-full flex flex-col items-center justify-center relative py-16 md:py-0"
       id="shop"
     >
-      {/* Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10" />
+
         <motion.div
           className="absolute inset-0 bg-cover bg-center fixed"
           style={{ backgroundImage: "url('/store_bg.png')", zIndex: 0 }}
@@ -198,38 +198,81 @@ export default function SectionShop({
           initial={{ scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         />
+
         <div className="absolute inset-0 bg-radial-gradient(circle at center, transparent 0%, #000000 90%) z-5 opacity-80" />
-        <div className="absolute top-5 end-10 text-red-950/25 text-9xl font-black select-none z-0">商</div>
-        <div className="absolute bottom-10 start-10 text-red-950/25 text-9xl font-black select-none z-0">品</div>
+
+        <div className="absolute top-5 end-10 text-red-950/25 text-9xl font-black select-none z-0">
+          商
+        </div>
+        <div className="absolute bottom-10 start-10 text-red-950/25 text-9xl font-black select-none z-0">
+          品
+        </div>
       </div>
 
-      {/* Content Wrapper */}
+      {/* --- BUTTON --- */}
+      <motion.button
+        onClick={() => setIsSectionOpen(!isSectionOpen)}
+        className="relative z-50 mb-6 group cursor-pointer outline-none overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.6),inset_0_2px_4px_rgba(255,255,255,0.1)] border border-[#5a1a1a]"
+        style={{ 
+          width: '280px', 
+          height: '64px',
+          background: 'linear-gradient(to bottom, #4a1111 0%, #2d0808 50%, #140303 100%)',
+        }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: exiting ? 0 : 1, opacity: exiting ? 0 : 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#ff5555]/50 to-transparent opacity-70"></div>
+        <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-black/80 to-transparent opacity-80"></div>
+        <div className="relative z-10 flex items-center justify-center gap-4 h-full w-full text-red-50">
+          <motion.div 
+            className="w-10 h-10 rounded-full border border-[#ffd700]/40 bg-[#1a0505] flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"
+            animate={{ rotate: isSectionOpen ? 180 : 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#ffd700] font-bold text-xl" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
+              {isSectionOpen ? "閉" : "開"}
+            </span>
+          </motion.div>
+          <div className="flex flex-col items-start">
+            <span className="text-[10px] text-red-300/60 uppercase tracking-widest font-semibold">
+              {isSectionOpen ? "بستن" : "دستور استاد"}
+            </span>
+            <span className="text-lg font-bold tracking-wide text-red-100 drop-shadow-md" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+              {isSectionOpen ? "مخفی کردن بخش" : "باز کردن طومار"}
+            </span>
+          </div>
+        </div>
+      </motion.button>
+
+      {/* --- CONTENT WRAPPER --- */}
       <motion.div
-        id="main-content-sectionshop"
         layout
         className="w-full flex justify-center overflow-hidden"
         initial={{ height: 0, opacity: 0 }}
         animate={{
-          height: isSectionOpen && !exiting ? "auto" : 0,
-          opacity: isSectionOpen && !exiting ? 1 : 0,
+          height: (isSectionOpen && !exiting) ? "auto" : 0,
+          opacity: (isSectionOpen && !exiting) ? 1 : 0,
         }}
-        transition={{
-          height: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
-          opacity: { duration: 0.5, delay: isSectionOpen ? 0.2 : 0 },
+        transition={{ 
+          height: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }, 
+          opacity: { duration: 0.5, delay: isSectionOpen ? 0.2 : 0 } 
         }}
       >
         <motion.div
           layout
           className="
-            relative z-10
-            w-full max-w-7xl
+            relative z-10 
+            w-full max-w-7xl 
             flex flex-col
             bg-[#080808]/80 backdrop-blur-sm
             border border-red-900/30
-            rounded-xl md:rounded-3xl
+            rounded-xl md:rounded-3xl 
             shadow-[0_0_50px_-10px_rgba(0,0,0,1)]
             overflow-hidden
-            mx-4 mb-4
+            mx-4
           "
           initial={{ opacity: 0, y: 50, scale: 0.98 }}
           animate={{
@@ -239,20 +282,19 @@ export default function SectionShop({
           }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          {/* Top accent line */}
-          <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_15px_red]" />
+          <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_15px:red]" />
 
           {/* Header */}
           <div className="w-full p-6 md:p-10 flex flex-col items-center border-b border-white/5 bg-[#0f0f0f]">
             <div className="w-full flex items-center justify-between gap-4">
               <div className="flex-1">
                 <h2
-                  className="text-3xl md:text-4xl font-bold text-red-100/90 mb-2 text-center"
+                  className="text-3xl md:text-4xl font-bold text-red-100/90 mb-2 text-center md:text-center"
                   style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                 >
                   {headingTitle}
                 </h2>
-                <div className="text-center">
+                <div className="text-center md:text-center">
                   <span className="text-sm text-red-500/60 font-light tracking-widest uppercase">
                     {headingSubtitle}
                   </span>
@@ -260,31 +302,46 @@ export default function SectionShop({
               </div>
             </div>
 
-            {/* Search */}
+            {/* Controls */}
             <div className="w-full mt-6 flex flex-col md:flex-row items-stretch md:items-center gap-3">
+              {/* Search */}
               <div className="relative flex-1">
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={ui.searchPlaceholder}
                   className="
-                    w-full bg-black/50
-                    border border-red-900/35 rounded-2xl
+                    w-full
+                    bg-black/50
+                    border border-red-900/35
+                    rounded-2xl
                     ps-11 pe-4 py-3
-                    text-red-50/90 outline-none
-                    focus:border-red-600/60 focus:ring-2 focus:ring-red-900/25
+                    text-red-50/90
+                    outline-none
+                    focus:border-red-600/60
+                    focus:ring-2 focus:ring-red-900/25
                   "
                   style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                 />
                 <div className="absolute inset-y-0 start-4 flex items-center text-red-300/60">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10.5 3a7.5 7.5 0 1 0 4.42 13.56l3.26 3.26a.75.75 0 1 0 1.06-1.06l-3.26-3.26A7.5 7.5 0 0 0 10.5 3Zm-6 7.5a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z" clipRule="evenodd" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-5 h-5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10.5 3a7.5 7.5 0 1 0 4.42 13.56l3.26 3.26a.75.75 0 1 0 1.06-1.06l-3.26-3.26A7.5 7.5 0 0 0 10.5 3Zm-6 7.5a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
               </div>
             </div>
 
-            {/* Category Filters */}
+            {/* Filters */}
             <div className="mt-6 flex flex-wrap justify-center gap-2 md:gap-4 relative z-20">
               {CATEGORIES.map((category) => (
                 <button
@@ -292,7 +349,11 @@ export default function SectionShop({
                   onClick={() => setActiveCategory(category)}
                   className={`
                     relative px-4 py-2 rounded-full text-sm transition-colors duration-300
-                    ${safeActiveCategory === category ? "text-white" : "text-gray-500 hover:text-gray-300"}
+                    ${
+                      safeActiveCategory === category
+                        ? "text-white"
+                        : "text-gray-500 hover:text-gray-300"
+                    }
                   `}
                   style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                 >
@@ -322,7 +383,8 @@ export default function SectionShop({
                     exit={{ opacity: 0, scale: 0.92 }}
                     transition={{ duration: 0.25 }}
                     className="
-                      group relative h-[22rem] overflow-hidden
+                      group relative h-[22rem]
+                      overflow-hidden
                       border border-white/5 bg-[#0c0c0c]
                       shadow-[0_20px_60px_-45px_rgba(0,0,0,1)]
                     "
@@ -336,9 +398,10 @@ export default function SectionShop({
                         alt={item.name}
                         className={`
                           w-full h-full object-contain transition-all duration-700
-                          ${hoveredItem === item.id
-                            ? "scale-110"
-                            : "scale-100 grayscale-[35%] sepia-[20%] brightness-75"
+                          ${
+                            hoveredItem === item.id
+                              ? "scale-110 filter:none"
+                              : "scale-100 grayscale-[35%] sepia-[20%] brightness-75"
                           }
                         `}
                         onError={(e) => {
@@ -366,35 +429,62 @@ export default function SectionShop({
                           >
                             {item.name}
                           </h3>
+
                           <div className="text-end">
-                            <div className="text-xs text-red-200/70 font-mono">ID: 00{item.id}</div>
+                            <div className="text-xs text-red-200/70 font-mono">
+                              ID: 00{item.id}
+                            </div>
                           </div>
                         </div>
 
                         <p
-                          className={`mt-2 text-sm text-gray-300 line-clamp-2 transition-all duration-300 ${hoveredItem === item.id ? "opacity-100" : "opacity-75"}`}
+                          className={`
+                            mt-2 text-sm text-gray-300 line-clamp-2 transition-all duration-300
+                            ${
+                              hoveredItem === item.id
+                                ? "opacity-100"
+                                : "opacity-75"
+                            }
+                          `}
                           style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                         >
                           {item.description}
                         </p>
 
-                        {/* Meta */}
+                        {/* meta */}
                         <div
                           className={`
                             mt-3 pt-3 border-t border-white/10
                             flex items-center justify-between gap-3 text-xs text-gray-400
                             transition-all duration-300
-                            ${hoveredItem === item.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}
+                            ${
+                              hoveredItem === item.id
+                                ? "opacity-100 translate-y-0"
+                                : "opacity-0 translate-y-3"
+                            }
                           `}
                         >
                           <span className="inline-flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 opacity-70" aria-hidden="true">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-3.5 h-3.5 opacity-70"
+                              aria-hidden="true"
+                            >
                               <path d="M12 2 2 7v10l10 5 10-5V7L12 2Zm0 2.18L19.764 8 12 11.82 4.236 8 12 4.18ZM4 9.618l7 3.5V20.7l-7-3.5V9.618Zm9 11.082v-7.582l7-3.5V17.2l-7 3.5Z" />
                             </svg>
                             {item.material}
                           </span>
+
                           <span className="inline-flex items-center gap-1 text-amber-200/70">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 opacity-80" aria-hidden="true">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-3.5 h-3.5 opacity-80"
+                              aria-hidden="true"
+                            >
                               <path d="M12 2c3.866 0 7 3.134 7 7 0 5.25-7 13-7 13S5 14.25 5 9c0-3.866 3.134-7 7-7Zm0 9.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
                             </svg>
                             {item.origin}
@@ -405,7 +495,11 @@ export default function SectionShop({
                         <div className="mt-4 flex items-center gap-2">
                           <button
                             onClick={() => setModalId(item.id)}
-                            className="flex-1 rounded-2xl py-2.5 border text-sm transition border-red-700/40 bg-red-900/35 cursor-pointer hover:bg-red-900/50 text-white"
+                            className="
+                              flex-1 rounded-2xl py-2.5
+                              border text-sm
+                              transition border-red-700/40 bg-red-900/35 cursor-pointer hover:bg-red-900/50 text-white
+                            "
                             style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                           >
                             {ui.details}
@@ -414,7 +508,7 @@ export default function SectionShop({
                       </motion.div>
                     </div>
 
-                    {/* Corner accents */}
+                    {/* corners */}
                     <div className="absolute top-2 end-2 w-8 h-8 border-t-2 border-e-2 border-red-500/0 group-hover:border-red-500/50 transition-all duration-500" />
                     <div className="absolute bottom-2 start-2 w-8 h-8 border-b-2 border-s-2 border-red-500/0 group-hover:border-red-500/50 transition-all duration-500" />
                   </motion.div>
@@ -426,7 +520,10 @@ export default function SectionShop({
             {searched.length === 0 && (
               <div className="py-16 text-center text-gray-400">
                 <div className="text-5xl opacity-30">空</div>
-                <div className="mt-3 text-sm" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                <div
+                  className="mt-3 text-sm"
+                  style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                >
                   چیزی پیدا نشد.
                 </div>
               </div>
@@ -448,6 +545,7 @@ export default function SectionShop({
                   className="absolute inset-0 bg-black/70 backdrop-blur-sm"
                   onClick={() => setModalId(null)}
                 />
+
                 <motion.div
                   initial={{ y: 20, scale: 0.98, opacity: 0 }}
                   animate={{ y: 0, scale: 1, opacity: 1 }}
@@ -455,7 +553,8 @@ export default function SectionShop({
                   transition={{ duration: 0.2 }}
                   className="
                     relative w-full max-w-3xl overflow-hidden
-                    border border-red-900/35 bg-[#0b0b0b]
+                    border border-red-900/35
+                    bg-[#0b0b0b]
                     shadow-[0_40px_120px_-70px_rgba(0,0,0,1)]
                   "
                 >
@@ -491,6 +590,7 @@ export default function SectionShop({
                             ID: 00{activeItem.id}
                           </div>
                         </div>
+
                         <button
                           onClick={() => setModalId(null)}
                           className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-2 text-xs text-red-50/80 transition"
@@ -501,17 +601,23 @@ export default function SectionShop({
                       </div>
 
                       <div className="mt-4 text-sm text-gray-200/85">
-                        <p style={{ fontFamily: "'Vazirmatn', sans-serif" }}>{activeItem.description}</p>
+                        <p style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                          {activeItem.description}
+                        </p>
                       </div>
 
                       <div className="mt-5 grid grid-cols-2 gap-3 text-xs">
                         <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
                           <div className="text-gray-400">Origin</div>
-                          <div className="mt-1 text-amber-200/80">{activeItem.origin}</div>
+                          <div className="mt-1 text-amber-200/80">
+                            {activeItem.origin}
+                          </div>
                         </div>
                         <div className="rounded-2xl border border-white/10 bg-black/40 p-3">
                           <div className="text-gray-400">Material</div>
-                          <div className="mt-1 text-gray-200/80">{activeItem.material}</div>
+                          <div className="mt-1 text-gray-200/80">
+                            {activeItem.material}
+                          </div>
                         </div>
                       </div>
 
@@ -520,17 +626,21 @@ export default function SectionShop({
                           <div className="text-xs text-red-200/60">Price</div>
                           <div className="mt-1 text-lg font-black">
                             {formatPriceIRR(activeItem.price)}{" "}
-                            <span className="text-xs text-red-200/60">{ui.currency}</span>
+                            <span className="text-xs text-red-200/60">
+                              {ui.currency}
+                            </span>
                           </div>
                         </div>
+
                         <button
                           onClick={() => addToCart(activeItem)}
                           disabled={!activeItem.inStock}
                           className={`
                             rounded-2xl px-4 py-3 text-sm border transition
-                            ${activeItem.inStock
-                              ? "border-red-700/40 bg-red-900/35 hover:bg-red-900/55 text-white"
-                              : "border-white/10 bg-white/5 text-gray-500 cursor-not-allowed"
+                            ${
+                              activeItem.inStock
+                                ? "border-red-700/40 bg-red-900/35 hover:bg-red-900/55 text-white"
+                                : "border-white/10 bg-white/5 text-gray-500 cursor-not-allowed"
                             }
                           `}
                           style={{ fontFamily: "'Vazirmatn', sans-serif" }}
@@ -542,11 +652,14 @@ export default function SectionShop({
                       {cart[activeItem.id] ? (
                         <div className="mt-4 text-xs text-red-200/70">
                           در سبد شما:{" "}
-                          <span className="font-mono text-red-100">{cart[activeItem.id]}</span>
+                          <span className="font-mono text-red-100">
+                            {cart[activeItem.id]}
+                          </span>
                         </div>
                       ) : null}
                     </div>
                   </div>
+
                   <div className="absolute top-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-700 to-transparent opacity-60" />
                 </motion.div>
               </motion.div>
@@ -554,97 +667,6 @@ export default function SectionShop({
           </AnimatePresence>
         </motion.div>
       </motion.div>
-
-      {/* Floating Button Area */}
-      <div className="w-full fixed bottom-8 left-0 right-0 flex flex-col items-center justify-end z-50 pointer-events-none">
-
-        {/* Guiding Arrow — only shown when scroll is closed */}
-        <AnimatePresence>
-          {!isSectionOpen && !exiting && (
-            <motion.div
-              className="mb-3 pointer-events-none flex flex-col items-center gap-1"
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.4 }}
-            >
-              {[0, 1, 2].map((i) => (
-                <motion.svg
-                  key={i}
-                  width="28"
-                  height="14"
-                  viewBox="0 0 28 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  animate={{ opacity: [0.2, 1, 0.2], y: [0, 4, 0] }}
-                  transition={{
-                    duration: 1.8,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: i * 0.25,
-                  }}
-                >
-                  <path
-                    d="M4 3L14 10L24 3"
-                    stroke="#dc2626"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </motion.svg>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Scroll Image Button */}
-        <motion.button
-          onClick={() => setIsSectionOpen(!isSectionOpen)}
-          className="pointer-events-auto relative group flex items-center justify-center outline-none cursor-pointer"
-          initial={{ y: 100 }}
-          animate={{ y: exiting ? 100 : 0 }}
-          transition={{
-            delay: 0.5,
-            type: "spring",
-            stiffness: 100,
-            damping: 15,
-          }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          aria-expanded={isSectionOpen}
-          aria-controls="main-content-sectionshop"
-        >
-          <motion.div
-            className="relative"
-            animate={{ y: [0, -10, 0] }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <div className="absolute inset-0 bg-red-600/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-            <img
-              src="/closed_scroll.png"
-              alt={isSectionOpen ? "بستن فروشگاه" : "باز کردن فروشگاه"}
-              className="w-[420px] md:w-[480px] h-auto drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] transition-all duration-300 group-hover:drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
-              style={{ opacity: isSectionOpen ? 0.4 : 1 }}
-            />
-
-            {/* Cart badge adjusted for new image size */}
-            {cartCount > 0 && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute top-2 right-6 w-8 h-8 rounded-full bg-red-600 border-2 border-[#0a0a0a] flex items-center justify-center text-sm font-black text-white shadow-[0_5px_15px_rgba(220,38,38,0.5)] z-20"
-              >
-                {cartCount}
-              </motion.div>
-            )}
-          </motion.div>
-        </motion.button>
-      </div>
     </div>
   );
 }

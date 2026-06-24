@@ -52,12 +52,12 @@ export default function Section3({
   messages,
 }: {
   exiting: boolean;
-  messages?: GlobalMessages;
+  messages?: GlobalMessages; 
 }) {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSectionOpen, setIsSectionOpen] = useState(false);
+  const [isSectionOpen, setIsSectionOpen] = useState(false); 
 
   const t = (messages?.Section3 as any) ?? {};
 
@@ -73,6 +73,7 @@ export default function Section3({
 
   const headingTitle = t?.heading?.title ?? "ارتباط با دوجو";
   const headingKanji = t?.heading?.kanji ?? "連絡";
+
   const formTitle = t?.form?.title ?? "ارسال پیام";
   const nameLabel = t?.form?.nameLabel ?? "نام شما";
   const namePlaceholder = t?.form?.namePlaceholder ?? "نام خود را وارد کنید...";
@@ -106,11 +107,7 @@ export default function Section3({
   };
 
   return (
-    <div
-      className="w-full min-h-full flex flex-col items-center justify-center relative py-16 md:py-0 overflow-hidden"
-      id="contact"
-    >
-      {/* Background Elements */}
+    <div className="w-full min-h-full flex flex-col items-center justify-center relative py-16 md:py-0" id="contact">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10" />
         <motion.div
@@ -120,23 +117,61 @@ export default function Section3({
           initial={{ scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         />
+
         <div className="absolute top-10 start-10 text-red-950/20 text-9xl font-black select-none z-0">連</div>
         <div className="absolute bottom-10 end-10 text-red-950/20 text-9xl font-black select-none z-0">絡</div>
       </div>
 
-      {/* Content Wrapper */}
+      {/* --- BUTTON --- */}
+      <motion.button
+        onClick={() => setIsSectionOpen(!isSectionOpen)}
+        className="relative z-50 mb-6 group cursor-pointer outline-none overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.6),inset_0_2px_4px_rgba(255,255,255,0.1)] border border-[#5a1a1a]"
+        style={{ 
+          width: '280px', 
+          height: '64px',
+          background: 'linear-gradient(to bottom, #4a1111 0%, #2d0808 50%, #140303 100%)',
+        }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: exiting ? 0 : 1, opacity: exiting ? 0 : 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#ff5555]/50 to-transparent opacity-70"></div>
+        <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-black/80 to-transparent opacity-80"></div>
+        <div className="relative z-10 flex items-center justify-center gap-4 h-full w-full text-red-50">
+          <motion.div 
+            className="w-10 h-10 rounded-full border border-[#ffd700]/40 bg-[#1a0505] flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"
+            animate={{ rotate: isSectionOpen ? 180 : 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#ffd700] font-bold text-xl" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
+              {isSectionOpen ? "閉" : "開"}
+            </span>
+          </motion.div>
+          <div className="flex flex-col items-start">
+            <span className="text-[10px] text-red-300/60 uppercase tracking-widest font-semibold">
+              {isSectionOpen ? "بستن" : "دستور استاد"}
+            </span>
+            <span className="text-lg font-bold tracking-wide text-red-100 drop-shadow-md" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+              {isSectionOpen ? "مخفی کردن بخش" : "باز کردن طومار"}
+            </span>
+          </div>
+        </div>
+      </motion.button>
+
+      {/* --- CONTENT WRAPPER --- */}
       <motion.div
-        id="main-content-section3"
         layout
         className="w-full flex justify-center overflow-hidden"
         initial={{ height: 0, opacity: 0 }}
         animate={{
-          height: isSectionOpen && !exiting ? "auto" : 0,
-          opacity: isSectionOpen && !exiting ? 1 : 0,
+          height: (isSectionOpen && !exiting) ? "auto" : 0,
+          opacity: (isSectionOpen && !exiting) ? 1 : 0,
         }}
-        transition={{
-          height: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
-          opacity: { duration: 0.5, delay: isSectionOpen ? 0.2 : 0 },
+        transition={{ 
+          height: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }, 
+          opacity: { duration: 0.5, delay: isSectionOpen ? 0.2 : 0 } 
         }}
       >
         <motion.div
@@ -147,14 +182,10 @@ export default function Section3({
             border-y-2 md:border-y-0 md:border-x-2 border-[#3a0a0a]
             rounded-xl md:rounded-3xl
             shadow-[0_20px_60px_-10px_rgba(0,0,0,1)]
-            overflow-hidden mx-4 mb-4
+            overflow-hidden mx-4
           "
           initial={{ opacity: 0, y: 50, scale: 0.98 }}
-          animate={{
-            opacity: exiting ? 0 : 1,
-            y: exiting ? -50 : 0,
-            scale: exiting ? 0.95 : 1,
-          }}
+          animate={{ opacity: exiting ? 0 : 1, y: exiting ? -50 : 0, scale: exiting ? 0.95 : 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <div className="absolute top-0 w-full h-[3px] bg-gradient-to-r from-transparent via-red-800 to-transparent z-30 shadow-[0_0_10px_red]" />
@@ -163,15 +194,9 @@ export default function Section3({
           <div className="w-full md:w-5/12 p-8 flex flex-col items-center justify-center bg-[#0f0f0f] relative border-b md:border-b-0 md:border-s border-red-900/30">
             <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')] pointer-events-none" />
 
-            <h2
-              className="relative z-10 text-3xl font-bold text-red-100/90 mb-8 text-center"
-              style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-            >
+            <h2 className="relative z-10 text-3xl font-bold text-red-100/90 mb-8 text-center" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
               {headingTitle}
-              <span
-                className="block text-5xl text-red-900/30 mt-2 font-black select-none"
-                style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
-              >
+              <span className="block text-5xl text-red-900/30 mt-2 font-black select-none" style={{ fontFamily: "'Noto Sans JP', sans-serif" }}>
                 {headingKanji}
               </span>
             </h2>
@@ -203,10 +228,12 @@ export default function Section3({
                     <div className="text-red-500 group-hover:text-red-400 group-hover:scale-110 transition-transform duration-300">
                       {ICONS[kind]}
                     </div>
+
                     <div className="ms-4 min-w-0">
                       <p className="text-xs text-gray-500 mb-0.5" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
                         {info.label}
                       </p>
+
                       <p
                         className={`text-sm md:text-base text-gray-200 truncate ${
                           kind === "email" || kind === "phone" ? "dir-ltr text-start" : ""
@@ -232,10 +259,7 @@ export default function Section3({
               <div className="absolute bottom-0 w-full h-2 bg-red-900/80 z-20" />
 
               <div className="relative z-20 p-8 md:p-10">
-                <h3
-                  className="text-2xl font-bold text-red-900/90 text-center mb-8 flex items-center justify-center gap-3"
-                  style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                >
+                <h3 className="text-2xl font-bold text-red-900/90 text-center mb-8 flex items-center justify-center gap-3" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
                   <span className="h-[1px] w-8 bg-red-900/30" />
                   {formTitle}
                   <span className="h-[1px] w-8 bg-red-900/30" />
@@ -243,10 +267,7 @@ export default function Section3({
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="group">
-                    <label
-                      className="block text-sm font-bold text-red-900/70 mb-2"
-                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                    >
+                    <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
                       {nameLabel}
                     </label>
                     <input
@@ -262,10 +283,7 @@ export default function Section3({
                   </div>
 
                   <div className="group">
-                    <label
-                      className="block text-sm font-bold text-red-900/70 mb-2"
-                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                    >
+                    <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
                       {emailLabel}
                     </label>
                     <input
@@ -282,10 +300,7 @@ export default function Section3({
                   </div>
 
                   <div className="group">
-                    <label
-                      className="block text-sm font-bold text-red-900/70 mb-2"
-                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                    >
+                    <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
                       {messageLabel}
                     </label>
                     <textarea
@@ -305,7 +320,7 @@ export default function Section3({
                       type="submit"
                       disabled={isLoading || isSubmitted}
                       className={`
-                        relative w-20 h-20 rounded-full flex items-center justify-center
+                        relative w-20 h-20 rounded-full flex items-center justify-center 
                         text-white shadow-lg border-4 transition-all duration-300
                         ${isSubmitted ? "bg-green-700 border-green-800" : "bg-red-800 border-red-900"}
                         ${isLoading ? "opacity-80 cursor-wait" : "hover:shadow-xl cursor-pointer"}
@@ -366,85 +381,6 @@ export default function Section3({
           <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900 to-transparent z-30 opacity-50" />
         </motion.div>
       </motion.div>
-
-      {/* Floating Button Area — same pattern as Section1 & Section2 */}
-      <div className="w-full fixed bottom-8 left-0 right-0 flex flex-col items-center justify-end z-50 pointer-events-none">
-
-        {/* Guiding Arrows — only when section is closed */}
-        <AnimatePresence>
-          {!isSectionOpen && !exiting && (
-            <motion.div
-              className="mb-3 pointer-events-none flex flex-col items-center gap-1"
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.4 }}
-            >
-              {[0, 1, 2].map((i) => (
-                <motion.svg
-                  key={i}
-                  width="28"
-                  height="14"
-                  viewBox="0 0 28 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  animate={{ opacity: [0.2, 1, 0.2], y: [0, 4, 0] }}
-                  transition={{
-                    duration: 1.8,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: i * 0.25,
-                  }}
-                >
-                  <path
-                    d="M4 3L14 10L24 3"
-                    stroke="#dc2626"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </motion.svg>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Scroll Image Button */}
-        <motion.button
-          onClick={() => setIsSectionOpen(!isSectionOpen)}
-          className="pointer-events-auto relative group flex items-center justify-center outline-none cursor-pointer"
-          initial={{ y: 100 }}
-          animate={{ y: exiting ? 100 : 0 }}
-          transition={{
-            delay: 0.5,
-            type: "spring",
-            stiffness: 100,
-            damping: 15,
-          }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          aria-expanded={isSectionOpen}
-          aria-controls="main-content-section3"
-        >
-          <motion.div
-            className="relative"
-            animate={{ y: [0, -10, 0] }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <div className="absolute inset-0 bg-red-600/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-            <img
-              src="/closed_scroll.png"
-              alt="Open Samurai Scroll"
-              className="w-[420px] md:w-[480px] h-auto drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] transition-all duration-300 group-hover:drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
-              style={{ opacity: isSectionOpen ? 0.4 : 1 }}
-            />
-          </motion.div>
-        </motion.button>
-      </div>
     </div>
   );
 }

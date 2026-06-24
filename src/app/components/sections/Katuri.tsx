@@ -6,6 +6,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCards } from "swiper/modules";
 
 import type { GlobalMessages } from "@/types/messages";
+import type { DojoApiData } from "@/types/api";
+import SafeImg from "@/app/components/ui/SafeImg";
 
 import "swiper/css";
 import "swiper/css/effect-cards";
@@ -95,9 +97,11 @@ function isLikelyEnglish(text?: string) {
 export default function Section8({
   exiting,
   messages,
+  apiData,
 }: {
   exiting: boolean;
   messages?: GlobalMessages;
+  apiData?: DojoApiData;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isSectionOpen, setIsSectionOpen] = useState(false); 
@@ -113,10 +117,20 @@ export default function Section8({
   }, [t?.header?.titlePart1, t?.header?.titlePart2, t?.master?.titlePrefix, t?.master?.name]);
 
   const SLIDE_DATA = useMemo(() => {
+    const fromApi = apiData?.katoriData?.slides?.filter(Boolean).map((s: any, i: number) => ({
+      id: s.id ?? i + 1,
+      title: s.title ?? "",
+      desc: s.desc ?? s.description ?? "",
+      image: s.image ?? s.thumbnail ?? "",
+      kanji: s.kanji ?? "",
+    }));
+    if (fromApi?.length) return fromApi as Slide[];
     const fromJson = t?.slides?.filter(Boolean);
     if (fromJson?.length) return fromJson;
     return inferredIsEn ? FALLBACK_SLIDES_EN : FALLBACK_SLIDES_FA;
-  }, [t?.slides, inferredIsEn]);
+  }, [apiData?.katoriData?.slides, t?.slides, inferredIsEn]);
+
+  
 
   const masterTitlePrefix = t?.master?.titlePrefix ?? (inferredIsEn ? "Shihan" : "شیهان");
   const masterName = t?.master?.name ?? (inferredIsEn ? "Ashrafi" : "اشرفی");
@@ -317,12 +331,12 @@ export default function Section8({
                           {slide.kanji}
                         </div>
 
-                        <img
+                        <SafeImg
                           src={slide.image}
                           alt={slide.title}
                           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 brightness-[0.8] contrast-125 sepia-[0.3] saturate-[0.8]"
                           onError={(e) => {
-                            e.currentTarget.src = `https://picsum.photos/seed/katori${slide.id}/1200/800.jpg`;
+                            (e.currentTarget as HTMLImageElement).src = `https://picsum.photos/seed/katori${slide.id}/1200/800.jpg`;
                           }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0000] via-transparent to-black/40 opacity-90"></div>

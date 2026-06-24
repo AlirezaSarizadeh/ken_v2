@@ -32,7 +32,7 @@ export async function generateMetadata({
   const { locale: rawLocale, slug } = await params;
   const locale: Locale = isLocale(rawLocale) ? rawLocale : "fa";
 
-  const post = await getBlogPostBySlug(slug);
+  const post = await getBlogPostBySlug(slug, locale);
   if (!post) return {};
 
   const messages = await getMessages(locale);
@@ -51,11 +51,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const locale: Locale = isLocale(rawLocale) ? rawLocale : "fa";
   const isRtl = locale === "fa";
 
-  const post = await getBlogPostBySlug(slug);
+  const post = await getBlogPostBySlug(slug, locale);
   if (!post) notFound();
 
   const [relatedPosts, messages] = await Promise.all([
-    getRelatedBlogPosts(post.id, post.category),
+    getRelatedBlogPosts(post.id, post.category, locale),
     getMessages(locale),
   ]);
 

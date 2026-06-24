@@ -2,7 +2,11 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { GlobalMessages } from "@/types/messages";
+import type { DojoApiData } from "@/types/api";
+import SafeImg from "@/app/components/ui/SafeImg";
+import CourseRegistrationModal from "@/app/components/ui/CourseRegistrationModal";
 
 const FALLBACK_LEVELS = [
   {
@@ -40,23 +44,50 @@ const FALLBACK_MILESTONES = [
 export default function Section4({
   exiting,
   messages,
+  apiData,
 }: {
   exiting: boolean;
   messages?: GlobalMessages;
+  apiData?: DojoApiData;
 }) {
+  const pathname = usePathname();
+  const locale = pathname?.startsWith("/en") ? "en" : "fa";
+
+  // selectedLevel = array index (not course ID)
   const [selectedLevel, setSelectedLevel] = useState(0);
   const [isSectionOpen, setIsSectionOpen] = useState(false);
+  const [regModalOpen, setRegModalOpen] = useState(false);
   const t = messages?.Section4 as any;
+  const courses = apiData?.coursesData;
 
   const COURSE_LEVELS = useMemo(() => {
+    const apiLevels = courses?.levels ?? courses?.items;
+    const fromApi = apiLevels?.filter(Boolean).map((lvl: any) => ({
+      id: lvl.id ?? 0,
+      title: lvl.title ?? "",
+      kanji: lvl.kanji ?? "",
+      description: lvl.description ?? "",
+      duration: lvl.duration ?? "",
+      image: lvl.image ?? "",
+      progress: lvl.progress ?? 0,
+      requirements: Array.isArray(lvl.requirements) ? lvl.requirements : [],
+      skills: Array.isArray(lvl.skills) ? lvl.skills : [],
+    }));
+    if (fromApi?.length) return fromApi;
     const fromJson = t?.levels?.filter(Boolean);
     return fromJson?.length ? fromJson : FALLBACK_LEVELS;
-  }, [t?.levels]);
+  }, [courses, t?.levels]);
 
   const MILESTONES = useMemo(() => {
+    const fromApi = courses?.milestones?.filter(Boolean).map((m: any) => ({
+      title: m.title ?? "",
+      kanji: m.kanji ?? "",
+      completed: m.completed ?? false,
+    }));
+    if (fromApi?.length) return fromApi;
     const fromJson = t?.milestones?.filter(Boolean);
     return fromJson?.length ? fromJson : FALLBACK_MILESTONES;
-  }, [t?.milestones]);
+  }, [courses?.milestones, t?.milestones]);
 
   const headingTitle = t?.heading?.title ?? "سطوح آموزشی";
   const headingSubtitle = t?.heading?.subtitle ?? "مسیر تبدیل شدن به استاد";
@@ -136,14 +167,14 @@ export default function Section4({
             </h2>
 
             <div className="space-y-4 relative z-10 mb-8">
-              {COURSE_LEVELS.map((level: any) => (
+              {COURSE_LEVELS.map((level: any, idx: number) => (
                 <button
                   key={level.id}
-                  onClick={() => setSelectedLevel(level.id)}
+                  onClick={() => setSelectedLevel(idx)}
                   className={`
                     w-full flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-300
                     ${
-                      selectedLevel === level.id
+                      selectedLevel === idx
                         ? "bg-red-950/30 border-red-800/60 shadow-[inset_0_0_20px_rgba(139,0,0,0.2)]"
                         : "bg-[#151515] border-white/5 hover:border-red-900/30 hover:bg-[#1a1a1a]"
                     }
@@ -151,7 +182,7 @@ export default function Section4({
                 >
                   <div className="flex flex-col items-start">
                     <span
-                      className={`text-lg font-bold ${selectedLevel === level.id ? "text-white" : "text-gray-400"}`}
+                      className={`text-lg font-bold ${selectedLevel === idx ? "text-white" : "text-gray-400"}`}
                       style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                     >
                       {level.title}
@@ -159,7 +190,7 @@ export default function Section4({
                     <span className="text-xs text-gray-500 mt-1">{level.duration}</span>
                   </div>
                   <span
-                    className={`text-3xl font-black ${selectedLevel === level.id ? "text-red-600" : "text-gray-700"}`}
+                    className={`text-3xl font-black ${selectedLevel === idx ? "text-red-600" : "text-gray-700"}`}
                     style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
                   >
                     {level.kanji}
@@ -213,12 +244,12 @@ export default function Section4({
                 className="h-full flex flex-col"
               >
                 <div className="relative w-full h-48 md:h-56 rounded-lg overflow-hidden border border-red-900/30 mb-6 group">
-                  <img
+                  <SafeImg
                     src={COURSE_LEVELS[selectedLevel].image}
                     alt={COURSE_LEVELS[selectedLevel].title}
                     className="w-full h-full object-cover filter brightness-[0.7] contrast-125 group-hover:brightness-100 transition-all duration-700"
                     onError={(e) => {
-                      e.currentTarget.src = `https://picsum.photos/seed/level${selectedLevel}/800/300.jpg`;
+                      (e.currentTarget as HTMLImageElement).src = `https://picsum.photos/seed/level${selectedLevel}/800/300.jpg`;
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
@@ -296,7 +327,10 @@ export default function Section4({
 
                 {/* CTA */}
                 <div className="mt-8 flex justify-center md:justify-end">
-                  <button className="relative group px-8 py-3 bg-red-900 overflow-hidden rounded-md text-white shadow-lg transition-all hover:scale-105">
+                  <button
+                    onClick={() => setRegModalOpen(true)}
+                    className="relative group px-8 py-3 bg-red-900 overflow-hidden rounded-md text-white shadow-lg transition-all hover:scale-105"
+                  >
                     <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-red-800 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <span
                       className="relative font-bold flex items-center gap-2"
@@ -393,6 +427,14 @@ export default function Section4({
           </motion.div>
         </motion.button>
       </div>
+
+      <CourseRegistrationModal
+        isOpen={regModalOpen}
+        onClose={() => setRegModalOpen(false)}
+        courseId={COURSE_LEVELS[selectedLevel]?.id ?? 0}
+        courseTitle={COURSE_LEVELS[selectedLevel]?.title ?? ""}
+        locale={locale}
+      />
     </div>
   );
 }

@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import type { GlobalMessages } from "@/types/messages";
+import { apiPost } from "@/lib/api";
+import { useAuth } from "@/app/context/AuthContext";
 
 type Locale = "fa" | "en";
 
@@ -18,6 +20,8 @@ export default function JoinClient({
 
   const t = (messages.JoinPage ?? {}) as any;
 
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -28,11 +32,14 @@ export default function JoinClient({
     motivation: "",
     availability: "",
     emergencyContact: "",
+    password: "",
+    passwordConfirm: "",
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // ---------- TEXTS ----------
   const pageTitle = t?.ui?.title ?? (isRtl ? "سامورایی شو!" : "Become a Samurai!");
@@ -101,6 +108,10 @@ export default function JoinClient({
   const requiredPhone =
     v?.phoneRequired ?? (isRtl ? "شماره تماس الزامی است" : "Phone is required");
 
+  const requiredPassword = v?.passwordRequired ?? (isRtl ? "رمز عبور الزامی است" : "Password is required");
+  const shortPassword = v?.passwordShort ?? (isRtl ? "رمز عبور باید حداقل ۸ کاراکتر باشد" : "Password must be at least 8 characters");
+  const passwordMismatch = v?.passwordMismatch ?? (isRtl ? "رمز عبور و تکرار آن یکسان نیستند" : "Passwords do not match");
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -111,6 +122,13 @@ export default function JoinClient({
     else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = invalidEmail;
 
     if (!formData.phone.trim()) newErrors.phone = requiredPhone;
+
+    if (!formData.password) newErrors.password = requiredPassword;
+    else if (formData.password.length < 8) newErrors.password = shortPassword;
+
+    if (formData.password && formData.passwordConfirm !== formData.password) {
+      newErrors.passwordConfirm = passwordMismatch;
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -124,30 +142,71 @@ export default function JoinClient({
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSubmitted(true);
+    setApiError(null);
 
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          age: "",
-          experience: "",
-          motivation: "",
-          availability: "",
-          emergencyContact: "",
-        });
-      }, 5000);
-    }, 1500);
+    const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
+
+    const registerResult = await apiPost<{ token?: string; data?: { token?: string }; user?: unknown }>(
+      "/auth/register",
+      {
+        name: fullName,
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        password: formData.password,
+        password_confirmation: formData.passwordConfirm,
+      },
+      locale
+    );
+
+    if (registerResult.error) {
+      setIsLoading(false);
+      setApiError(registerResult.error);
+      return;
+    }
+
+    const token = registerResult.data?.token ?? (registerResult.data?.data as any)?.token ?? null;
+    if (token && registerResult.data?.user) login(token, registerResult.data.user as any);
+
+    await apiPost(
+      "/join-requests",
+      {
+        name: fullName,
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        age: formData.age ? Number(formData.age) : undefined,
+        experience: formData.experience || undefined,
+        motivation: formData.motivation || undefined,
+        availability: formData.availability || undefined,
+        emergency_contact: formData.emergencyContact || undefined,
+      },
+      locale,
+      token ?? undefined
+    );
+
+    setIsLoading(false);
+    setIsSubmitted(true);
+
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        age: "",
+        experience: "",
+        motivation: "",
+        availability: "",
+        emergencyContact: "",
+        password: "",
+        passwordConfirm: "",
+      });
+    }, 5000);
   };
 
   // Shared Input Styles
@@ -425,6 +484,44 @@ export default function JoinClient({
                 </div>
               </div>
 
+              {/* Password */}
+              <div className={inputContainerClass}>
+                <label className={labelClass}>
+                  {labels?.password ?? (isRtl ? "رمز عبور" : "Password")}
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  dir="ltr"
+                  placeholder="••••••••"
+                  className={[inputBase, "text-left", errors.password ? "border-red-500 bg-red-50" : inputBorder].join(" ")}
+                />
+                {errors.password && (
+                  <span className="text-xs text-red-600 mt-1 absolute">{errors.password}</span>
+                )}
+              </div>
+
+              {/* Password Confirm */}
+              <div className={inputContainerClass}>
+                <label className={labelClass}>
+                  {labels?.passwordConfirm ?? (isRtl ? "تکرار رمز عبور" : "Confirm password")}
+                </label>
+                <input
+                  type="password"
+                  name="passwordConfirm"
+                  value={formData.passwordConfirm}
+                  onChange={handleInputChange}
+                  dir="ltr"
+                  placeholder="••••••••"
+                  className={[inputBase, "text-left", errors.passwordConfirm ? "border-red-500 bg-red-50" : inputBorder].join(" ")}
+                />
+                {errors.passwordConfirm && (
+                  <span className="text-xs text-red-600 mt-1 absolute">{errors.passwordConfirm}</span>
+                )}
+              </div>
+
               {/* Motivation */}
               <div className={`${inputContainerClass} mt-6`}>
                 <label className={labelClass}>
@@ -439,6 +536,12 @@ export default function JoinClient({
                   className={[inputBase, textAlign, "resize-none", inputBorder].join(" ")}
                 />
               </div>
+
+              {apiError && (
+                <div className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-4 py-2" dir={dir}>
+                  {apiError}
+                </div>
+              )}
 
               <div className="mt-10 flex items-center justify-between gap-6">
                 <div

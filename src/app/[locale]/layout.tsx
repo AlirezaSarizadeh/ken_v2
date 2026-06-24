@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { notFound } from "next/navigation";
 import "../globals.css";
+import { AuthProvider } from "@/app/context/AuthContext";
 
 const locales = ["fa", "en"] as const;
 type Locale = (typeof locales)[number];
@@ -108,7 +109,7 @@ export default async function RootLayout({
       <body
         className={`${vazirmatn.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

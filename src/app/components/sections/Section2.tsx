@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
 import type { GlobalMessages } from "@/types/messages";
+import type { DojoApiData } from "@/types/api";
 
 const FALLBACK_TABS = [
   { id: 0, title: "تاریخچه", kanji: "歴史", content: "دوجو ما بیش از ۵۰ سال است که در زمینه هنرهای رزمی ژاپنی فعالیت دارد. این مکان توسط اولین استاد ما تأسیس شد که پس از سال‌ها تمرین در ژاپن، به ایران بازگشت تا دانش خود را با علاقه‌مندان به اشتراک بگذارد.", image: "/history.jpg" },
@@ -11,20 +12,29 @@ const FALLBACK_TABS = [
   { id: 3, title: "دستاوردها", kanji: "成果", content: "دانش‌آموزان ما موفق به کسب جوایز متعدد در مسابقات ملی و بین‌المللی شده‌اند. اما بزرگترین دستاورد ما، رشد و توسعه شخصیتی صدها دانش‌آموز است.", image: "/achievements.jpg" },
 ];
 
-export default function Section2({ exiting, messages }: { exiting: boolean; messages?: GlobalMessages }) {
+export default function Section2({ exiting, messages, apiData }: { exiting: boolean; messages?: GlobalMessages; apiData?: DojoApiData }) {
   const [activeTab, setActiveTab] = useState(0);
   const [isSectionOpen, setIsSectionOpen] = useState(false);
   const t = messages?.Section2 as any;
+  const about = apiData?.aboutData;
 
   const TABS_DATA = useMemo(() => {
+    const fromApi = about?.tabs?.filter(Boolean).map((tab: any, idx: number) => ({
+      id: tab.id ?? idx,
+      title: tab.title ?? "",
+      kanji: tab.kanji ?? "",
+      content: tab.content ?? "",
+      image: tab.image ?? "",
+    }));
+    if (fromApi?.length) return fromApi;
     const fromJson = t?.tabs?.filter(Boolean);
     return fromJson?.length ? fromJson : FALLBACK_TABS;
-  }, [t?.tabs]);
+  }, [about?.tabs, t?.tabs]);
 
-  const headingTitle = t?.heading?.title ?? "درباره ما";
-  const headingKanji = t?.heading?.kanji ?? "私たち";
-  const foundedLabel = t?.founded?.label ?? "تأسیس:";
-  const foundedValue = t?.founded?.value ?? "۱۳۵۰ خورشیدی";
+  const headingTitle = about?.heading?.title ?? t?.heading?.title ?? "درباره ما";
+  const headingKanji = about?.heading?.kanji ?? t?.heading?.kanji ?? "私たち";
+  const foundedLabel = about?.founded?.label ?? t?.founded?.label ?? "تأسیس:";
+  const foundedValue = about?.founded?.value ?? t?.founded?.value ?? "۱۳۵۰ خورشیدی";
   const moreInfo = t?.moreInfo ?? "اطلاعات بیشتر";
 
   return (

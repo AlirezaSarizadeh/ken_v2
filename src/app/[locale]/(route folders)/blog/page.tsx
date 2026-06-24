@@ -51,7 +51,7 @@ export default async function BlogPage({
   const locale: Locale = isLocale(raw) ? raw : "fa";
   const isRtl = locale === "fa";
 
-  const [posts, messages] = await Promise.all([getBlogPosts(), getMessages(locale)]);
+  const [posts, messages] = await Promise.all([getBlogPosts(locale), getMessages(locale)]);
   const t = (messages.BlogPage ?? {}) as any;
 
   const headingTitle = t?.ui?.headingTitle ?? (isRtl ? "خردنامه خانه" : "Dojo Chronicle");

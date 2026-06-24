@@ -1,0 +1,1147 @@
+{
+  "info": {
+    "_postman_id": "a583ab5c-ec06-4aa6-be6e-122d33e0f702",
+    "name": "Kenjutsu",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "15462356"
+  },
+  "item": [
+    {
+      "name": "Authenticate",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"login\": \"omid@example.com\",\r\n    \"password\": \"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"امید جابری\",\r\n    \"email\": \"omid@example.com\",\r\n    \"phone\": \"09120000000\",\r\n    \"password\": \"12345678\",\r\n    \"password_confirmation\": \"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Join",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/join-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "join-requests"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "setting",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/settings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "settings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "menu",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/menus",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "menus"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "home",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/home",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "home"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "about",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/about",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "about"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "about Copy",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/about",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "about"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "contact",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/contact",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "contact"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "contact send message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"امید جابری\",\r\n    \"email\": \"omid@example.com\",\r\n    \"message\": \"سلام، برای دریافت اطلاعات دوره‌های کنجوتسو پیام می‌دهم.\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/contact/messages",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "contact",
+                "messages"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "about - tarikhche",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/about/tarikhche?",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "about",
+                "tarikhche"
+              ],
+              "query": [
+                {
+                  "key": null,
+                  "value": null,
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Article",
+      "item": [
+        {
+          "name": "article-categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/article-categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "article-categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "articles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/articles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "articles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "article-samurai-path",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/articles/samurai-path",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "articles",
+                "samurai-path"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "articles-katori",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/articles/katori",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "articles",
+                "katori"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "article filter by category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/articles?category=samurai-path",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "articles"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "samurai-path"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "article filter by category get limit",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/articles?category=samurai-path&limit=4",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "articles"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "samurai-path"
+                },
+                {
+                  "key": "limit",
+                  "value": "4"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "article search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/articles?search=سامورایی",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "articles"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "سامورایی"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "article single fa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/articles/sherafat-dar-rahe-samurai",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "articles",
+                "sherafat-dar-rahe-samurai"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "article single en",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Locale",
+                "value": "en",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/articles/honor-in-the-samurai-path",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "articles",
+                "honor-in-the-samurai-path"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "courses mobtadi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/courses/mobtadi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "courses",
+                "mobtadi"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "course register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"course_level_id\": 1,\r\n    \"name\": \"امید جابری\",\r\n    \"mobile\": \"09120000000\",\r\n    \"email\": \"omid@example.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/course-registrations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "course-registrations"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Gallery",
+      "item": [
+        {
+          "name": "gallery",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/gallery",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gallery"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "gallery-categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/gallery-categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gallery-categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "gallery - item",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/gallery/tamrinhaye-dojo-1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gallery",
+                "tamrinhaye-dojo-1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "item": [
+        {
+          "name": "product-categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product-categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "product-categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "product-tags",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product-tags",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "product-tags"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "products detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products/bokken-tamrini",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "bokken-tamrini"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "product search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products?search=بوکن",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "بوکن"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "product-filter",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/products?category=tajhizat-tamrin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "tajhizat-tamrin"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "member-categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/member-categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "member-categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "members",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "members"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "members search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/members?search=SHN-001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "members"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "SHN-001"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Katori",
+      "item": [
+        {
+          "name": "katori",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Locale",
+                "value": "fa",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/katori",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "katori"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/ping",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "ping"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

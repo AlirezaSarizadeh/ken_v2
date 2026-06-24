@@ -6,6 +6,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCards } from "swiper/modules";
 
 import type { GlobalMessages } from "@/types/messages";
+import type { DojoApiData } from "@/types/api";
+import SafeImg from "@/app/components/ui/SafeImg";
 
 import "swiper/css";
 import "swiper/css/effect-cards";
@@ -20,26 +22,40 @@ const FALLBACK_SLIDES = [
 export default function Section1({
   exiting,
   messages,
+  apiData,
 }: {
   exiting: boolean;
   messages?: GlobalMessages;
+  apiData?: DojoApiData;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isSectionOpen, setIsSectionOpen] = useState(false);
 
   const t = messages?.Section1 as any;
+  const home = apiData?.homeData;
 
   const SLIDE_DATA = useMemo(() => {
+    const fromApi = home?.slides?.filter(Boolean).map((s: any) => ({
+      id: s.id ?? Math.random(),
+      title: s.title ?? "",
+      desc: s.desc ?? s.description ?? "",
+      image: s.image ?? "",
+      kanji: s.kanji ?? "",
+    }));
+    if (fromApi?.length) return fromApi;
     const fromJson = t?.slides?.filter(Boolean);
     return fromJson?.length ? fromJson : FALLBACK_SLIDES;
-  }, [t?.slides]);
+  }, [home?.slides, t?.slides]);
 
-  const masterTitlePrefix = t?.master?.titlePrefix ?? "شیهان";
-  const masterName = t?.master?.name ?? "اشرفی";
+  const masterTitlePrefix = home?.master?.titlePrefix ?? t?.master?.titlePrefix ?? "شیهان";
+  const masterName = home?.master?.name ?? t?.master?.name ?? "اشرفی";
   const masterQuote =
+    home?.master?.quote ??
     t?.master?.quote ??
     "راهِ جنگجو از دلِ رویارویی با مرگ می‌گذرد؛ کسی که از مرگ نمی‌گریزد، در نهایت زندگی را تمام‌قد در آغوش می‌گیرد.";
   const masterAlt = t?.master?.imageAlt ?? "Shihan";
+  // API hero.image replaces static shihan photo when available
+  const masterImage = (home?.master as any)?.image ?? null;
 
   const headerP1 = t?.header?.titlePart1 ?? "راه";
   const headerP2 = t?.header?.titlePart2 ?? "سامورایی";
@@ -142,12 +158,13 @@ export default function Section1({
               />
 
               <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#1a1a1a] relative z-10 bg-black shadow-[0_0_30px_black_inset]">
-                <img
-                  src="/shihan-new.jpg"
+                {/* Static fallback: src="/shihan-new.jpg" — preserved below; API hero.image takes priority when available */}
+                <SafeImg
+                  src={masterImage ?? "/shihan-new.jpg"}
                   alt={masterAlt}
                   className="w-full h-full object-cover grayscale-[30%] contrast-125 group-hover:grayscale-0 transition-all duration-500"
                   onError={(e) => {
-                    e.currentTarget.src = "https://picsum.photos/seed/samurai/500/500.jpg";
+                    (e.currentTarget as HTMLImageElement).src = "/shihan-new.jpg";
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-red-950/50 to-transparent mix-blend-overlay"></div>
@@ -215,12 +232,12 @@ export default function Section1({
                           {slide.kanji}
                         </div>
 
-                        <img
+                        <SafeImg
                           src={slide.image}
                           alt={slide.title}
                           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 brightness-[0.8] contrast-125 sepia-[0.3] saturate-[0.8]"
                           onError={(e) => {
-                            e.currentTarget.src = `https://picsum.photos/seed/samurai${slide.id}/500/300.jpg`;
+                            (e.currentTarget as HTMLImageElement).src = `https://picsum.photos/seed/samurai${slide.id}/500/300.jpg`;
                           }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0000] via-transparent to-black/40 opacity-90"></div>

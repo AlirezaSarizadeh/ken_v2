@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GlobalMessages } from "../../../types/messages";
+import type { DojoApiData } from "@/types/api";
 
 // Components
 import Section1 from "../sections/Section1";
@@ -16,6 +17,8 @@ import Section8 from "../sections/Katuri";
 import CutVideo from "../ui/sections/CutVideo";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
 import SideNavigation from "../ui/navigation/SideNavigation";
+import AuthModal from "../ui/AuthModal";
+import { useAuth } from "@/app/context/AuthContext";
 
 const TRANSITION_VIDEOS: Record<string, string> = {
   // Section 1 - Academy
@@ -97,8 +100,10 @@ const TRANSITION_VIDEOS: Record<string, string> = {
 
 export default function DojoPageClient({
   messages,
+  apiData,
 }: {
   messages: GlobalMessages;
+  apiData?: DojoApiData;
 }) {
   // --- Data Configuration (FROM JSON) ---
   const SECTIONS = useMemo(() => {
@@ -179,6 +184,12 @@ export default function DojoPageClient({
   const [isMobile, setIsMobile] = useState(false);
   const [transitionId, setTransitionId] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  const { isLoggedIn, user } = useAuth();
+  const locale = typeof document !== "undefined"
+    ? (document.documentElement.lang === "en" ? "en" : "fa")
+    : "fa";
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -267,7 +278,7 @@ export default function DojoPageClient({
       {/* Content Layer */}
       <div className="relative z-0 flex-1 w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
         <div className="min-h-full w-full flex flex-col items-center justify-center pb-20 md:py-0 px-4 md:px-0">
-          <ActiveComponent exiting={exiting} messages={messages} />
+          <ActiveComponent exiting={exiting} messages={messages} apiData={apiData} />
         </div>
       </div>
 
@@ -275,13 +286,37 @@ export default function DojoPageClient({
       <div className="absolute inset-0 z-20 pointer-events-none flex flex-col justify-between">
         {/* Top row: switcher (left) + header info (right) + mobile menu */}
         <div className="w-full p-4 md:p-6 flex items-start justify-between">
-          {/* Language Switcher - Hidden on mobile if menu is open */}
+          {/* Language Switcher + Auth Button */}
           <motion.div
-            className={`pointer-events-auto ${mobileMenuOpen ? "hidden" : "block"}`}
+            className={`pointer-events-auto flex items-center gap-2 ${mobileMenuOpen ? "hidden" : "flex"}`}
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <LanguageSwitcher compact={isMobile} />
+            <button
+              onClick={() => setAuthModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md border border-red-900/30 text-sm font-bold text-red-400 hover:bg-red-900/20 transition-all duration-200"
+            >
+              {isLoggedIn ? (
+                <>
+                  <span className="w-5 h-5 rounded-full bg-red-700/50 flex items-center justify-center text-xs text-white font-bold">
+                    {user?.name?.[0]?.toUpperCase() ?? "U"}
+                  </span>
+                  <span className="hidden md:inline text-xs text-red-300 max-w-[80px] truncate">
+                    {user?.name ?? ""}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                  <span className="hidden md:inline text-xs">
+                    {locale === "fa" ? "ورود" : "Login"}
+                  </span>
+                </>
+              )}
+            </button>
           </motion.div>
 
           {/* Header Info - Hidden on mobile */}
@@ -383,6 +418,21 @@ export default function DojoPageClient({
                   >
                     سکشن‌ها
                   </h2>
+
+                  {/* Auth Button in mobile menu */}
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); setAuthModalOpen(true); }}
+                    className="w-full flex items-center gap-4 p-4 rounded-lg border border-red-600/30 bg-red-900/10 mb-2"
+                  >
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-900/30">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-red-400">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm font-bold text-red-300" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                      {isLoggedIn ? (user?.name ?? (locale === "fa" ? "حساب کاربری" : "Account")) : (locale === "fa" ? "ورود / ثبت‌نام" : "Login / Register")}
+                    </p>
+                  </button>
 
                   {/* Menu Items */}
                   {SECTIONS.map((section, idx) => {
@@ -522,6 +572,13 @@ export default function DojoPageClient({
         currentIndex={currentIndex}
         onSectionChange={startTransition}
         isMobile={isMobile}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        locale={locale}
       />
     </main>
   );

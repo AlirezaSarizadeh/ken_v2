@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import type { GlobalMessages } from "@/types/messages";
+import type { DojoApiData } from "@/types/api";
+import SafeImg from "@/app/components/ui/SafeImg";
 
 const FALLBACK_CATEGORIES_FA = ["همه", "سلاح", "سلاح تمرینی", "زره", "هنر"];
 
@@ -108,9 +110,11 @@ function formatPriceIRR(n: number) {
 export default function SectionShop({
   exiting,
   messages,
+  apiData,
 }: {
   exiting: boolean;
   messages?: GlobalMessages;
+  apiData?: DojoApiData;
 }) {
   const [isSectionOpen, setIsSectionOpen] = useState(false);
   const t = (messages?.SectionShop ?? {}) as any;
@@ -118,14 +122,32 @@ export default function SectionShop({
   const allKey: string = t?.allKey ?? "همه";
 
   const CATEGORIES: string[] = useMemo(() => {
+    const fromApi = apiData?.productCategories?.filter(Boolean).map(
+      (c: any) => c.title ?? c.name ?? c.slug ?? ""
+    ).filter(Boolean);
+    if (fromApi?.length) return [allKey, ...fromApi];
     const fromJson = t?.categories?.filter(Boolean);
     return fromJson?.length ? fromJson : FALLBACK_CATEGORIES_FA;
-  }, [t?.categories]);
+  }, [apiData?.productCategories, t?.categories, allKey]);
 
   const ITEMS: ShopItem[] = useMemo(() => {
+    const fromApi = apiData?.products?.filter(Boolean).map((p: any) => ({
+      id: p.id ?? Math.random(),
+      name: p.name ?? p.title ?? "",
+      kanji: p.kanji ?? "",
+      description: p.description ?? "",
+      origin: p.origin ?? "",
+      material: p.material ?? "",
+      image: p.image ?? p.thumbnail ?? "",
+      category: p.category ?? p.category_slug ?? "",
+      price: p.price ?? 0,
+      inStock: p.inStock ?? p.in_stock ?? true,
+      badge: p.badge ?? undefined,
+    }));
+    if (fromApi?.length) return fromApi as ShopItem[];
     const fromJson = t?.items?.filter(Boolean);
     return fromJson?.length ? fromJson : (FALLBACK_ITEMS_FA as ShopItem[]);
-  }, [t?.items]);
+  }, [apiData?.products, t?.items]);
 
   const headingTitle: string = t?.heading?.title ?? "فروشگاه ابزار کنجوتسو";
   const headingSubtitle: string = t?.heading?.subtitle ?? "Kenjutsu Gear Shop";
@@ -285,7 +307,7 @@ export default function SectionShop({
             </div>
 
             {/* Category Filters */}
-            <div className="mt-6 flex flex-wrap justify-center gap-2 md:gap-4 relative z-20">
+            <div className="mt-6 flex flex-nowrap overflow-x-auto pb-1 justify-start md:justify-center gap-2 md:gap-4 relative z-20 scrollbar-none px-1" style={{ scrollbarWidth: "none" }}>
               {CATEGORIES.map((category) => (
                 <button
                   key={category}
@@ -331,7 +353,7 @@ export default function SectionShop({
                   >
                     {/* Media */}
                     <div className="absolute inset-0 overflow-hidden">
-                      <img
+                      <SafeImg
                         src={item.image}
                         alt={item.name}
                         className={`
@@ -342,7 +364,7 @@ export default function SectionShop({
                           }
                         `}
                         onError={(e) => {
-                          e.currentTarget.src = `https://picsum.photos/seed/gear${item.id}/800/600.jpg`;
+                          (e.currentTarget as HTMLImageElement).src = `https://picsum.photos/seed/gear${item.id}/800/600.jpg`;
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent opacity-95 transition-opacity duration-300 group-hover:opacity-80" />
@@ -461,12 +483,12 @@ export default function SectionShop({
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2">
                     <div className="relative h-64 md:h-full">
-                      <img
+                      <SafeImg
                         src={activeItem.image}
                         alt={activeItem.name}
                         className="absolute inset-0 w-full h-full object-cover"
                         onError={(e) => {
-                          e.currentTarget.src = `https://picsum.photos/seed/gearModal${activeItem.id}/1000/800.jpg`;
+                          (e.currentTarget as HTMLImageElement).src = `https://picsum.photos/seed/gearModal${activeItem.id}/1000/800.jpg`;
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />

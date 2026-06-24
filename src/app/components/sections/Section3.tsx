@@ -3,6 +3,8 @@
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GlobalMessages } from "@/types/messages";
+import type { DojoApiData } from "@/types/api";
+import { apiPost } from "@/lib/api";
 
 type ContactKind = "address" | "phone" | "email";
 
@@ -50,18 +52,30 @@ function inferKind(item: ContactInfoItem): ContactKind {
 export default function Section3({
   exiting,
   messages,
+  apiData,
 }: {
   exiting: boolean;
   messages?: GlobalMessages;
+  apiData?: DojoApiData;
 }) {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSectionOpen, setIsSectionOpen] = useState(false);
 
   const t = (messages?.Section3 as any) ?? {};
+  const contact = apiData?.contactData;
 
   const CONTACT_INFO: ContactInfoItem[] = useMemo(() => {
+    const apiItems = contact?.contactInfo ?? contact?.items;
+    const fromApi = apiItems?.filter(Boolean).map((item: any, idx: number) => ({
+      id: item.id ?? idx + 1,
+      kind: (item.kind ?? (item.type as ContactKind)) ?? undefined,
+      label: item.label ?? "",
+      text: item.text ?? item.value ?? "",
+    }));
+    if (fromApi?.length) return fromApi;
     const fromJson = (t?.contactInfo as ContactInfoItem[] | undefined)?.filter(Boolean);
     const fallback: ContactInfoItem[] = [
       { id: 1, kind: "address", label: "آدرس", text: "تهران، خیابان ولیعصر، دوجو بوشیدو" },
@@ -69,7 +83,7 @@ export default function Section3({
       { id: 3, kind: "email", label: "ایمیل", text: "info@bushido-dojo.ir" },
     ];
     return fromJson?.length ? fromJson : fallback;
-  }, [t?.contactInfo]);
+  }, [contact, t?.contactInfo]);
 
   const headingTitle = t?.heading?.title ?? "ارتباط با دوجو";
   const headingKanji = t?.heading?.kanji ?? "連絡";
@@ -91,18 +105,21 @@ export default function Section3({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setSubmitError(null);
+    const result = await apiPost("/contact/messages", formData, "fa");
+    setIsLoading(false);
+    if (result.error) {
+      setSubmitError(result.error);
+      return;
+    }
+    setIsSubmitted(true);
     setTimeout(() => {
-      console.log("Form submitted:", formData);
-      setIsLoading(false);
-      setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setFormData({ name: "", email: "", message: "" });
-      }, 3000);
-    }, 1500);
+      setIsSubmitted(false);
+      setFormData({ name: "", email: "", message: "" });
+    }, 3000);
   };
 
   return (
@@ -299,6 +316,12 @@ export default function Section3({
                       style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                     />
                   </div>
+
+                  {submitError && (
+                    <div className="text-xs text-red-700 text-center py-2">
+                      {submitError}
+                    </div>
+                  )}
 
                   <div className="pt-4 flex justify-center relative">
                     <motion.button

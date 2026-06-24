@@ -1,5 +1,7 @@
-// lib/blogApi.ts
-interface BlogPost {
+import { apiFetch } from "@/lib/api";
+import type { ArticleCategory } from "@/types/api";
+
+export interface BlogPost {
   id: number;
   title: string;
   slug: string;
@@ -8,12 +10,13 @@ interface BlogPost {
   author: string;
   publishDate: string;
   category: string;
+  categorySlug: string;
   image: string;
   tags: string[];
   readTime: number;
 }
 
-interface RelatedPost {
+export interface RelatedPost {
   id: number;
   title: string;
   slug: string;
@@ -21,160 +24,128 @@ interface RelatedPost {
   publishDate: string;
 }
 
-// Mock data
-const mockPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: "تاریخچه سامورایی‌ها در ژاپن",
-    slug: "history-of-samurai",
-    excerpt: "سامورایی‌ها طبقه‌ای از جنگجویان قدرتمند در ژاپن باستان بودند که برای قرن‌ها بر تاریخ این کشور تأثیر گذاشتند. این مقاله به بررسی تاریخچه و فرهنگ سامورایی‌ها می‌پردازد.",
-    content: `# تاریخچه سامورایی‌ها در ژاپن
+// Actual API article shape (both in list and single)
+interface RawArticle {
+  id?: number;
+  title?: string | null;
+  slug?: string | null;
+  short_description?: string | null;
+  excerpt?: string | null;
+  content?: string | null;
+  body?: string | null;
+  author?: string | null;
+  reading_time?: number | null;
+  read_time?: number | null;
+  published_at?: string | null;
+  created_at?: string | null;
+  image?: string | null;
+  thumbnail?: string | null;
+  tags?: string[] | null;
+  // category can be an object { id, title, slug } or a string
+  category?: { id?: number; title?: string; slug?: string } | string | null;
+  category_slug?: string | null;
+}
 
-سامورایی‌ها طبقه‌ای از جنگجویان قدرتمند در ژاپن باستان بودند که برای قرن‌ها بر تاریخ این کشور تأثیر گذاشتند. این مقاله به بررسی تاریخچه و فرهنگ سامورایی‌ها می‌پردازد.
+function normalizeArticle(a: RawArticle): BlogPost {
+  const catObj = typeof a.category === "object" && a.category !== null ? a.category : null;
+  const catSlug = catObj?.slug ?? (typeof a.category === "string" ? a.category : null) ?? a.category_slug ?? "";
+  const catTitle = catObj?.title ?? catSlug;
 
-## شکل‌گیری طبقه سامورایی
-
-طبقه سامورایی در دوره هی‌آن (۷۹۴-۱۱۸۵) شکل گرفت. در ابتدا، سامورایی‌ها محافظان دولت و اشراف بودند، اما به تدریج به یک طبقه نظامی قدرتمند تبدیل شدند. واژه "سامورایی" از فعل "سامورائو" به معنای "خدمت کردن" گرفته شده است که نشان‌دهنده نقش اصلی آن‌ها به عنوان خدمتگزاران اربابان خود بود.
-
-## دوره کاماکورا و ظهور شوگونات
-
-در دوره کاماکورا (۱۱۸۵-۱۳۳۳)، قدرت سامورایی‌ها به اوج خود رسید. میناموتو نو یوریتومو اولین شوگون (دیکتاتور نظامی) ژاپن شد و دولت شوگونات را تأسیس کرد. در این دوره، سامورایی‌ها طبقه حاکم را تشکیل می‌دادند و فرهنگ منحصر به فرد خود را توسعه دادند.
-
-## بوشیدو: راه جنگجو
-
-بوشیدو یا "راه جنگجو" یک آیین اخلاقی بود که سامورایی‌ها بر اساس آن زندگی می‌کردند. این آیین بر اساس هفت اصل اصلی استوار بود:
-
-1. **صداقت (گی - Gi)**: وفاداری به اصول اخلاقی و راستگویی
-2. **شجاعت (یو - Yu)**: شجاعت در برابر خطر و سختی
-3. **benevolence (جین - Jin)**: مهربانی و بخشش نسبت به دیگران
-4. **احترام (ری - Rei)**: احترام به بزرگترها و اربابان
-5. **صداقت (ماکوتو - Makoto)**: راستگویی و وفاداری به کلمه
-6. **افتخار (میو - Meiyo)**: حفظ آبرو و اعتبار
-7. **وفاداری (چو - Chugi)**: وفاداری مطلق به ارباب
-
-## زره و سلاح‌های سامورایی
-
-زره سامورایی یا "یوروی" یک شاهکار مهندسی بود که هم محافظت می‌کرد و هم انعطاف‌پذیری را فراهم می‌کرد. این زره از قطعات مختلفی تشکیل شده بود که با ریسمان‌های ابریشمی به هم متصل می‌شدند.
-
-کاتانا، شمشیر بلند سامورایی، نماد اصلی این طبقه بود. ساخت کاتانا یک هنر پیچیده بود و استادان شمشیرسازی ماه‌ها برای ساختن یک کاتانای باکیفیت وقت می‌گذاشتند. کاتانا نه تنها یک سلاح، بلکه یک اثر هنری و نماد روح سامورایی بود.
-
-## زن و مراقبه
-
-زن (مراقبه) نقش مهمی در زندگی سامورایی‌ها داشت. بسیاری از سامورایی‌ها برای تمرکز ذهن و کنترل احساسات، زن را تمرین می‌کردند. زن به آن‌ها کمک می‌کرد تا در نبرد آرامش خود را حفظ کرده و تصمیمات بهتری بگیرند.
-
-## افول سامورایی
-
-در دوره ادو (۱۶۰۳-۱۸۶۸)، ژاپن دوره‌ای از صلح را تجربه کرد و نقش سامورایی‌ها به تدریج از جنگجویان به مدیران و بوروکرات‌ها تغییر کرد. با اصلاحات میجی در قرن نوزدهم، طبقه سامورایی منحل شد و بسیاری از آن‌ها به مشاغل دیگری روی آوردند.
-
-## میراث سامورایی
-
-با وجود منحل شدن طبقه سامورایی، میراث فرهنگی آن‌ها همچنان در ژاپن زنده است. بسیاری از هنرهای رزمی مدرن ریشه در تکنیک‌های سامورایی دارند و اصول بوشیدو همچنان بر فرهنگ ژاپن تأثیر می‌گذارد.
-
-امروزه، روح سامورایی در disciplines مختلفی مانند کندو (شمشیربازی)، آیکیدو، و جودو دیده می‌شود و اصول بوشیدو همچنان به عنوان یک راهنمای اخلاقی در کسب و کار و زندگی روزمره در ژاپن استفاده می‌شود.`,
-    author: "استاد کنجی",
-    publishDate: "۱۴۰۲/۰۳/۱۵",
-    category: "تاریخ",
-    image: "/pic_4.jpg",
-    tags: ["سامورایی", "تاریخ ژاپن", "بوشیدو"],
-    readTime: 8
-  },
-  {
-    id: 2,
-    title: "اصول بوشیدو: راه جنگجو",
-    slug: "principles-of-bushido",
-    excerpt: "بوشیدو یا راه جنگجو، یک آیین اخلاقی است که بر اساس آن سامورایی‌ها زندگی می‌کردند. این مقاله به بررسی هفت اصل اصلی بوشیدو می‌پردازد.",
-    content: "محتوای کامل مقاله در مورد اصول بوشیدو...",
-    author: "استاد کنجی",
-    publishDate: "۱۴۰۲/۰۴/۰۲",
-    category: "فلسفه",
-    image: "/pic_1.jpg",
-    tags: ["بوشیدو", "اخلاق", "سامورایی"],
-    readTime: 6
-  },
-  {
-    id: 3,
-    title: "هنر شمشیربازی: کاتانا",
-    slug: "art-of-swordsmanship",
-    excerpt: "کاتانا نه تنها یک سلاح، بلکه یک اثر هنری است. این مقاله به بررسی تاریخچه، ساخت و تکنیک‌های استفاده از کاتانا می‌پردازد.",
-    content: "محتوای کامل مقاله در مورد هنر شمشیربازی...",
-    author: "استاد کنجی",
-    publishDate: "۱۴۰۲/۰۴/۱۸",
-    category: "هنرهای رزمی",
-    image: "/pic_2.jpg",
-    tags: ["کاتانا", "شمشیربازی", "هنرهای رزمی"],
-    readTime: 10
-  },
-  {
-    id: 4,
-    title: "زن و مراقبه در فرهنگ سامورایی",
-    slug: "zen-meditation-samurai",
-    excerpt: "زن و مراقبه نقش مهمی در زندگی سامورایی‌ها داشتند. این مقاله به بررسی تأثیر زن بر ذهنیت و عملکرد جنگجویان می‌پردازد.",
-    content: "محتوای کامل مقاله در مورد زن و مراقبه...",
-    author: "استاد کنجی",
-    publishDate: "۱۴۰۲/۰۵/۰۵",
-    category: "فلسفه",
-    image: "/pic_3.jpg",
-    tags: ["زن", "مراقبه", "سامورایی"],
-    readTime: 7
-  },
-  {
-    id: 5,
-    title: "زره سامورایی: طراحی و کاربرد",
-    slug: "samurai-armor",
-    excerpt: "زره سامورایی نه تنها برای محافظت، بلکه نمادی از的地位 و قدرت بود. این مقاله به بررسی طراحی، ساخت و کاربرد زره‌های سامورایی می‌پردازد.",
-    content: "محتوای کامل مقاله در مورد زره سامورایی...",
-    author: "استاد کنجی",
-    publishDate: "۱۴۰۲/۰۵/۲۰",
-    category: "تاریخ",
-    image: "/pic_4.jpg",
-    tags: ["زره", "سامورایی", "تاریخ"],
-    readTime: 9
-  },
-  {
-    id: 6,
-    title: "هنرهای رزمی مدرن و ریشه‌های سامورایی",
-    slug: "modern-martial-arts",
-    excerpt: "بسیاری از هنرهای رزمی مدرن ریشه در تکنیک‌های سامورایی دارند. این مقاله به بررسی ارتباط بین هنرهای رزمی مدرن و تکنیک‌های سنتی می‌پردازد.",
-    content: "محتوای کامل مقاله در مورد هنرهای رزمی مدرن...",
-    author: "استاد کنجی",
-    publishDate: "۱۴۰۲/۰۶/۰۱",
-    category: "هنرهای رزمی",
-    image: "/pic_1.jpg",
-    tags: ["هنرهای رزمی", "سامورایی", "مدرن"],
-    readTime: 11
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[BLOG] article "${a.title}" — category:`, catTitle, "slug:", catSlug);
   }
-];
 
-// API functions
-export async function getBlogPosts(): Promise<BlogPost[]> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  return mockPosts;
+  return {
+    id: a.id ?? 0,
+    title: a.title ?? "",
+    slug: a.slug ?? String(a.id ?? ""),
+    excerpt: a.short_description ?? a.excerpt ?? "",
+    content: a.content ?? a.body ?? "",
+    author: a.author ?? "",
+    publishDate: a.published_at ?? a.created_at ?? "",
+    category: catTitle,
+    categorySlug: catSlug,
+    image: a.image ?? a.thumbnail ?? "",
+    tags: Array.isArray(a.tags) ? a.tags : [],
+    readTime: a.reading_time ?? a.read_time ?? 5,
+  };
 }
 
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  return mockPosts.find(post => post.slug === slug) || null;
+// Extract items from either array, { items }, or { data }
+function extractArticles(raw: unknown): RawArticle[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "object" && raw !== null) {
+    const obj = raw as Record<string, unknown>;
+    if (Array.isArray(obj.items)) return obj.items as RawArticle[];
+    if (Array.isArray(obj.data)) return obj.data as RawArticle[];
+  }
+  return [];
 }
 
-export async function getRelatedBlogPosts(currentPostId: number, category: string): Promise<RelatedPost[]> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
-  // Get related posts (excluding current post)
-  const related = mockPosts
-    .filter(p => p.id !== currentPostId && p.category === category)
+export async function getBlogPosts(locale = "fa", category?: string, search?: string, limit?: number): Promise<BlogPost[]> {
+  const params = new URLSearchParams();
+  if (category) params.set("category", category);
+  if (search) params.set("search", search);
+  if (limit) params.set("limit", String(limit));
+
+  const path = params.toString() ? `/articles?${params}` : "/articles";
+  const result = await apiFetch<unknown>(path, locale, { next: { revalidate: 60 } });
+
+  if (result.error || !result.data) return [];
+
+  const items = extractArticles(result.data);
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[BLOG] getBlogPosts(${locale}) → ${items.length} articles`);
+  }
+
+  return items.filter(Boolean).map(normalizeArticle);
+}
+
+export async function getBlogPostBySlug(slug: string, locale = "fa"): Promise<BlogPost | null> {
+  const result = await apiFetch<unknown>(`/articles/${slug}`, locale, { next: { revalidate: 60 } });
+  if (result.error || !result.data) return null;
+
+  // Single article might be returned as the object directly or wrapped in { data }
+  const raw = result.data as RawArticle;
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[BLOG] getBlogPostBySlug("${slug}", ${locale}) →`, raw?.title ?? "null");
+  }
+
+  return normalizeArticle(raw);
+}
+
+export async function getRelatedBlogPosts(currentPostId: number, category: string, locale = "fa"): Promise<RelatedPost[]> {
+  const result = await apiFetch<unknown>(
+    `/articles?category=${encodeURIComponent(category)}&limit=4`,
+    locale,
+    { next: { revalidate: 60 } }
+  );
+
+  if (result.error || !result.data) return [];
+
+  const items = extractArticles(result.data);
+
+  return items
+    .filter((a) => a.id !== currentPostId)
     .slice(0, 3)
-    .map(p => ({
-      id: p.id,
-      title: p.title,
-      slug: p.slug,
-      image: p.image,
-      publishDate: p.publishDate
+    .map((a) => ({
+      id: a.id ?? 0,
+      title: a.title ?? "",
+      slug: a.slug ?? String(a.id ?? ""),
+      image: a.image ?? a.thumbnail ?? "",
+      publishDate: a.published_at ?? a.created_at ?? "",
     }));
-  
-  return related;
+}
+
+export async function getArticleCategories(locale = "fa"): Promise<ArticleCategory[]> {
+  const result = await apiFetch<unknown>("/article-categories", locale, { next: { revalidate: 3600 } });
+  if (!result.data) return [];
+
+  if (Array.isArray(result.data)) return result.data as ArticleCategory[];
+  const obj = result.data as Record<string, unknown>;
+  if (Array.isArray(obj.items)) return obj.items as ArticleCategory[];
+  return [];
 }

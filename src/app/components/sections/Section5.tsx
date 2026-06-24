@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import type { GlobalMessages } from "@/types/messages";
+import type { DojoApiData } from "@/types/api";
+import SafeImg from "@/app/components/ui/SafeImg";
 
 const FALLBACK_CATEGORIES_FA = ["همه", "سلاح", "سلاح تمرینی", "زره", "هنر"];
 
@@ -83,9 +85,11 @@ type GalleryItem = {
 export default function Section5({
   exiting,
   messages,
+  apiData,
 }: {
   exiting: boolean;
   messages?: GlobalMessages;
+  apiData?: DojoApiData;
 }) {
   const t = messages?.Section5 as any;
 
@@ -94,14 +98,29 @@ export default function Section5({
   const allKey: string = t?.allKey ?? "همه";
 
   const CATEGORIES: string[] = useMemo(() => {
+    const fromApi = apiData?.galleryCategories?.filter(Boolean).map(
+      (c: any) => c.title ?? c.name ?? c.slug ?? ""
+    ).filter(Boolean);
+    if (fromApi?.length) return [allKey, ...fromApi];
     const fromJson = t?.categories?.filter(Boolean);
     return fromJson?.length ? fromJson : FALLBACK_CATEGORIES_FA;
-  }, [t?.categories]);
+  }, [apiData?.galleryCategories, t?.categories, allKey]);
 
   const GALLERY_ITEMS: GalleryItem[] = useMemo(() => {
+    const fromApi = apiData?.galleryItems?.filter(Boolean).map((item: any) => ({
+      id: item.id ?? Math.random(),
+      name: item.title ?? item.name ?? "",
+      kanji: item.kanji ?? "",
+      description: item.description ?? "",
+      origin: item.origin ?? "",
+      material: item.material ?? "",
+      image: item.image ?? item.thumbnail ?? "",
+      category: item.category ?? "",
+    }));
+    if (fromApi?.length) return fromApi as GalleryItem[];
     const fromJson = t?.items?.filter(Boolean);
     return fromJson?.length ? fromJson : (FALLBACK_ITEMS_FA as GalleryItem[]);
-  }, [t?.items]);
+  }, [apiData?.galleryItems, t?.items]);
 
   const headingTitle: string = t?.heading?.title ?? "گنجینه دوجو";
   const headingSubtitle: string = t?.heading?.subtitle ?? "Artifacts & Weapons";
@@ -189,7 +208,7 @@ export default function Section5({
               </span>
             </h2>
 
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4 relative z-20">
+            <div className="flex flex-nowrap overflow-x-auto pb-1 justify-start md:justify-center gap-2 md:gap-4 relative z-20 scrollbar-none px-1" style={{ scrollbarWidth: "none" }}>
               {CATEGORIES.map((category) => (
                 <button
                   key={category}
@@ -230,7 +249,7 @@ export default function Section5({
                     onHoverEnd={() => setHoveredItem(null)}
                   >
                     <div className="absolute inset-0 overflow-hidden">
-                      <img
+                      <SafeImg
                         src={item.image}
                         alt={item.name}
                         className={`
@@ -238,7 +257,7 @@ export default function Section5({
                           ${hoveredItem === item.id ? "scale-110" : "scale-100 grayscale-[50%] sepia-[30%] brightness-75"}
                         `}
                         onError={(e) => {
-                          e.currentTarget.src = `https://picsum.photos/seed/artifact${item.id}/400/300.jpg`;
+                          (e.currentTarget as HTMLImageElement).src = `https://picsum.photos/seed/artifact${item.id}/400/300.jpg`;
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-70" />

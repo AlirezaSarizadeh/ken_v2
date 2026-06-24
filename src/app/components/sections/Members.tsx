@@ -4,6 +4,7 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GlobalMessages } from "@/types/messages";
+import type { DojoApiData } from "@/types/api";
 import Image from "next/image";
 
 type Member = {
@@ -114,12 +115,14 @@ const FALLBACK_MEMBERS_EN: Member[] = [
 export default function SectionMembers({
   exiting,
   messages,
+  apiData,
 }: {
   exiting: boolean;
   messages?: GlobalMessages;
+  apiData?: DojoApiData;
 }) {
   const t = (messages as any)?.SectionMembers;
-  const [isSectionOpen, setIsSectionOpen] = useState(false); 
+  const [isSectionOpen, setIsSectionOpen] = useState(false);
 
   const inferredIsEn = useMemo(() => {
     return (
@@ -148,15 +151,28 @@ export default function SectionMembers({
   const bgImage = t?.decor?.bgImage ?? "/sec1_bg.webp";
 
   const members: Member[] = useMemo(() => {
+    const fromApi = apiData?.members?.filter(Boolean).map((m: any) => ({
+      id: m.id ?? Math.random(),
+      name: m.name ?? "",
+      code: m.code ?? "",
+      level: m.level ?? m.category ?? "",
+      kanji: m.kanji ?? undefined,
+      bio: m.bio ?? undefined,
+      tags: Array.isArray(m.tags) ? m.tags : undefined,
+      avatar: m.avatar ?? m.image ?? undefined,
+    }));
+    if (fromApi?.length) return fromApi as Member[];
     const fromJson = t?.members?.filter(Boolean);
     if (fromJson?.length) return fromJson;
     return inferredIsEn ? FALLBACK_MEMBERS_EN : FALLBACK_MEMBERS_FA;
-  }, [t?.members, inferredIsEn]);
+  }, [apiData?.members, t?.members, inferredIsEn]);
 
   const levelOptions = useMemo(() => {
+    const fromApi = apiData?.memberCategories?.filter(Boolean).map((c: any) => c.name ?? c.title ?? String(c));
+    if (fromApi?.length) return [allLabel, ...fromApi];
     const unique = Array.from(new Set(members.map((m) => m.level).filter(Boolean)));
     return [allLabel, ...unique];
-  }, [members, allLabel]);
+  }, [apiData?.memberCategories, members, allLabel]);
 
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState(levelOptions[0] ?? allLabel);
@@ -522,7 +538,7 @@ function MemberCard({ member }: { member: Member }) {
           <div className="absolute inset-[18px] rounded-full overflow-hidden bg-white border border-black/10 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.9)]">
             <img
               src={
-                member.avatar ??
+                member.avatar ||
                 `https://picsum.photos/seed/kenjutsu_${member.id}/500/500.jpg`
               }
               alt={member.name}

@@ -91,6 +91,8 @@ async function fetchApiData(locale: Locale): Promise<DojoApiData> {
       quote: rawHome.hero.short_description ?? null,
       image: rawHome.hero.image ?? null,
       kanji: rawHome.hero.japanese_title ?? null,
+      button_text: rawHome.hero.button_text ?? null,
+      button_url: rawHome.hero.button_url ?? null,
     } : null,
     slides: Array.isArray(rawHome.samurai_path_articles)
       ? rawHome.samurai_path_articles.map((a: any, i: number) => ({
@@ -192,22 +194,40 @@ async function fetchApiData(locale: Locale): Promise<DojoApiData> {
   // ── /products → Product[] ─────────────────────────────────────────────────
   // Actual shape: { items: [{ id, category:{id,title,slug}, title, slug, short_description, main_image, price, contact_text }], pagination }
   const rawProductItems = extractItems<any>(rawProducts);
-  const products = rawProductItems?.map((p: any) => ({
-    id: p.id ?? 0,
-    name: p.title ?? "",
-    title: p.title ?? null,
-    slug: p.slug ?? null,
-    description: p.short_description ?? null,
-    image: p.main_image ?? null,
-    thumbnail: p.main_image ?? null,
-    // Use category title for filter matching (Store.tsx compares category string to category filter tab)
-    category: p.category?.title ?? p.category?.slug ?? null,
-    price: p.price != null ? parseFloat(String(p.price)) : null,
-    inStock: true,
-    in_stock: true,
-    badge: null,
-    kanji: null,
-  })) ?? null;
+  const products = rawProductItems?.map((p: any) => {
+    const galleryImages: Array<{ id: number; image: string; title: string | null; alt: string | null }> =
+      Array.isArray(p.images)
+        ? p.images
+            .filter((img: any) => img?.image)
+            .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+            .map((img: any) => ({
+              id: img.id ?? 0,
+              image: img.image ?? "",
+              title: img.title ?? null,
+              alt: img.alt ?? null,
+            }))
+        : [];
+    const primaryImage = p.main_image ?? (galleryImages[0]?.image ?? null);
+    return {
+      id: p.id ?? 0,
+      name: p.title ?? "",
+      title: p.title ?? null,
+      slug: p.slug ?? null,
+      description: p.short_description ?? null,
+      image: primaryImage,
+      thumbnail: primaryImage,
+      // Use category title for filter matching (Store.tsx compares category string to category filter tab)
+      category: p.category?.title ?? p.category?.slug ?? null,
+      price: p.price != null ? parseFloat(String(p.price)) : null,
+      inStock: true,
+      in_stock: true,
+      badge: null,
+      kanji: null,
+      contact_text: p.contact_text ?? null,
+      contact_url: p.contact_url ?? null,
+      images: galleryImages,
+    };
+  }) ?? null;
 
   // ── /product-categories → ProductCategory[] ──────────────────────────────
   // Actual shape: { items: [{ id, title, slug, sort_order }] }

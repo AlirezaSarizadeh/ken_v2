@@ -2,9 +2,11 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { GlobalMessages } from "@/types/messages";
 import type { DojoApiData } from "@/types/api";
 import SafeImg from "@/app/components/ui/SafeImg";
+import { apiFetch } from "@/lib/api";
 
 const FALLBACK_CATEGORIES_FA = ["همه", "سلاح", "سلاح تمرینی", "زره", "هنر"];
 
@@ -101,10 +103,14 @@ type ShopItem = {
   price: number;
   inStock: boolean;
   badge?: string;
+  slug?: string | null;
+  contact_text?: string | null;
+  contact_url?: string | null;
+  images?: Array<{ id: number; image: string; title: string | null; alt: string | null }>;
 };
 
-function formatPriceIRR(n: number) {
-  return n.toLocaleString("fa-IR");
+function formatPrice(n: number, locale: string) {
+  return n.toLocaleString(locale === "en" ? "en-US" : "fa-IR");
 }
 
 export default function SectionShop({
@@ -118,6 +124,8 @@ export default function SectionShop({
 }) {
   const [isSectionOpen, setIsSectionOpen] = useState(false);
   const t = (messages?.SectionShop ?? {}) as any;
+  const pathname = usePathname();
+  const locale = pathname?.split("/")[1] === "en" ? "en" : "fa";
 
   const allKey: string = t?.allKey ?? "همه";
 
@@ -143,6 +151,10 @@ export default function SectionShop({
       price: p.price ?? 0,
       inStock: p.inStock ?? p.in_stock ?? true,
       badge: p.badge ?? undefined,
+      slug: p.slug ?? null,
+      contact_text: p.contact_text ?? null,
+      contact_url: p.contact_url ?? null,
+      images: Array.isArray(p.images) ? p.images : [],
     }));
     if (fromApi?.length) return fromApi as ShopItem[];
     const fromJson = t?.items?.filter(Boolean);
@@ -154,7 +166,7 @@ export default function SectionShop({
 
   const ui = {
     searchPlaceholder: t?.ui?.searchPlaceholder ?? "جستجو ابزار…",
-    addToCart: t?.ui?.addToCart ?? "افزودن به سبد",
+    contactBtn: t?.ui?.contactBtn ?? "تماس",
     outOfStock: t?.ui?.outOfStock ?? "ناموجود",
     details: t?.ui?.details ?? "جزئیات",
     close: t?.ui?.close ?? "بستن",
@@ -165,11 +177,42 @@ export default function SectionShop({
   const [query, setQuery] = useState("");
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const [modalId, setModalId] = useState<number | null>(null);
-  const [cart, setCart] = useState<Record<number, number>>({});
+  const [galleryIdx, setGalleryIdx] = useState(0);
+  const [modalImages, setModalImages] = useState<Array<{ id: number; image: string; title: string | null; alt: string | null }> | null>(null);
 
   useEffect(() => {
     setActiveCategory((prev) => (CATEGORIES.includes(prev) ? prev : allKey));
   }, [allKey, CATEGORIES]);
+
+  useEffect(() => {
+    setGalleryIdx(0);
+    setModalImages(null);
+
+    if (!modalId) return;
+    const item = ITEMS.find((x) => x.id === modalId);
+    if (!item?.slug) return;
+
+    apiFetch<any>(`/products/${item.slug}`, locale, { cache: "no-store" }).then((res) => {
+      if (res.error || !res.data) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`[Store] detail fetch failed for slug "${item.slug}":`, res.error);
+        }
+        return;
+      }
+      const raw = res.data;
+      const imgs = Array.isArray(raw.images) ? raw.images : [];
+      const normalized = imgs
+        .filter((img: any) => img?.image)
+        .sort((a: any, b: any) => ((a.sort_order ?? 0) - (b.sort_order ?? 0)))
+        .map((img: any) => ({
+          id: img.id ?? 0,
+          image: img.image ?? "",
+          title: img.title ?? null,
+          alt: img.alt ?? null,
+        }));
+      if (normalized.length) setModalImages(normalized);
+    });
+  }, [modalId, locale, ITEMS]);
 
   const safeActiveCategory = CATEGORIES.includes(activeCategory)
     ? activeCategory
@@ -194,16 +237,6 @@ export default function SectionShop({
     : baseFiltered;
 
   const activeItem = modalId ? ITEMS.find((x) => x.id === modalId) : null;
-
-  function addToCart(item: ShopItem) {
-    if (!item.inStock) return;
-    setCart((prev) => ({ ...prev, [item.id]: (prev[item.id] ?? 0) + 1 }));
-  }
-
-  const cartCount = useMemo(
-    () => Object.values(cart).reduce((a, b) => a + b, 0),
-    [cart],
-  );
 
   return (
     <div
@@ -482,22 +515,59 @@ export default function SectionShop({
                   "
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2">
-                    <div className="relative h-64 md:h-full">
-                      <SafeImg
-                        src={activeItem.image}
-                        alt={activeItem.name}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src = `https://picsum.photos/seed/gearModal${activeItem.id}/1000/800.jpg`;
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
-                      <div className="absolute top-4 start-4 px-3 py-1 rounded-full text-[11px] border border-red-700/35 bg-black/40 text-red-100/85">
-                        {activeItem.category}
-                      </div>
-                      <div className="absolute bottom-4 start-4 text-6xl text-white/10 font-black select-none">
-                        {activeItem.kanji}
-                      </div>
+                    {/* Product image / gallery */}
+                    <div className="relative h-64 md:h-full min-h-[16rem]">
+                      {(() => {
+                        const imgs = (modalImages ?? activeItem.images)?.length
+                          ? (modalImages ?? activeItem.images)!
+                          : activeItem.image
+                            ? [{ id: 0, image: activeItem.image, title: null, alt: activeItem.name }]
+                            : [];
+                        const cur = imgs[galleryIdx] ?? null;
+                        return (
+                          <>
+                            <SafeImg
+                              src={cur?.image ?? null}
+                              alt={cur?.alt ?? activeItem.name}
+                              className="absolute inset-0 w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
+                            <div className="absolute top-4 start-4 px-3 py-1 rounded-full text-[11px] border border-red-700/35 bg-black/40 text-red-100/85">
+                              {activeItem.category}
+                            </div>
+                            <div className="absolute bottom-4 start-4 text-6xl text-white/10 font-black select-none">
+                              {activeItem.kanji}
+                            </div>
+                            {imgs.length > 1 && (
+                              <div className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-2" dir="ltr">
+                                <button
+                                  onClick={() => setGalleryIdx((i) => Math.max(0, i - 1))}
+                                  disabled={galleryIdx === 0}
+                                  className="w-7 h-7 flex items-center justify-center rounded-full bg-black/60 border border-white/20 text-white disabled:opacity-30 hover:bg-black/80 transition"
+                                  aria-label="Previous image"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                                  </svg>
+                                </button>
+                                <span className="text-[11px] text-white/60 tabular-nums">
+                                  {galleryIdx + 1}/{imgs.length}
+                                </span>
+                                <button
+                                  onClick={() => setGalleryIdx((i) => Math.min(imgs.length - 1, i + 1))}
+                                  disabled={galleryIdx === imgs.length - 1}
+                                  className="w-7 h-7 flex items-center justify-center rounded-full bg-black/60 border border-white/20 text-white disabled:opacity-30 hover:bg-black/80 transition"
+                                  aria-label="Next image"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                  </svg>
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
 
                     <div className="p-6 md:p-7">
@@ -541,32 +611,29 @@ export default function SectionShop({
                         <div className="text-red-50/90">
                           <div className="text-xs text-red-200/60">Price</div>
                           <div className="mt-1 text-lg font-black">
-                            {formatPriceIRR(activeItem.price)}{" "}
+                            {formatPrice(activeItem.price, locale)}{" "}
                             <span className="text-xs text-red-200/60">{ui.currency}</span>
                           </div>
                         </div>
-                        <button
-                          onClick={() => addToCart(activeItem)}
-                          disabled={!activeItem.inStock}
-                          className={`
-                            rounded-2xl px-4 py-3 text-sm border transition
-                            ${activeItem.inStock
-                              ? "border-red-700/40 bg-red-900/35 hover:bg-red-900/55 text-white"
-                              : "border-white/10 bg-white/5 text-gray-500 cursor-not-allowed"
-                            }
-                          `}
-                          style={{ fontFamily: "'Vazirmatn', sans-serif" }}
-                        >
-                          {activeItem.inStock ? ui.addToCart : ui.outOfStock}
-                        </button>
+                        {activeItem.contact_url ? (
+                          <a
+                            href={activeItem.contact_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-2xl px-4 py-3 text-sm border border-red-700/40 bg-red-900/35 hover:bg-red-900/55 text-white transition text-center"
+                            style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                          >
+                            {activeItem.contact_text ?? ui.contactBtn}
+                          </a>
+                        ) : activeItem.contact_text ? (
+                          <span
+                            className="rounded-2xl px-4 py-3 text-sm border border-red-700/40 bg-red-900/20 text-red-200"
+                            style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                          >
+                            {activeItem.contact_text}
+                          </span>
+                        ) : null}
                       </div>
-
-                      {cart[activeItem.id] ? (
-                        <div className="mt-4 text-xs text-red-200/70">
-                          در سبد شما:{" "}
-                          <span className="font-mono text-red-100">{cart[activeItem.id]}</span>
-                        </div>
-                      ) : null}
                     </div>
                   </div>
                   <div className="absolute top-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-700 to-transparent opacity-60" />
@@ -654,16 +721,6 @@ export default function SectionShop({
               style={{ opacity: isSectionOpen ? 0.4 : 1 }}
             />
 
-            {/* Cart badge adjusted for new image size */}
-            {cartCount > 0 && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute top-2 right-6 w-8 h-8 rounded-full bg-red-600 border-2 border-[#0a0a0a] flex items-center justify-center text-sm font-black text-white shadow-[0_5px_15px_rgba(220,38,38,0.5)] z-20"
-              >
-                {cartCount}
-              </motion.div>
-            )}
           </motion.div>
         </motion.button>
       </div>

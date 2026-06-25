@@ -17,6 +17,7 @@ import Section8 from "../sections/Katuri";
 import CutVideo from "../ui/sections/CutVideo";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
 import SideNavigation from "../ui/navigation/SideNavigation";
+import Link from "next/link";
 import AuthModal from "../ui/AuthModal";
 import { useAuth } from "@/app/context/AuthContext";
 
@@ -434,7 +435,7 @@ export default function DojoPageClient({
                     </p>
                   </button>
 
-                  {/* Menu Items */}
+                  {/* Section Items */}
                   {SECTIONS.map((section, idx) => {
                     const isActive = idx === currentIndex;
 
@@ -494,6 +495,27 @@ export default function DojoPageClient({
                       </motion.button>
                     );
                   })}
+
+                  {/* Blog — separate internal page link */}
+                  <div className="mt-3 pt-3 border-t border-sky-900/20">
+                    <Link
+                      href={`/${locale}/blog`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full flex items-center gap-4 p-4 rounded-lg border border-sky-900/30 bg-sky-950/10 hover:bg-sky-900/20 active:scale-95 transition-all duration-200"
+                    >
+                      <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-sky-900/20 border border-sky-800/30">
+                        <span
+                          className="text-lg font-bold text-sky-600/70"
+                          style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
+                        >
+                          記
+                        </span>
+                      </div>
+                      <p className="text-sm font-bold text-sky-300/80" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                        {locale === "fa" ? "وبلاگ" : "Blog"}
+                      </p>
+                    </Link>
+                  </div>
                 </div>
               </motion.div>
             </>
@@ -572,6 +594,7 @@ export default function DojoPageClient({
         currentIndex={currentIndex}
         onSectionChange={startTransition}
         isMobile={isMobile}
+        locale={locale}
       />
 
       {/* Auth Modal */}

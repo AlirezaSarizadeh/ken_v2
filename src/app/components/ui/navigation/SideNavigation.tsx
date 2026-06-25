@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface SideNavigationProps {
   sections: Array<{
@@ -12,6 +13,7 @@ interface SideNavigationProps {
   currentIndex: number;
   onSectionChange: (index: number) => void;
   isMobile: boolean;
+  locale: string;
 }
 
 const SECTION_ICONS = [
@@ -99,11 +101,19 @@ const SECTION_ICONS = [
   },
 ];
 
+const BLOG_PAGE = {
+  href: (locale: string) => `/${locale}/blog`,
+  kanji: '記',
+  label: (locale: string) => locale === 'en' ? 'Blog' : 'وبلاگ',
+  color: 'from-sky-600 to-blue-700',
+};
+
 export default function SideNavigation({
   sections,
   currentIndex,
   onSectionChange,
   isMobile,
+  locale,
 }: SideNavigationProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -204,6 +214,51 @@ export default function SideNavigation({
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.3 }}
         />
+
+        {/* Blog page link — separate from section navigation */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: sections.length * 0.05 + 0.05 }}
+          onMouseEnter={() => setHoveredIndex(sections.length)}
+          onMouseLeave={() => setHoveredIndex(null)}
+          className="relative"
+        >
+          <Link href={BLOG_PAGE.href(locale)}>
+            <motion.div
+              className={`group relative flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 cursor-pointer`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.div
+                className={`absolute inset-0 rounded-xl bg-gradient-to-br ${BLOG_PAGE.color} opacity-0 group-hover:opacity-20 blur transition-all duration-300`}
+              />
+              <div className="absolute inset-0 rounded-xl border border-sky-900/40 group-hover:border-sky-500/50 transition-all duration-300" />
+              <span
+                className="relative text-base font-bold text-sky-700/70 group-hover:text-sky-400 transition-colors duration-300"
+                style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
+              >
+                {BLOG_PAGE.kanji}
+              </span>
+            </motion.div>
+          </Link>
+
+          <AnimatePresence>
+            {hoveredIndex === sections.length && (
+              <motion.div
+                className="absolute left-16 top-1/2 -translate-y-1/2 px-3 py-2 bg-black/95 border border-sky-900/50 rounded-lg text-sm font-medium text-white whitespace-nowrap z-50 pointer-events-none"
+                initial={{ opacity: 0, x: -10, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -10, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+              >
+                {BLOG_PAGE.label(locale)}
+                <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-l-8 border-l-black/95 border-t-4 border-t-transparent border-b-4 border-b-transparent" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
         {/* Scroll indicator */}
         <motion.div

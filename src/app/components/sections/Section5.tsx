@@ -127,6 +127,7 @@ export default function Section5({
 
   const [activeCategory, setActiveCategory] = useState<string>(allKey);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+  const [lightboxId, setLightboxId] = useState<number | null>(null);
 
   useEffect(() => {
     setActiveCategory((prev) => (CATEGORIES.includes(prev) ? prev : allKey));
@@ -138,6 +139,9 @@ export default function Section5({
     safeActiveCategory === allKey
       ? GALLERY_ITEMS
       : GALLERY_ITEMS.filter((item) => item.category === safeActiveCategory);
+
+  const lightboxItem = lightboxId !== null ? filteredItems.find((i) => i.id === lightboxId) ?? null : null;
+  const lightboxIdx = lightboxId !== null ? filteredItems.findIndex((i) => i.id === lightboxId) : -1;
 
   return (
     <div
@@ -245,6 +249,7 @@ export default function Section5({
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.3 }}
                     className="group relative h-72 rounded-xl overflow-hidden cursor-pointer border border-white/5 bg-[#0c0c0c]"
+                    onClick={() => setLightboxId(item.id)}
                     onHoverStart={() => setHoveredItem(item.id)}
                     onHoverEnd={() => setHoveredItem(null)}
                   >
@@ -339,6 +344,104 @@ export default function Section5({
           <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900 to-transparent z-30 opacity-50" />
         </motion.div>
       </motion.div>
+
+      {/* Gallery Lightbox */}
+      <AnimatePresence>
+        {lightboxItem && (
+          <motion.div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxId(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full max-w-3xl bg-[#0a0a0a] border border-red-900/30 rounded-xl overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,1)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="absolute top-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-700 to-transparent opacity-60" />
+
+              <div className="relative w-full max-h-[65vh] overflow-hidden bg-black flex items-center justify-center">
+                <SafeImg
+                  src={lightboxItem.image}
+                  alt={lightboxItem.name}
+                  className="w-full max-h-[65vh] object-contain"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent pointer-events-none opacity-50" />
+              </div>
+
+              <div className="p-5 flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <h3
+                    className="text-lg font-bold text-white mb-1 truncate"
+                    style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                  >
+                    {lightboxItem.name}
+                    {lightboxItem.kanji && (
+                      <span
+                        className="ms-2 text-red-900/50 text-2xl align-middle"
+                        style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
+                      >
+                        {lightboxItem.kanji}
+                      </span>
+                    )}
+                  </h3>
+                  {lightboxItem.description && (
+                    <p
+                      className="text-sm text-gray-400 line-clamp-2"
+                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                    >
+                      {lightboxItem.description}
+                    </p>
+                  )}
+                </div>
+
+                {/* dir="ltr" keeps ← always left and → always right in both RTL/LTR */}
+                <div className="flex items-center gap-2 flex-shrink-0" dir="ltr">
+                  {/* Prev — left arrow → previous item */}
+                  <button
+                    onClick={() => lightboxIdx > 0 && setLightboxId(filteredItems[lightboxIdx - 1].id)}
+                    disabled={lightboxIdx <= 0}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition text-white"
+                    aria-label="Previous"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Next — right arrow → next item */}
+                  <button
+                    onClick={() => lightboxIdx < filteredItems.length - 1 && setLightboxId(filteredItems[lightboxIdx + 1].id)}
+                    disabled={lightboxIdx >= filteredItems.length - 1}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition text-white"
+                    aria-label="Next"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  {/* Close */}
+                  <button
+                    onClick={() => setLightboxId(null)}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 hover:bg-red-900/30 transition text-red-200"
+                    aria-label="Close"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Floating Button */}
       <div className="w-full fixed bottom-8 left-0 right-0 flex flex-col items-center z-50 pointer-events-none">

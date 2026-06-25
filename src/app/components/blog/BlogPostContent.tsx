@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 
 // ✅ Fixed import path (from src/app/components/blog/ up to src/types/)
 import type { GlobalMessages } from "../../../types/messages";
+import SafeImg from "@/app/components/ui/SafeImg";
 
 type Locale = "fa" | "en";
 
@@ -184,13 +185,10 @@ export function BlogPostContent({ post, relatedPosts, messages }: BlogPostConten
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.55 }}
         >
-          <img
+          <SafeImg
             src={post.image}
             alt={post.title}
             className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.src = `https://picsum.photos/seed/blog${post.id}/800/400.jpg`;
-            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent opacity-60" />
         </motion.div>
@@ -254,13 +252,10 @@ export function BlogPostContent({ post, relatedPosts, messages }: BlogPostConten
                     whileHover={{ y: -4 }}
                   >
                     <div className="h-40 overflow-hidden relative">
-                      <img
+                      <SafeImg
                         src={rp.image}
                         alt={rp.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 filter brightness-75 group-hover:brightness-100"
-                        onError={(e) => {
-                          e.currentTarget.src = `https://picsum.photos/seed/blog${rp.id}/400/300.jpg`;
-                        }}
                       />
                     </div>
 

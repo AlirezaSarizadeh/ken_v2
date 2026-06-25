@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { GlobalMessages } from "../../../../types/messages";
 
 import { BlogPostList } from "../../../components/blog/BlogPostList";
-import { getBlogPosts } from "../../../lib/blogApi";
+import { getBlogPosts, getArticleCategories } from "../../../lib/blogApi";
 
 type Locale = "fa" | "en";
 
@@ -51,7 +51,11 @@ export default async function BlogPage({
   const locale: Locale = isLocale(raw) ? raw : "fa";
   const isRtl = locale === "fa";
 
-  const [posts, messages] = await Promise.all([getBlogPosts(locale), getMessages(locale)]);
+  const [posts, categories, messages] = await Promise.all([
+    getBlogPosts(locale),
+    getArticleCategories(locale),
+    getMessages(locale),
+  ]);
   const t = (messages.BlogPage ?? {}) as any;
 
   const headingTitle = t?.ui?.headingTitle ?? (isRtl ? "خردنامه خانه" : "Dojo Chronicle");
@@ -119,7 +123,7 @@ export default async function BlogPage({
         <div className="w-full bg-[#0a0a0a]/60 backdrop-blur-xl border border-red-900/20 rounded-3xl shadow-[0_0_50px_-10px_rgba(0,0,0,0.7)] overflow-hidden">
           <div className="h-1 w-full bg-gradient-to-r from-transparent via-red-900 to-transparent opacity-70" />
           <div className="p-6 md:p-10 min-h-[500px]">
-            <BlogPostList posts={posts} messages={messages} />
+            <BlogPostList posts={posts} categories={categories} messages={messages} />
           </div>
           <div className="h-1 w-full bg-gradient-to-r from-transparent via-red-900 to-transparent opacity-70" />
         </div>

@@ -1,29 +1,19 @@
 // components/BlogPostList.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// اگر مسیر types شما این نیست، فقط همین import رو درست کن
 import type { GlobalMessages } from "../../../types/messages";
+import SafeImg from "@/app/components/ui/SafeImg";
 
 type Locale = "fa" | "en";
 
 function getLocaleFromPath(pathname: string): Locale {
   const seg = pathname.split("/")[1];
   return seg === "en" ? "en" : "fa";
-}
-
-function stripLocale(pathname: string) {
-  const parts = pathname.split("/");
-  const maybeLocale = parts[1];
-  if (maybeLocale === "fa" || maybeLocale === "en") {
-    const rest = "/" + parts.slice(2).join("/");
-    return rest === "/" ? "/" : rest;
-  }
-  return pathname;
 }
 
 function withLocale(locale: Locale, path: string) {
@@ -39,105 +29,108 @@ interface BlogPost {
   author: string;
   publishDate: string;
   category: string;
+  categorySlug: string;
   image: string;
   tags: string[];
   readTime: number;
 }
 
-type CategoryKey = "all" | "history" | "philosophy" | "martialArts";
+interface ApiCategory {
+  id?: number;
+  title?: string | null;
+  slug?: string | null;
+  name?: string | null;
+}
 
 interface BlogPostListProps {
   posts: BlogPost[];
-  messages?: GlobalMessages; // ✅ optional
+  categories?: ApiCategory[];
+  messages?: GlobalMessages;
 }
 
-export function BlogPostList({ posts, messages }: BlogPostListProps) {
+export function BlogPostList({ posts, categories, messages }: BlogPostListProps) {
   const pathname = usePathname();
   const locale = getLocaleFromPath(pathname);
   const isRtl = locale === "fa";
 
   const t = (messages as any)?.BlogPostList ?? {};
 
-  // ✅ UI labels (fallback safe)
   const ui = {
-    loading: t?.ui?.loading ?? (isRtl ? "در حال بارگذاری..." : "Loading..."),
     readTimeSuffix: t?.ui?.readTimeSuffix ?? (isRtl ? "دقیقه مطالعه" : "min read"),
+    allLabel: isRtl ? "همه" : "All",
+    noResults: isRtl ? "مطلبی یافت نشد." : "No posts found.",
   };
 
-  // ✅ دسته‌ها با key ثابت (برای فیلتر) + label ترجمه‌شونده
-  const categories: Array<{ key: CategoryKey; label: string; matches: string[] }> = useMemo(() => {
-    // اگر خواستی از JSON هم قابل تغییر باشد:
-    const fromJson = t?.categories as Array<{
-      key: CategoryKey;
-      label: string;
-      matches?: string[];
-    }> | undefined;
+  // Build tabs: "all" + API categories; fall back to titles derived from posts
+  const tabs = useMemo<Array<{ slug: string; label: string }>>(() => {
+    const allTab = { slug: "all", label: ui.allLabel };
 
-    const fallback = [
-      { key: "all" as const, label: isRtl ? "همه" : "All", matches: ["همه", "All"] },
-      { key: "history" as const, label: isRtl ? "تاریخ" : "History", matches: ["تاریخ", "History"] },
-      { key: "philosophy" as const, label: isRtl ? "فلسفه" : "Philosophy", matches: ["فلسفه", "Philosophy"] },
-      { key: "martialArts" as const, label: isRtl ? "هنرهای رزمی" : "Martial Arts", matches: ["هنرهای رزمی", "Martial Arts"] },
-    ];
+    if (categories?.length) {
+      return [
+        allTab,
+        ...categories
+          .filter((c) => c.slug || c.title)
+          .map((c) => ({ slug: c.slug ?? c.title ?? "", label: c.title ?? c.slug ?? "" })),
+      ];
+    }
 
-    if (!fromJson?.length) return fallback;
-
-    // اگر از JSON بیاد ولی matches نداشت، خودمون امنش می‌کنیم
-    return fromJson.map((c) => ({
-      key: c.key,
-      label: c.label,
-      matches: c.matches?.length ? c.matches : [c.label],
-    }));
-  }, [t?.categories, isRtl]);
-
-  const [activeCategory, setActiveCategory] = useState<CategoryKey>("all");
-  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>(posts);
-  const [loading, setLoading] = useState(false);
-
-  // وقتی locale عوض شد، فیلتر ریست بشه تا گیر نکنه
-  useEffect(() => {
-    setActiveCategory("all");
-  }, [locale]);
-
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      if (activeCategory === "all") {
-        setFilteredPosts(posts);
-      } else {
-        const cat = categories.find((c) => c.key === activeCategory);
-        const matches = cat?.matches ?? [];
-        setFilteredPosts(posts.filter((p) => matches.includes(p.category)));
+    // Fallback: derive unique category titles from posts
+    const seen = new Set<string>();
+    const derived: Array<{ slug: string; label: string }> = [];
+    for (const p of posts) {
+      const key = p.categorySlug || p.category;
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        derived.push({ slug: key, label: p.category || key });
       }
-      setLoading(false);
-    }, 250);
+    }
+    return derived.length ? [allTab, ...derived] : [allTab];
+  }, [categories, posts, ui.allLabel]);
 
-    return () => clearTimeout(timer);
-  }, [activeCategory, posts, categories]);
+  const [activeSlug, setActiveSlug] = useState("all");
+
+  // Synchronous filter — no fake loading delay
+  const filteredPosts = useMemo(() => {
+    if (activeSlug === "all") return posts;
+    return posts.filter(
+      (p) =>
+        p.categorySlug === activeSlug ||
+        p.category === activeSlug ||
+        (p.categorySlug || "").toLowerCase() === activeSlug.toLowerCase() ||
+        (p.category || "").toLowerCase() === activeSlug.toLowerCase()
+    );
+  }, [activeSlug, posts]);
 
   return (
     <>
-      {/* Filter */}
-      <div className="px-6 pb-2">
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {categories.map((cat) => {
-            const active = activeCategory === cat.key;
+      {/* Filter tabs — horizontal scroll, no wrap */}
+      <div className="px-1 pb-2">
+        <div
+          className="flex flex-nowrap overflow-x-auto gap-2 mb-6 pb-1 scrollbar-none justify-start md:justify-center"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {tabs.map((tab) => {
+            const active = activeSlug === tab.slug;
             return (
               <motion.button
-                key={cat.key}
+                key={tab.slug}
                 type="button"
                 className={[
-                  "px-4 py-2 rounded-lg text-sm transition-all duration-300",
-                  active
-                    ? "bg-red-900/50 text-white border border-red-700/30"
-                    : "bg-black/30 text-gray-300 hover:bg-black/45 border border-white/5",
+                  "relative flex-shrink-0 px-4 py-2 rounded-full text-sm transition-colors duration-300",
+                  active ? "text-white" : "text-gray-500 hover:text-gray-300",
                 ].join(" ")}
-                onClick={() => setActiveCategory(cat.key)}
-                whileHover={{ scale: 1.03 }}
+                onClick={() => setActiveSlug(tab.slug)}
                 whileTap={{ scale: 0.97 }}
                 style={{ fontFamily: "'Vazirmatn', sans-serif" }}
               >
-                {cat.label}
+                {active && (
+                  <motion.div
+                    layoutId="activeBlogFilter"
+                    className="absolute inset-0 bg-red-900/40 border border-red-700/50 rounded-full"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                  />
+                )}
+                <span className="relative z-10">{tab.label}</span>
               </motion.button>
             );
           })}
@@ -146,17 +139,14 @@ export function BlogPostList({ posts, messages }: BlogPostListProps) {
 
       {/* Grid */}
       <div className="flex-1 p-6 overflow-auto">
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="text-red-500 text-xl" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-              {ui.loading}
-            </div>
+        {filteredPosts.length === 0 ? (
+          <div className="flex justify-center items-center h-64 text-gray-500" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+            {ui.noResults}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredPosts.map((post, index) => {
               const href = withLocale(locale, `/blog/${post.slug}`);
-
               return (
                 <motion.div
                   key={post.id}
@@ -172,13 +162,10 @@ export function BlogPostList({ posts, messages }: BlogPostListProps) {
                 >
                   <Link href={href} className="block h-full">
                     <div className="h-48 overflow-hidden">
-                      <img
+                      <SafeImg
                         src={post.image}
                         alt={post.title}
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                        onError={(e) => {
-                          e.currentTarget.src = `https://picsum.photos/seed/blog${post.id}/400/300.jpg`;
-                        }}
                       />
                     </div>
 
@@ -212,7 +199,7 @@ export function BlogPostList({ posts, messages }: BlogPostListProps) {
                         </span>
                       </div>
 
-                      <div className={`mt-3 flex flex-wrap gap-1 ${isRtl ? "" : ""}`}>
+                      <div className="mt-3 flex flex-wrap gap-1">
                         {post.tags.map((tag, tagIndex) => (
                           <span
                             key={tagIndex}

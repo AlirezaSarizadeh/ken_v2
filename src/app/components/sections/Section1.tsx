@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCards } from "swiper/modules";
 
@@ -47,8 +49,12 @@ export default function Section1({
     return fromJson?.length ? fromJson : FALLBACK_SLIDES;
   }, [home?.slides, t?.slides]);
 
-  const masterTitlePrefix = home?.master?.titlePrefix ?? t?.master?.titlePrefix ?? "شیهان";
-  const masterName = home?.master?.name ?? t?.master?.name ?? "اشرفی";
+  // API: hero.title → full display name (no static prefix injected)
+  const masterName = home?.master?.name ?? null;
+  // Static fallback preserved below for manual restoration:
+  // const masterTitlePrefix = t?.master?.titlePrefix ?? "شیهان";
+  // const masterStaticName = t?.master?.name ?? "اشرفی";
+
   const masterQuote =
     home?.master?.quote ??
     t?.master?.quote ??
@@ -56,6 +62,16 @@ export default function Section1({
   const masterAlt = t?.master?.imageAlt ?? "Shihan";
   // API hero.image replaces static shihan photo when available
   const masterImage = (home?.master as any)?.image ?? null;
+  const masterButtonText = (home?.master as any)?.button_text ?? null;
+  const masterButtonUrl = (home?.master as any)?.button_url ?? null;
+
+  const pathname = usePathname();
+  const locale = pathname?.split("/")[1] === "en" ? "en" : "fa";
+  const fullButtonUrl = masterButtonUrl
+    ? (masterButtonUrl.startsWith("/en/") || masterButtonUrl.startsWith("/fa/")
+        ? masterButtonUrl
+        : `/${locale}${masterButtonUrl}`)
+    : null;
 
   const headerP1 = t?.header?.titlePart1 ?? "راه";
   const headerP2 = t?.header?.titlePart2 ?? "سامورایی";
@@ -140,7 +156,11 @@ export default function Section1({
               className="relative z-10 text-2xl md:text-3xl font-bold text-red-100/90 mb-8 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
               style={{ fontFamily: "'Vazirmatn', sans-serif" }}
             >
-              <span className="text-red-600">{masterTitlePrefix}</span> {masterName}
+              {/* API: hero.title is the full title — no static prefix mixed in */}
+              {masterName ?? (t?.master?.name ?? "اشرفی")}
+              {/* Static fallback (restore manually if needed):
+              <span className="text-red-600">{t?.master?.titlePrefix ?? "شیهان"}</span>{" "}
+              {t?.master?.name ?? "اشرفی"} */}
             </motion.h2>
 
             <div className="relative z-10 w-48 h-48 md:w-60 md:h-60 rounded-full group">
@@ -186,6 +206,15 @@ export default function Section1({
                 {masterQuote}
                 <span className="absolute bottom-0 right-0 text-2xl text-red-800 opacity-50 translate-y-2">"</span>
               </p>
+              {fullButtonUrl && masterButtonText && (
+                <Link
+                  href={fullButtonUrl}
+                  className="mt-5 inline-block px-5 py-2 rounded-full border border-red-700/50 bg-red-900/30 hover:bg-red-800/50 text-red-100 text-sm font-bold transition-all duration-300"
+                  style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                >
+                  {masterButtonText}
+                </Link>
+              )}
             </motion.div>
           </div>
 
@@ -199,7 +228,7 @@ export default function Section1({
                 <span className="text-red-700">{headerP1}</span> {headerP2}
               </h2>
               <span
-                className="text-6xl text-red-950/50 font-black select-none absolute left-0 -bottom-3 -z-10"
+                className="text-6xl text-red-950/50 font-black select-none absolute start-0 -bottom-3 -z-10"
                 style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
               >
                 {headerKanji}

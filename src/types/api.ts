@@ -158,7 +158,7 @@ export interface Product {
   material?: string | null;
   image?: string | null;
   thumbnail?: string | null;
-  images?: string[] | null;
+  images?: Array<{ id?: number; image?: string; title?: string | null; alt?: string | null; sort_order?: number | null }> | null;
   gallery?: string[] | null;
   category?: string | null;
   category_slug?: string | null;
@@ -167,6 +167,8 @@ export interface Product {
   in_stock?: boolean | null;
   badge?: string | null;
   slug?: string | null;
+  contact_text?: string | null;
+  contact_url?: string | null;
   tags?: ProductTag[] | null;
 }
 

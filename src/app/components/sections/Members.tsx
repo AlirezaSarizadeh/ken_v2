@@ -384,7 +384,7 @@ export default function SectionMembers({
               "
             >
               <div className="max-h-[62vh] md:max-h-[58vh] overflow-y-auto overflow-x-hidden no-scrollbar p-1">
-                <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="grid gap-3 grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   {filtered.map((m) => (
                     <MemberCard key={m.id} member={m} />
                   ))}
@@ -502,24 +502,24 @@ function MemberCard({ member }: { member: Member }) {
         shadow-[0_18px_60px_-40px_rgba(0,0,0,0.9)]
         hover:-translate-y-0.5 hover:shadow-[0_22px_70px_-45px_rgba(0,0,0,1)]
         transition-all duration-300
+        flex flex-col
+        pb-12
       "
-      style={{ aspectRatio: "2 / 3" }}
     >
       {/* paper texture */}
       <div className="absolute inset-0 opacity-[0.16] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-1.png')] mix-blend-multiply" />
 
-      {/* 🉐 subtle Japanese crest (Mon) */}
+      {/* subtle Japanese crest (Mon) */}
       <div className="absolute top-4 left-4 opacity-[0.08] pointer-events-none">
-        <Image src={'/mon.png'} alt="mon" width={'52'} height={'52'} />
+        <Image src={'/mon.png'} alt="mon" width={52} height={52} />
       </div>
 
       {/* tiny top seal */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-5 bg-red-800 shadow-sm" />
 
       {/* Avatar zone */}
-      <div className="relative z-10 px-4 pt-6">
-        <div className="relative mx-auto w-[120px] h-[120px]">
-          
+      <div className="relative z-10 px-3 pt-6 flex-shrink-0">
+        <div className="relative mx-auto w-[90px] h-[90px] sm:w-[110px] sm:h-[110px]">
           {/* Enso brush ring */}
           <div
             className="absolute inset-0 rounded-full opacity-90"
@@ -531,23 +531,16 @@ function MemberCard({ member }: { member: Member }) {
               filter: "contrast(1.15)",
             }}
           />
-
-          <div className="absolute inset-2 rounded-full bg-black/5 blur-[1px]" />
-
+          <div className="absolute inset-[6px] rounded-full bg-black/5 blur-[1px]" />
           {/* avatar */}
-          <div className="absolute inset-[18px] rounded-full overflow-hidden bg-white border border-black/10 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.9)]">
+          <div className="absolute inset-[14px] sm:inset-[16px] rounded-full overflow-hidden bg-white border border-black/10 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.9)]">
             <img
               src={
                 member.avatar ||
                 `https://picsum.photos/seed/kenjutsu_${member.id}/500/500.jpg`
               }
               alt={member.name}
-              className="
-                w-full h-full object-cover
-                transition-transform duration-500
-                group-hover:scale-[1.04]
-                contrast-[1.08] brightness-[0.98]
-              "
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04] contrast-[1.08] brightness-[0.98]"
               loading="lazy"
               onError={(e) => {
                 e.currentTarget.src = `https://picsum.photos/seed/member_${member.id}/500/500.jpg`;
@@ -559,51 +552,41 @@ function MemberCard({ member }: { member: Member }) {
       </div>
 
       {/* Text area */}
-      <div className="relative z-10 px-4 pt-4 text-center">
+      <div className="relative z-10 px-3 pt-3 text-center flex-1 min-w-0">
         <div
-          className="text-[14px] sm:text-[15px] font-bold text-black/80 line-clamp-1"
+          className="text-[13px] sm:text-[14px] font-bold text-black/80 line-clamp-1 leading-tight"
           style={{ fontFamily: "'Vazirmatn', sans-serif" }}
         >
           {member.name}
         </div>
-
         <div
-          className="mt-1 text-[11px] text-black/55 line-clamp-1"
+          className="mt-1 text-[10px] sm:text-[11px] text-black/55 line-clamp-1"
           style={{ fontFamily: "'Vazirmatn', sans-serif" }}
         >
           {member.level}
         </div>
-
         {member.bio ? (
           <p
-            className="mt-3 text-[11px] leading-5 text-black/50 line-clamp-2"
+            className="mt-2 text-[10px] sm:text-[11px] leading-5 text-black/50 line-clamp-2"
             style={{ fontFamily: "'Vazirmatn', sans-serif" }}
           >
             {member.bio}
           </p>
-        ) : (
-          <div className="mt-3 h-10" />
-        )}
+        ) : null}
       </div>
 
-      {/* 🟥 Japanese Hanko Stamp (inkan style) */}
-      <div className="absolute bottom-16 right-5 opacity-[0.15] group-hover:opacity-[0.2] transition-opacity duration-300">
-        <div className="relative w-12 h-12 bg-red-700 rounded-sm shadow-md flex items-center justify-center">
-          <span
-            className="text-white text-[14px] font-bold tracking-widest"
-            style={{
-              writingMode: "vertical-rl",
-              fontFamily: "serif",
-            }}
-          >
+      {/* Hanko stamp */}
+      <div className="absolute bottom-14 right-3 opacity-[0.12] group-hover:opacity-[0.18] transition-opacity duration-300 hidden sm:block">
+        <div className="relative w-10 h-10 bg-red-700 rounded-sm shadow-md flex items-center justify-center">
+          <span className="text-white text-[12px] font-bold tracking-widest" style={{ writingMode: "vertical-rl", fontFamily: "serif" }}>
             剣道
           </span>
         </div>
       </div>
 
       {/* Bottom code bar */}
-      <div className="absolute left-0 right-0 bottom-0 h-12 border-t border-black/10 bg-red-800 backdrop-blur-sm flex items-center justify-center">
-        <span className="text-white/80 font-mono text-xs tracking-[0.28em]">
+      <div className="absolute left-0 right-0 bottom-0 h-11 border-t border-black/10 bg-red-800 flex items-center justify-center">
+        <span className="text-white/80 font-mono text-[10px] sm:text-xs tracking-[0.2em]">
           {member.code}
         </span>
       </div>

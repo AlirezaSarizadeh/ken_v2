@@ -278,8 +278,8 @@ export default function DojoPageClient({
         )}
       </AnimatePresence>
 
-      {/* Content Layer */}
-      <div className="relative z-0 flex-1 w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
+      {/* Content Layer — z-10 keeps it above position:fixed section backgrounds on iOS Safari */}
+      <div className="relative z-10 flex-1 w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
         <div className="min-h-full w-full flex flex-col items-center justify-center pb-20 md:py-0 px-4 md:px-0">
           <ActiveComponent exiting={exiting} messages={messages} apiData={apiData} />
         </div>

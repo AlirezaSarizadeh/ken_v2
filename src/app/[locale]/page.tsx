@@ -56,7 +56,13 @@ async function fetchApiData(locale: Locale): Promise<DojoApiData> {
   ]);
 
   function getData(res: PromiseSettledResult<{ data: any; error: string | null }>) {
-    return res.status === "fulfilled" ? res.value.data : null;
+    if (res.status === "rejected") return null;
+    return res.value.data;
+  }
+
+  function getError(res: PromiseSettledResult<{ data: any; error: string | null }>): string | null {
+    if (res.status === "rejected") return String(res.reason);
+    return res.value.error;
   }
 
   const rawHome = getData(homeRes);
@@ -72,13 +78,26 @@ async function fetchApiData(locale: Locale): Promise<DojoApiData> {
   const rawKatori = getData(katoriRes);
 
   if (process.env.NODE_ENV === "development") {
-    console.log("[API DEBUG] /home raw:", JSON.stringify(rawHome)?.slice(0, 200));
-    console.log("[API DEBUG] /about raw:", JSON.stringify(rawAbout)?.slice(0, 200));
-    console.log("[API DEBUG] /courses raw:", JSON.stringify(rawCourses)?.slice(0, 200));
-    console.log("[API DEBUG] /gallery raw:", JSON.stringify(rawGallery)?.slice(0, 200));
-    console.log("[API DEBUG] /members raw:", JSON.stringify(rawMembers)?.slice(0, 200));
-    console.log("[API DEBUG] /products raw:", JSON.stringify(rawProducts)?.slice(0, 200));
-    console.log("[API DEBUG] /katori raw:", JSON.stringify(rawKatori)?.slice(0, 200));
+    const endpoints = [
+      ["/home", rawHome, getError(homeRes)],
+      ["/about", rawAbout, getError(aboutRes)],
+      ["/contact", rawContact, getError(contactRes)],
+      ["/courses", rawCourses, getError(coursesRes)],
+      ["/gallery", rawGallery, getError(galleryRes)],
+      ["/gallery-categories", rawGalleryCats, getError(galleryCatsRes)],
+      ["/products", rawProducts, getError(productsRes)],
+      ["/product-categories", rawProductCats, getError(productCatsRes)],
+      ["/members", rawMembers, getError(membersRes)],
+      ["/member-categories", rawMemberCats, getError(memberCatsRes)],
+      ["/katori", rawKatori, getError(katoriRes)],
+    ] as [string, unknown, string | null][];
+    for (const [ep, data, err] of endpoints) {
+      if (err) {
+        console.error(`[API DEBUG] ${ep} ERROR: ${err}`);
+      } else {
+        console.log(`[API DEBUG] ${ep} raw: ${JSON.stringify(data)?.slice(0, 300)}`);
+      }
+    }
   }
 
   // ── /home → HomeData ──────────────────────────────────────────────────────

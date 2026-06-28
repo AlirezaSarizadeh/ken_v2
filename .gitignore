@@ -31,8 +31,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — commit .env for public build vars; keep secrets in .env.local
+.env.local
+.env*.local
 # test internet 3
 
 # vercel

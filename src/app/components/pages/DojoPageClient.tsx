@@ -238,6 +238,8 @@ export default function DojoPageClient({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (cutting || exiting) return;
+      const tag = (document.activeElement as HTMLElement | null)?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || (document.activeElement as HTMLElement | null)?.isContentEditable) return;
 
       switch (e.key) {
         case "ArrowDown":

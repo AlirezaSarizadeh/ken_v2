@@ -239,10 +239,10 @@ export default function JoinClient({
       dir={dir}
     >
       {/* Background */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10" />
         <motion.div
-          className="absolute inset-0 bg-cover bg-center fixed opacity-40"
+          className="absolute inset-0 bg-cover bg-center opacity-40"
           style={{ backgroundImage: "url('/join-bg.jpg')" }}
           animate={{ scale: 1.05 }}
           transition={{ duration: 20, repeat: Infinity, repeatType: "mirror" }}

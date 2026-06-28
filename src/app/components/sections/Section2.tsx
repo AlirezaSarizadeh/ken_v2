@@ -40,11 +40,11 @@ export default function Section2({ exiting, messages, apiData }: { exiting: bool
   return (
     <div className="w-full min-h-full flex flex-col items-center justify-center relative py-12 md:py-0 overflow-hidden" id="about">
       {/* Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10"></div>
 
         <motion.div
-          className="absolute inset-0 bg-cover bg-center fixed"
+          className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/about_bg.webp')", zIndex: 0 }}
           animate={{ scale: exiting ? 1.2 : 1, opacity: exiting ? 0.8 : 1 }}
           initial={{ scale: 1 }}

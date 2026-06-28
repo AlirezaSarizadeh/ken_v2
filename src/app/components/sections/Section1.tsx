@@ -82,11 +82,11 @@ export default function Section1({
   return (
     <div className="w-full min-h-full flex flex-col items-center justify-center relative py-12 md:py-0 overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10"></div>
 
         <motion.div
-          className="absolute inset-0 bg-cover bg-center fixed"
+          className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/sec1_bg.webp')", zIndex: 0 }}
           animate={{ scale: exiting ? 1.1 : 1, opacity: exiting ? 0.5 : 1 }}
           transition={{ duration: 0.8 }}

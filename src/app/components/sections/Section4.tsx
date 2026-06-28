@@ -103,10 +103,10 @@ export default function Section4({
       id="courses"
     >
       {/* Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-10" />
         <motion.div
-          className="absolute inset-0 bg-cover bg-center fixed"
+          className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/course_bg.webp')", zIndex: 0 }}
           animate={{ scale: exiting ? 1.2 : 1, opacity: exiting ? 0.8 : 1 }}
           initial={{ scale: 1 }}

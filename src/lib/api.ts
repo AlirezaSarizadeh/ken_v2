@@ -89,13 +89,27 @@ export async function apiFetch<T>(
       status = res.status;
       rawText = await res.text();
     } else {
-      // Browser: use global fetch (SSL handled by browser)
-      const res = await fetch(fullUrl, {
-        ...fetchOptions,
-        headers,
+      // Browser: route through /api/proxy (same-origin) so mobile Safari/Chrome
+      // are not blocked by the API's SSL cert mismatch (*.irandns.com).
+      // The proxy forwards server-side with rejectUnauthorized:false.
+      const proxyRes = await fetch("/api/proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          path,
+          method,
+          locale,
+          token,
+          body: bodyStr,
+        }),
       });
-      status = res.status;
-      rawText = await res.text();
+      status = proxyRes.status;
+      rawText = await proxyRes.text();
+      if (IS_DEV) {
+        console.log(
+          `[apiFetch/browser] → ${method} ${fullUrl} via /api/proxy → HTTP ${status}`
+        );
+      }
     }
 
     if (IS_DEV) {
@@ -133,9 +147,12 @@ export async function apiFetch<T>(
     return { data, error: null };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Network error";
-    if (IS_DEV) {
-      console.error(`[apiFetch] ✗ fetch threw for ${fullUrl}:`, err);
-    }
+    const isBrowser = typeof window !== "undefined";
+    // Always log network errors — critical for debugging mobile failures
+    console.error(
+      `[apiFetch] ✗ ${method} ${isBrowser ? "(browser→proxy)" : "(server)"} ${fullUrl}`,
+      `— ${msg}`
+    );
     return { data: null, error: msg };
   }
 }

@@ -4,14 +4,14 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  // Firefox and Safari refuse <video> playback when the server's declared
-  // Content-Type doesn't match the file (some proxies serve .m4v as
-  // application/octet-stream). Chrome/Edge sniff the bytes and play anyway,
-  // which is why the transition videos only broke on Firefox/iOS Safari.
+  // Some proxies don't map uncommon extensions to the right Content-Type,
+  // which breaks <video> playback in browsers that enforce it strictly
+  // (Firefox, Safari). .mp4 is mapped correctly almost everywhere, but this
+  // stays as a safe, explicit guarantee.
   async headers() {
     return [
       {
-        source: "/transitions/:path*.m4v",
+        source: "/transitions_mp4/:path*.mp4",
         headers: [
           { key: "Content-Type", value: "video/mp4" },
           { key: "Accept-Ranges", value: "bytes" },

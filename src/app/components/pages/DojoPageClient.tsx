@@ -22,80 +22,80 @@ import CutVideo from "../ui/sections/CutVideo";
 
 const TRANSITION_VIDEOS: Record<string, string> = {
   // Section 1 - Academy
-  "1-2": "/transitions/1_to_2.m4v",
-  "1-3": "/transitions/1_to_3.m4v",
-  "1-4": "/transitions/1_to_4.m4v",
-  "1-5": "/transitions/1_to_5.m4v",
-  "1-6": "/transitions/1_to_6.m4v",
-  "1-7": "/transitions/1_to_7.m4v",
-  "1-8": "/transitions/1_to_8.m4v",
+  "1-2": "/transitions_mp4/1_to_2.mp4",
+  "1-3": "/transitions_mp4/1_to_3.mp4",
+  "1-4": "/transitions_mp4/1_to_4.mp4",
+  "1-5": "/transitions_mp4/1_to_5.mp4",
+  "1-6": "/transitions_mp4/1_to_6.mp4",
+  "1-7": "/transitions_mp4/1_to_7.mp4",
+  "1-8": "/transitions_mp4/1_to_8.mp4",
 
   // Section 2 - About
-  "2-1": "/transitions/2_to_1.m4v",
-  "2-3": "/transitions/2_to_3.m4v",
-  "2-4": "/transitions/2_to_4.m4v",
-  "2-5": "/transitions/2_to_5.m4v",
-  "2-6": "/transitions/2_to_6.m4v",
-  "2-7": "/transitions/2_to_7.m4v",
-  "2-8": "/transitions/2_to_8.m4v",
+  "2-1": "/transitions_mp4/2_to_1.mp4",
+  "2-3": "/transitions_mp4/2_to_3.mp4",
+  "2-4": "/transitions_mp4/2_to_4.mp4",
+  "2-5": "/transitions_mp4/2_to_5.mp4",
+  "2-6": "/transitions_mp4/2_to_6.mp4",
+  "2-7": "/transitions_mp4/2_to_7.mp4",
+  "2-8": "/transitions_mp4/2_to_8.mp4",
 
   // Section 3 - Contact
-  "3-1": "/transitions/3_to_1.m4v",
-  "3-2": "/transitions/3_to_2.m4v",
-  "3-4": "/transitions/3_to_4.m4v",
-  "3-5": "/transitions/3_to_5.m4v",
-  "3-6": "/transitions/3_to_6.m4v",
-  "3-7": "/transitions/3_to_7.m4v",
-  "3-8": "/transitions/3_to_8.m4v",
+  "3-1": "/transitions_mp4/3_to_1.mp4",
+  "3-2": "/transitions_mp4/3_to_2.mp4",
+  "3-4": "/transitions_mp4/3_to_4.mp4",
+  "3-5": "/transitions_mp4/3_to_5.mp4",
+  "3-6": "/transitions_mp4/3_to_6.mp4",
+  "3-7": "/transitions_mp4/3_to_7.mp4",
+  "3-8": "/transitions_mp4/3_to_8.mp4",
 
   // Section 4 - Courses
-  "4-1": "/transitions/4_to_1.m4v",
-  "4-2": "/transitions/4_to_2.m4v",
-  "4-3": "/transitions/4_to_3.m4v",
-  "4-5": "/transitions/4_to_5.m4v",
-  "4-6": "/transitions/4_to_6.m4v",
-  "4-7": "/transitions/4_to_7.m4v",
-  "4-8": "/transitions/4_to_8.m4v",
+  "4-1": "/transitions_mp4/4_to_1.mp4",
+  "4-2": "/transitions_mp4/4_to_2.mp4",
+  "4-3": "/transitions_mp4/4_to_3.mp4",
+  "4-5": "/transitions_mp4/4_to_5.mp4",
+  "4-6": "/transitions_mp4/4_to_6.mp4",
+  "4-7": "/transitions_mp4/4_to_7.mp4",
+  "4-8": "/transitions_mp4/4_to_8.mp4",
 
   // Section 5 - gallery
-  "5-1": "/transitions/5_to_1.m4v",
-  "5-2": "/transitions/5_to_2.m4v",
-  "5-3": "/transitions/5_to_3.m4v",
-  "5-4": "/transitions/5_to_4.m4v",
-  "5-5": "/transitions/5_to_5.m4v",
-  "5-6": "/transitions/5_to_6.m4v",
-  "5-7": "/transitions/5_to_7.m4v",
-  "5-8": "/transitions/5_to_8.m4v",
+  "5-1": "/transitions_mp4/5_to_1.mp4",
+  "5-2": "/transitions_mp4/5_to_2.mp4",
+  "5-3": "/transitions_mp4/5_to_3.mp4",
+  "5-4": "/transitions_mp4/5_to_4.mp4",
+  "5-5": "/transitions_mp4/5_to_5.mp4",
+  "5-6": "/transitions_mp4/5_to_6.mp4",
+  "5-7": "/transitions_mp4/5_to_7.mp4",
+  "5-8": "/transitions_mp4/5_to_8.mp4",
 
   // Section 6 - store
-  "6-1": "/transitions/6_to_1.m4v",
-  "6-2": "/transitions/6_to_2.m4v",
-  "6-3": "/transitions/6_to_3.m4v",
-  "6-4": "/transitions/6_to_4.m4v",
-  "6-5": "/transitions/6_to_5.m4v",
-  "6-6": "/transitions/6_to_6.m4v",
-  "6-7": "/transitions/6_to_7.m4v",
-  "6-8": "/transitions/6_to_8.m4v",
+  "6-1": "/transitions_mp4/6_to_1.mp4",
+  "6-2": "/transitions_mp4/6_to_2.mp4",
+  "6-3": "/transitions_mp4/6_to_3.mp4",
+  "6-4": "/transitions_mp4/6_to_4.mp4",
+  "6-5": "/transitions_mp4/6_to_5.mp4",
+  "6-6": "/transitions_mp4/6_to_6.mp4",
+  "6-7": "/transitions_mp4/6_to_7.mp4",
+  "6-8": "/transitions_mp4/6_to_8.mp4",
 
   // Section 7 - members
-  "7-1": "/transitions/7_to_1.m4v",
-  "7-2": "/transitions/7_to_2.m4v",
-  "7-3": "/transitions/7_to_3.m4v",
-  "7-4": "/transitions/7_to_4.m4v",
-  "7-5": "/transitions/7_to_5.m4v",
-  "7-6": "/transitions/7_to_6.m4v",
-  "7-7": "/transitions/7_to_7.m4v",
-  "7-8": "/transitions/7_to_8.m4v",
+  "7-1": "/transitions_mp4/7_to_1.mp4",
+  "7-2": "/transitions_mp4/7_to_2.mp4",
+  "7-3": "/transitions_mp4/7_to_3.mp4",
+  "7-4": "/transitions_mp4/7_to_4.mp4",
+  "7-5": "/transitions_mp4/7_to_5.mp4",
+  "7-6": "/transitions_mp4/7_to_6.mp4",
+  "7-7": "/transitions_mp4/7_to_7.mp4",
+  "7-8": "/transitions_mp4/7_to_8.mp4",
 
   // Section 8 - katuri
-  "8-1": "/transitions/8_to_1.m4v",
-  "8-2": "/transitions/8_to_2.m4v",
-  "8-3": "/transitions/8_to_3.m4v",
-  "8-4": "/transitions/8_to_4.m4v",
-  "8-5": "/transitions/8_to_5.m4v",
-  "8-6": "/transitions/8_to_6.m4v",
-  "8-7": "/transitions/8_to_7.m4v",
-  "8-8": "/transitions/8_to_8.m4v",
+  "8-1": "/transitions_mp4/8_to_1.mp4",
+  "8-2": "/transitions_mp4/8_to_2.mp4",
+  "8-3": "/transitions_mp4/8_to_3.mp4",
+  "8-4": "/transitions_mp4/8_to_4.mp4",
+  "8-5": "/transitions_mp4/8_to_5.mp4",
+  "8-6": "/transitions_mp4/8_to_6.mp4",
+  "8-7": "/transitions_mp4/8_to_7.mp4",
+  "8-8": "/transitions_mp4/8_to_8.mp4",
 };
 
 export default function DojoPageClient({
@@ -113,7 +113,7 @@ export default function DojoPageClient({
       {
         id: 1,
         component: Section1,
-        video: "/transitions/video3.m4v",
+        video: "/transitions_mp4/video3.mp4",
         title: s?.academy?.title ?? "آکادمی کنجوتسو",
         kanji: s?.academy?.kanji ?? "師範",
         desc: s?.academy?.desc ?? "",
@@ -121,7 +121,7 @@ export default function DojoPageClient({
       {
         id: 2,
         component: Section2,
-        video: "/transitions/video2.m4v",
+        video: "/transitions_mp4/video2.mp4",
         title: s?.about?.title ?? "درباره ما",
         kanji: s?.about?.kanji ?? "私たち",
         desc: s?.about?.desc ?? "",
@@ -129,7 +129,7 @@ export default function DojoPageClient({
       {
         id: 3,
         component: Section3,
-        video: "/transitions/video3.m4v",
+        video: "/transitions_mp4/video3.mp4",
         title: s?.contact?.title ?? "تماس با ما",
         kanji: s?.contact?.kanji ?? "連絡",
         desc: s?.contact?.desc ?? "",
@@ -137,7 +137,7 @@ export default function DojoPageClient({
       {
         id: 4,
         component: Section4,
-        video: "/transitions/video3.m4v",
+        video: "/transitions_mp4/video3.mp4",
         title: s?.courses?.title ?? "دوره‌ها",
         kanji: s?.courses?.kanji ?? "級",
         desc: s?.courses?.desc ?? "",
@@ -145,7 +145,7 @@ export default function DojoPageClient({
       {
         id: 5,
         component: Section5,
-        video: "/transitions/video2.m4v",
+        video: "/transitions_mp4/video2.mp4",
         title: s?.gallery?.title ?? "گالری",
         kanji: s?.gallery?.kanji ?? "美術館",
         desc: s?.gallery?.desc ?? "",
@@ -153,7 +153,7 @@ export default function DojoPageClient({
       {
         id: 6,
         component: Section6,
-        video: "/transitions/video2.m4v",
+        video: "/transitions_mp4/video2.mp4",
         title: s?.store?.title ?? "فروشگاه",
         kanji: s?.store?.kanji ?? "美術館",
         desc: s?.store?.desc ?? "",
@@ -161,7 +161,7 @@ export default function DojoPageClient({
       {
         id: 7,
         component: Section7,
-        video: "/transitions/video2.m4v",
+        video: "/transitions_mp4/video2.mp4",
         title: s?.members?.title ?? "اعضا",
         kanji: s?.members?.kanji ?? "美術館",
         desc: s?.members?.desc ?? "",
@@ -169,7 +169,7 @@ export default function DojoPageClient({
       {
         id: 8,
         component: Section8,
-        video: "/transitions/video2.m4v",
+        video: "/transitions_mp4/video2.mp4",
         title: s?.katuri?.title ?? "کاتوری",
         kanji: s?.katuri?.kanji ?? "美術館",
         desc: s?.katuri?.desc ?? "",
@@ -220,7 +220,7 @@ export default function DojoPageClient({
       v.playsInline = true;
       // Must point at a real transition asset — a 404 resource rejects
       // play() immediately and never actually warms the media engine.
-      v.src = "/transitions/ctu_to_gallery.m4v";
+      v.src = "/transitions_mp4/ctu_to_gallery.mp4";
       const p = v.play();
       if (p !== undefined) {
         p.then(() => {

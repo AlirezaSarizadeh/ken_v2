@@ -11,17 +11,39 @@ interface CutVideoProps {
 export default function CutVideo({ src, onFinish }: CutVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // iOS Safari sometimes ignores autoPlay attribute without explicit .play() call
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // If autoplay blocked (e.g. low-power mode), skip the transition
-        onFinish();
-      });
+
+    let cancelled = false;
+
+    // iOS Safari sometimes needs an explicit load() before play() on a
+    // freshly created <video> element, otherwise play() rejects immediately.
+    video.load();
+
+    const tryPlay = () => {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          if (cancelled) return;
+          // Autoplay blocked (iOS gesture policy, Firefox restrictions,
+          // low-power mode, etc.) — skip the transition instead of
+          // freezing on a black screen.
+          onFinish();
+        });
+      }
+    };
+
+    if (video.readyState >= 3) {
+      tryPlay();
+    } else {
+      video.addEventListener("canplay", tryPlay, { once: true });
     }
+
+    return () => {
+      cancelled = true;
+      video.removeEventListener("canplay", tryPlay);
+    };
   }, [src, onFinish]);
 
   return (
@@ -42,7 +64,6 @@ export default function CutVideo({ src, onFinish }: CutVideoProps) {
       >
         <video
           ref={videoRef}
-          src={src}
           autoPlay
           muted
           playsInline
@@ -50,7 +71,9 @@ export default function CutVideo({ src, onFinish }: CutVideoProps) {
           onEnded={onFinish}
           onError={onFinish}
           className="w-full h-full object-contain md:object-cover"
-        />
+        >
+          <source src={src} type="video/mp4" />
+        </video>
       </motion.div>
     </motion.div>
   );

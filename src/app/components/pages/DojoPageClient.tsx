@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GlobalMessages } from "../../../types/messages";
 import type { DojoApiData } from "@/types/api";
@@ -197,6 +197,42 @@ export default function DojoPageClient({
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // iOS Safari fallback: prime video playback on the first user gesture.
+  // Programmatic play() calls that happen later (triggered via setTimeout
+  // chains in startTransition, not directly inside a click handler) are
+  // blocked by iOS's autoplay gesture policy unless the page has already
+  // successfully played a muted video during a real user interaction.
+  const videoUnlockedRef = useRef(false);
+
+  useEffect(() => {
+    if (videoUnlockedRef.current) return;
+
+    const unlock = () => {
+      if (videoUnlockedRef.current) return;
+      videoUnlockedRef.current = true;
+
+      const v = document.createElement("video");
+      v.muted = true;
+      v.playsInline = true;
+      v.src = "/transitions/video2.m4v";
+      const p = v.play();
+      if (p !== undefined) {
+        p.then(() => v.pause()).catch(() => { });
+      }
+
+      window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("click", unlock);
+    };
+
+    window.addEventListener("touchstart", unlock, { passive: true });
+    window.addEventListener("click", unlock);
+
+    return () => {
+      window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("click", unlock);
+    };
   }, []);
 
   const startTransition = useCallback(
@@ -451,24 +487,21 @@ export default function DojoPageClient({
                         className={`
                           w-full flex items-center gap-4 p-4 rounded-lg
                           transition-all duration-200
-                          ${
-                            isActive
-                              ? 'bg-red-900/40 border border-red-600/60'
-                              : 'border border-white/10 hover:bg-white/5 active:scale-95'
+                          ${isActive
+                            ? 'bg-red-900/40 border border-red-600/60'
+                            : 'border border-white/10 hover:bg-white/5 active:scale-95'
                           }
                         `}
                         whileTap={{ scale: 0.98 }}
                       >
                         {/* Icon */}
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          isActive
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${isActive
                             ? 'bg-red-600/30'
                             : 'bg-white/10'
-                        }`}>
+                          }`}>
                           <span
-                            className={`text-lg font-bold ${
-                              isActive ? 'text-red-500' : 'text-gray-400'
-                            }`}
+                            className={`text-lg font-bold ${isActive ? 'text-red-500' : 'text-gray-400'
+                              }`}
                             style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
                           >
                             {section.kanji}
@@ -478,9 +511,8 @@ export default function DojoPageClient({
                         {/* Text */}
                         <div className="text-left flex-1">
                           <p
-                            className={`text-sm font-bold ${
-                              isActive ? 'text-white' : 'text-gray-300'
-                            }`}
+                            className={`text-sm font-bold ${isActive ? 'text-white' : 'text-gray-300'
+                              }`}
                             style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                           >
                             {section.title}
@@ -559,16 +591,14 @@ export default function DojoPageClient({
                       onClick={() => startTransition(idx)}
                     >
                       <div
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
-                          isActive
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${isActive
                             ? "bg-red-900/40 border border-red-600/60"
                             : "hover:bg-white/5 border border-transparent"
-                        }`}
+                          }`}
                       >
                         <span
-                          className={`text-sm font-medium whitespace-nowrap ${
-                            isActive ? "text-white" : "text-gray-400"
-                          }`}
+                          className={`text-sm font-medium whitespace-nowrap ${isActive ? "text-white" : "text-gray-400"
+                            }`}
                           style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                         >
                           {section.title}
@@ -626,11 +656,10 @@ function NavButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`group relative flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-300 shrink-0 ${
-        disabled
+      className={`group relative flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-300 shrink-0 ${disabled
           ? "opacity-30 cursor-not-allowed border-gray-800 text-gray-700"
           : "cursor-pointer border-red-600/30 text-red-500 hover:bg-red-600 hover:text-white"
-      }`}
+        }`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

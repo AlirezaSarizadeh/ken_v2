@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import type { GlobalMessages } from "../../../types/messages";
+import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useAuth } from "@/app/context/AuthContext";
 import type { DojoApiData } from "@/types/api";
-
+import type { GlobalMessages } from "../../../types/messages";
+import Section8 from "../sections/Katuri";
+import Section7 from "../sections/Members";
 // Components
 import Section1 from "../sections/Section1";
 import Section2 from "../sections/Section2";
@@ -12,14 +15,10 @@ import Section3 from "../sections/Section3";
 import Section4 from "../sections/Section4";
 import Section5 from "../sections/Section5";
 import Section6 from "../sections/Store";
-import Section7 from "../sections/Members";
-import Section8 from "../sections/Katuri";
-import CutVideo from "../ui/sections/CutVideo";
+import AuthModal from "../ui/AuthModal";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
 import SideNavigation from "../ui/navigation/SideNavigation";
-import Link from "next/link";
-import AuthModal from "../ui/AuthModal";
-import { useAuth } from "@/app/context/AuthContext";
+import CutVideo from "../ui/sections/CutVideo";
 
 const TRANSITION_VIDEOS: Record<string, string> = {
   // Section 1 - Academy
@@ -188,9 +187,12 @@ export default function DojoPageClient({
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const { isLoggedIn, user } = useAuth();
-  const locale = typeof document !== "undefined"
-    ? (document.documentElement.lang === "en" ? "en" : "fa")
-    : "fa";
+  const locale =
+    typeof document !== "undefined"
+      ? document.documentElement.lang === "en"
+        ? "en"
+        : "fa"
+      : "fa";
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -216,21 +218,35 @@ export default function DojoPageClient({
       const v = document.createElement("video");
       v.muted = true;
       v.playsInline = true;
-      v.src = "/transitions/video2.m4v";
+      // Must point at a real transition asset — a 404 resource rejects
+      // play() immediately and never actually warms the media engine.
+      v.src = "/transitions/ctu_to_gallery.m4v";
       const p = v.play();
       if (p !== undefined) {
-        p.then(() => v.pause()).catch(() => { });
+        p.then(() => {
+          v.pause();
+          if (process.env.NODE_ENV === "development") {
+            console.log("[iOS unlock] priming play() succeeded");
+          }
+        }).catch((err: unknown) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log("[iOS unlock] priming play() rejected —", err);
+          }
+        });
       }
 
       window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("click", unlock);
     };
 
     window.addEventListener("touchstart", unlock, { passive: true });
+    window.addEventListener("pointerdown", unlock, { passive: true });
     window.addEventListener("click", unlock);
 
     return () => {
       window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("click", unlock);
     };
   }, []);
@@ -274,8 +290,16 @@ export default function DojoPageClient({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (cutting || exiting) return;
-      const tag = (document.activeElement as HTMLElement | null)?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea" || tag === "select" || (document.activeElement as HTMLElement | null)?.isContentEditable) return;
+      const tag = (
+        document.activeElement as HTMLElement | null
+      )?.tagName?.toLowerCase();
+      if (
+        tag === "input" ||
+        tag === "textarea" ||
+        tag === "select" ||
+        (document.activeElement as HTMLElement | null)?.isContentEditable
+      )
+        return;
 
       switch (e.key) {
         case "ArrowDown":
@@ -317,7 +341,11 @@ export default function DojoPageClient({
       {/* Content Layer — z-10 keeps it above position:fixed section backgrounds on iOS Safari */}
       <div className="relative z-10 flex-1 w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
         <div className="min-h-full w-full flex flex-col items-center justify-center pb-20 md:py-0 px-4 md:px-0">
-          <ActiveComponent exiting={exiting} messages={messages} apiData={apiData} />
+          <ActiveComponent
+            exiting={exiting}
+            messages={messages}
+            apiData={apiData}
+          />
         </div>
       </div>
 
@@ -347,8 +375,19 @@ export default function DojoPageClient({
                 </>
               ) : (
                 <>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                    />
                   </svg>
                   <span className="hidden md:inline text-xs">
                     {locale === "fa" ? "ورود" : "Login"}
@@ -391,9 +430,7 @@ export default function DojoPageClient({
             animate={{ opacity: 1, y: 0 }}
           >
             {/* Glow effect */}
-            <motion.div
-              className="absolute inset-0 rounded-xl bg-red-600/0 group-hover:bg-red-600/10 blur transition-all duration-300"
-            />
+            <motion.div className="absolute inset-0 rounded-xl bg-red-600/0 group-hover:bg-red-600/10 blur transition-all duration-300" />
 
             {/* Hamburger lines */}
             <motion.span
@@ -406,7 +443,11 @@ export default function DojoPageClient({
             />
             <motion.span
               className="w-6 h-0.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full transition-all duration-300 relative z-10"
-              animate={mobileMenuOpen ? { opacity: 0, scale: 0.5 } : { opacity: 1, scale: 1 }}
+              animate={
+                mobileMenuOpen
+                  ? { opacity: 0, scale: 0.5 }
+                  : { opacity: 1, scale: 1 }
+              }
             />
             <motion.span
               className="w-6 h-0.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full transition-all duration-300 relative z-10"
@@ -421,7 +462,12 @@ export default function DojoPageClient({
             {mobileMenuOpen && (
               <motion.div
                 className="absolute inset-0 rounded-xl border border-red-500/50"
-                animate={{ boxShadow: ['0 0 0 2px rgba(239, 68, 68, 0.5)', '0 0 0 8px rgba(239, 68, 68, 0)'] }}
+                animate={{
+                  boxShadow: [
+                    "0 0 0 2px rgba(239, 68, 68, 0.5)",
+                    "0 0 0 8px rgba(239, 68, 68, 0)",
+                  ],
+                }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
             )}
@@ -460,16 +506,38 @@ export default function DojoPageClient({
 
                   {/* Auth Button in mobile menu */}
                   <button
-                    onClick={() => { setMobileMenuOpen(false); setAuthModalOpen(true); }}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setAuthModalOpen(true);
+                    }}
                     className="w-full flex items-center gap-4 p-4 rounded-lg border border-red-600/30 bg-red-900/10 mb-2"
                   >
                     <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-900/30">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-red-400">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-5 h-5 text-red-400"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                        />
                       </svg>
                     </div>
-                    <p className="text-sm font-bold text-red-300" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                      {isLoggedIn ? (user?.name ?? (locale === "fa" ? "حساب کاربری" : "Account")) : (locale === "fa" ? "ورود / ثبت‌نام" : "Login / Register")}
+                    <p
+                      className="text-sm font-bold text-red-300"
+                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                    >
+                      {isLoggedIn
+                        ? (user?.name ??
+                          (locale === "fa" ? "حساب کاربری" : "Account"))
+                        : locale === "fa"
+                          ? "ورود / ثبت‌نام"
+                          : "Login / Register"}
                     </p>
                   </button>
 
@@ -487,21 +555,24 @@ export default function DojoPageClient({
                         className={`
                           w-full flex items-center gap-4 p-4 rounded-lg
                           transition-all duration-200
-                          ${isActive
-                            ? 'bg-red-900/40 border border-red-600/60'
-                            : 'border border-white/10 hover:bg-white/5 active:scale-95'
+                          ${
+                            isActive
+                              ? "bg-red-900/40 border border-red-600/60"
+                              : "border border-white/10 hover:bg-white/5 active:scale-95"
                           }
                         `}
                         whileTap={{ scale: 0.98 }}
                       >
                         {/* Icon */}
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${isActive
-                            ? 'bg-red-600/30'
-                            : 'bg-white/10'
-                          }`}>
+                        <div
+                          className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            isActive ? "bg-red-600/30" : "bg-white/10"
+                          }`}
+                        >
                           <span
-                            className={`text-lg font-bold ${isActive ? 'text-red-500' : 'text-gray-400'
-                              }`}
+                            className={`text-lg font-bold ${
+                              isActive ? "text-red-500" : "text-gray-400"
+                            }`}
                             style={{ fontFamily: "'Noto Sans JP', sans-serif" }}
                           >
                             {section.kanji}
@@ -511,8 +582,9 @@ export default function DojoPageClient({
                         {/* Text */}
                         <div className="text-left flex-1">
                           <p
-                            className={`text-sm font-bold ${isActive ? 'text-white' : 'text-gray-300'
-                              }`}
+                            className={`text-sm font-bold ${
+                              isActive ? "text-white" : "text-gray-300"
+                            }`}
                             style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                           >
                             {section.title}
@@ -545,7 +617,10 @@ export default function DojoPageClient({
                           記
                         </span>
                       </div>
-                      <p className="text-sm font-bold text-sky-300/80" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                      <p
+                        className="text-sm font-bold text-sky-300/80"
+                        style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                      >
                         {locale === "fa" ? "وبلاگ" : "Blog"}
                       </p>
                     </Link>
@@ -591,14 +666,16 @@ export default function DojoPageClient({
                       onClick={() => startTransition(idx)}
                     >
                       <div
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${isActive
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
+                          isActive
                             ? "bg-red-900/40 border border-red-600/60"
                             : "hover:bg-white/5 border border-transparent"
-                          }`}
+                        }`}
                       >
                         <span
-                          className={`text-sm font-medium whitespace-nowrap ${isActive ? "text-white" : "text-gray-400"
-                            }`}
+                          className={`text-sm font-medium whitespace-nowrap ${
+                            isActive ? "text-white" : "text-gray-400"
+                          }`}
                           style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                         >
                           {section.title}
@@ -622,7 +699,11 @@ export default function DojoPageClient({
 
       {/* Side Navigation (Desktop Only) */}
       <SideNavigation
-        sections={SECTIONS.map(s => ({ id: s.id, title: s.title, kanji: s.kanji }))}
+        sections={SECTIONS.map((s) => ({
+          id: s.id,
+          title: s.title,
+          kanji: s.kanji,
+        }))}
         currentIndex={currentIndex}
         onSectionChange={startTransition}
         isMobile={isMobile}
@@ -656,10 +737,11 @@ function NavButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`group relative flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-300 shrink-0 ${disabled
+      className={`group relative flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-300 shrink-0 ${
+        disabled
           ? "opacity-30 cursor-not-allowed border-gray-800 text-gray-700"
           : "cursor-pointer border-red-600/30 text-red-500 hover:bg-red-600 hover:text-white"
-        }`}
+      }`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

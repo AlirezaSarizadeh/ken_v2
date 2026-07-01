@@ -1,21 +1,38 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 interface CutVideoProps {
   src: string;
   onFinish: () => void;
 }
 
+// Fallback fade duration when playback truly can't happen — keeps the cut
+// feeling intentional instead of an abrupt jump to the next section.
+const FALLBACK_FADE_MS = 350;
+
 export default function CutVideo({ src, onFinish }: CutVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [fallback, setFallback] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     let cancelled = false;
+    let fallbackTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const triggerFallback = () => {
+      if (cancelled) return;
+      // Playback blocked (iOS gesture policy, Firefox restrictions,
+      // low-power mode, unsupported codec, etc.) — fade out instead of
+      // instantly unmounting so the cut still reads as a transition.
+      setFallback(true);
+      fallbackTimer = setTimeout(() => {
+        if (!cancelled) onFinish();
+      }, FALLBACK_FADE_MS);
+    };
 
     // iOS Safari sometimes needs an explicit load() before play() on a
     // freshly created <video> element, otherwise play() rejects immediately.
@@ -24,13 +41,7 @@ export default function CutVideo({ src, onFinish }: CutVideoProps) {
     const tryPlay = () => {
       const playPromise = video.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          if (cancelled) return;
-          // Autoplay blocked (iOS gesture policy, Firefox restrictions,
-          // low-power mode, etc.) — skip the transition instead of
-          // freezing on a black screen.
-          onFinish();
-        });
+        playPromise.catch(triggerFallback);
       }
     };
 
@@ -42,6 +53,7 @@ export default function CutVideo({ src, onFinish }: CutVideoProps) {
 
     return () => {
       cancelled = true;
+      if (fallbackTimer) clearTimeout(fallbackTimer);
       video.removeEventListener("canplay", tryPlay);
     };
   }, [src, onFinish]);
@@ -50,9 +62,9 @@ export default function CutVideo({ src, onFinish }: CutVideoProps) {
     <motion.div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black overflow-hidden"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      animate={{ opacity: fallback ? 0 : 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: fallback ? FALLBACK_FADE_MS / 1000 : 0.25 }}
       style={{ willChange: "opacity" }}
     >
       <motion.div
@@ -69,7 +81,12 @@ export default function CutVideo({ src, onFinish }: CutVideoProps) {
           playsInline
           preload="auto"
           onEnded={onFinish}
-          onError={onFinish}
+          onError={() => {
+            if (!fallback) {
+              setFallback(true);
+              setTimeout(onFinish, FALLBACK_FADE_MS);
+            }
+          }}
           className="w-full h-full object-contain md:object-cover"
         >
           <source src={src} type="video/mp4" />

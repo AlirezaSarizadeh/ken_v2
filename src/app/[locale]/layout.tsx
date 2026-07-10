@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 // import { Geist_Mono, Vazirmatn } from "next/font/google";
 import localFont from "next/font/local";
 import { notFound } from "next/navigation";
@@ -53,6 +53,14 @@ const geistMono = localFont({
   display: "swap",
 });
 
+
+// viewport-fit=cover is required for env(safe-area-inset-*) to report real
+// values on iPhones with a home indicator (used by the mobile bottom nav).
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 function getDir(locale: Locale) {
   return locale === "fa" ? "rtl" : "ltr";

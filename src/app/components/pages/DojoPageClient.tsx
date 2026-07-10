@@ -17,6 +17,7 @@ import Section5 from "../sections/Section5";
 import Section6 from "../sections/Store";
 import AuthModal from "../ui/AuthModal";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
+import MobileBottomNav from "../ui/navigation/MobileBottomNav";
 import SideNavigation from "../ui/navigation/SideNavigation";
 import CutVideo from "../ui/sections/CutVideo";
 
@@ -340,7 +341,7 @@ export default function DojoPageClient({
 
       {/* Content Layer — z-10 keeps it above position:fixed section backgrounds on iOS Safari */}
       <div className="relative z-10 flex-1 w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
-        <div className="min-h-full w-full flex flex-col items-center justify-center pb-20 md:py-0 px-4 md:px-0">
+        <div className="min-h-full w-full flex flex-col items-center justify-center pb-40 md:pb-0 md:py-0 px-4 md:px-0">
           <ActiveComponent
             exiting={exiting}
             messages={messages}
@@ -424,7 +425,7 @@ export default function DojoPageClient({
           {/* Mobile Hamburger Menu - Enhanced */}
           <motion.button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden pointer-events-auto relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 group bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/40 rounded-xl hover:from-red-600/30 hover:to-red-700/20 transition-all duration-300"
+            className="hidden pointer-events-auto relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 group bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/40 rounded-xl hover:from-red-600/30 hover:to-red-700/20 transition-all duration-300"
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -708,6 +709,19 @@ export default function DojoPageClient({
         onSectionChange={startTransition}
         isMobile={isMobile}
         locale={locale}
+      />
+
+      {/* Bottom Navigation (Mobile Only — app-style tab bar) */}
+      <MobileBottomNav
+        sections={SECTIONS.map((s) => ({
+          id: s.id,
+          title: s.title,
+          kanji: s.kanji,
+        }))}
+        currentIndex={currentIndex}
+        onSectionChange={startTransition}
+        locale={locale}
+        hidden={mobileMenuOpen}
       />
 
       {/* Auth Modal */}

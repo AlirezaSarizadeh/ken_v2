@@ -645,7 +645,7 @@ export default function SectionShop({
       </motion.div>
 
       {/* Floating Button Area */}
-      <div className="w-full fixed bottom-8 left-0 right-0 flex flex-col items-center justify-end z-50 pointer-events-none">
+      <div className="w-full fixed bottom-[calc(72px+env(safe-area-inset-bottom))] md:bottom-8 left-0 right-0 flex flex-col items-center justify-end z-50 pointer-events-none">
 
         {/* Guiding Arrow — only shown when scroll is closed */}
         <AnimatePresence>

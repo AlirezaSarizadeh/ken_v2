@@ -4,6 +4,8 @@ import type { GlobalMessages } from "../../types/messages";
 import { apiFetch } from "@/lib/api";
 import type { DojoApiData } from "@/types/api";
 
+export const dynamic = "force-dynamic";
+
 const LOCALES = ["fa", "en"] as const;
 type Locale = (typeof LOCALES)[number];
 

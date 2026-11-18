@@ -182,16 +182,12 @@ export interface MemberCategory {
 }
 
 export interface Member {
-  id?: number;
-  name?: string | null;
-  code?: string | null;
-  level?: string | null;
-  kanji?: string | null;
-  bio?: string | null;
-  tags?: string[] | null;
-  avatar?: string | null;
-  image?: string | null;
-  category?: string | null;
+  id: number;
+  name: string;
+  code: string;
+  level: string;
+  bio: string | null;
+  tags: string[];
 }
 
 // ── Katori ────────────────────────────────────────────────────────────────────

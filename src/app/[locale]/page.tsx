@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import DojoPageClient from "../components/pages/DojoPageClient";
 import type { GlobalMessages } from "../../types/messages";
 import { apiFetch } from "@/lib/api";
+import { fetchMembers } from "@/lib/members";
 import type { DojoApiData } from "@/types/api";
 
 export const dynamic = "force-dynamic";
@@ -52,7 +53,7 @@ async function fetchApiData(locale: Locale): Promise<DojoApiData> {
     apiFetch<any>("/gallery-categories", locale, { next: { revalidate: 3600 } }),
     apiFetch<any>("/products", locale, { next: { revalidate: 60 } }),
     apiFetch<any>("/product-categories", locale, { next: { revalidate: 3600 } }),
-    apiFetch<any>("/members", locale, { next: { revalidate: 60 } }),
+    fetchMembers(locale),
     apiFetch<any>("/member-categories", locale, { next: { revalidate: 3600 } }),
     apiFetch<any>("/katori", locale, { next: { revalidate: 3600 } }),
   ]);
@@ -75,7 +76,7 @@ async function fetchApiData(locale: Locale): Promise<DojoApiData> {
   const rawGalleryCats = getData(galleryCatsRes);
   const rawProducts = getData(productsRes);
   const rawProductCats = getData(productCatsRes);
-  const rawMembers = getData(membersRes);
+  const members = membersRes.status === "fulfilled" ? membersRes.value : null;
   const rawMemberCats = getData(memberCatsRes);
   const rawKatori = getData(katoriRes);
 
@@ -89,7 +90,6 @@ async function fetchApiData(locale: Locale): Promise<DojoApiData> {
       ["/gallery-categories", rawGalleryCats, getError(galleryCatsRes)],
       ["/products", rawProducts, getError(productsRes)],
       ["/product-categories", rawProductCats, getError(productCatsRes)],
-      ["/members", rawMembers, getError(membersRes)],
       ["/member-categories", rawMemberCats, getError(memberCatsRes)],
       ["/katori", rawKatori, getError(katoriRes)],
     ] as [string, unknown, string | null][];
@@ -258,23 +258,6 @@ async function fetchApiData(locale: Locale): Promise<DojoApiData> {
     title: c.title ?? "",
     slug: c.slug ?? null,
     name: c.title ?? null,
-  })) ?? null;
-
-  // ── /members → Member[] ───────────────────────────────────────────────────
-  // Actual shape: { items: [{ id, category:{id,title,slug}, name, member_code, tag, short_description, image }], pagination }
-  const rawMemberItems = extractItems<any>(rawMembers);
-  const members = rawMemberItems?.map((m: any) => ({
-    id: m.id ?? 0,
-    name: m.name ?? "",
-    code: m.member_code ?? "",
-    // level = category title so the level filter in Members.tsx can compare strings
-    level: m.category?.title ?? "",
-    kanji: null,
-    bio: m.short_description ?? null,
-    tags: m.tag ? [m.tag] : null,
-    avatar: m.image ?? null,
-    image: m.image ?? null,
-    category: m.category?.slug ?? null,
   })) ?? null;
 
   // ── /member-categories → MemberCategory[] ────────────────────────────────

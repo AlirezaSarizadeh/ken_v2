@@ -4,19 +4,7 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GlobalMessages } from "@/types/messages";
-import type { DojoApiData } from "@/types/api";
-import Image from "next/image";
-
-type Member = {
-  id: number;
-  name: string;
-  code: string; 
-  level: "Beginner" | "Intermediate" | "Advanced" | "Master" | string;
-  kanji?: string; 
-  bio?: string; 
-  tags?: string[];
-  avatar?: string; 
-};
+import type { DojoApiData, Member } from "@/types/api";
 
 function isLikelyEnglish(text?: string) {
   return !!text && /[A-Za-z]/.test(text);
@@ -25,92 +13,6 @@ function isLikelyEnglish(text?: string) {
 function normalize(s: string) {
   return (s ?? "").toString().trim().toLowerCase().replace(/\s+/g, " ");
 }
-
-const FALLBACK_MEMBERS_FA: Member[] = [
-  {
-    id: 1,
-    name: "علیرضا جابری",
-    code: "IR174",
-    level: "پیشرفته",
-    bio: "تمرکز روی کاتا و ما-آی (فاصله).",
-    tags: ["کاتا", "کنجوتسو"],
-    avatar:
-      "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 2,
-    name: "نگار شریفی",
-    code: "IR208",
-    level: "متوسط",
-    bio: "انضباط، ریتم و تمرین دونفره.",
-    tags: ["کومیاچی", "ری‌گی"],
-    avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 3,
-    name: "آرش رضایی",
-    code: "IR311",
-    level: "مبتدی",
-    bio: "ساختن پایه‌ها و فرم‌های صحیح.",
-    tags: ["پایه", "کاتا"],
-    avatar:
-      "https://images.unsplash.com/photo-1555952517-2e8e729e0b44?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 4,
-    name: "هومن کیانی",
-    code: "IR099",
-    level: "استاد",
-    bio: "آموزش اصول زمان‌بندی و زاویه.",
-    tags: ["تایمینگ", "زاویه"],
-    avatar:
-      "https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&w=900&q=80",
-  },
-];
-
-const FALLBACK_MEMBERS_EN: Member[] = [
-  {
-    id: 1,
-    name: "Alireza Jaberi",
-    code: "IR174",
-    level: "Advanced",
-    bio: "Focused on kata and ma-ai (distance).",
-    tags: ["Kata", "Kenjutsu"],
-    avatar:
-      "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 2,
-    name: "Negar Sharifi",
-    code: "IR208",
-    level: "Intermediate",
-    bio: "Discipline, rhythm, and paired practice.",
-    tags: ["Kumitachi", "Reigi"],
-    avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 3,
-    name: "Arash Rezaei",
-    code: "IR311",
-    level: "Beginner",
-    bio: "Building fundamentals and clean forms.",
-    tags: ["Basics", "Kata"],
-    avatar:
-      "https://images.unsplash.com/photo-1555952517-2e8e729e0b44?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 4,
-    name: "Hooman Kiani",
-    code: "IR099",
-    level: "Master",
-    bio: "Teaching timing and angle principles.",
-    tags: ["Timing", "Angles"],
-    avatar:
-      "https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&w=900&q=80",
-  },
-];
 
 export default function SectionMembers({
   exiting,
@@ -121,7 +23,7 @@ export default function SectionMembers({
   messages?: GlobalMessages;
   apiData?: DojoApiData;
 }) {
-  const t = (messages as any)?.SectionMembers;
+  const t = messages?.SectionMembers;
   const [isSectionOpen, setIsSectionOpen] = useState(false);
 
   const inferredIsEn = useMemo(() => {
@@ -150,25 +52,11 @@ export default function SectionMembers({
   const floatBottom = t?.decor?.floatingKanjiBottom ?? "簿";
   const bgImage = t?.decor?.bgImage ?? "/sec1_bg.webp";
 
-  const members: Member[] = useMemo(() => {
-    const fromApi = apiData?.members?.filter(Boolean).map((m: any) => ({
-      id: m.id ?? Math.random(),
-      name: m.name ?? "",
-      code: m.code ?? "",
-      level: m.level ?? m.category ?? "",
-      kanji: m.kanji ?? undefined,
-      bio: m.bio ?? undefined,
-      tags: Array.isArray(m.tags) ? m.tags : undefined,
-      avatar: m.avatar ?? m.image ?? undefined,
-    }));
-    if (fromApi?.length) return fromApi as Member[];
-    const fromJson = t?.members?.filter(Boolean);
-    if (fromJson?.length) return fromJson;
-    return inferredIsEn ? FALLBACK_MEMBERS_EN : FALLBACK_MEMBERS_FA;
-  }, [apiData?.members, t?.members, inferredIsEn]);
+  const members = useMemo(() => apiData?.members ?? [], [apiData?.members]);
+  const loadFailed = apiData?.members == null;
 
   const levelOptions = useMemo(() => {
-    const fromApi = apiData?.memberCategories?.filter(Boolean).map((c: any) => c.name ?? c.title ?? String(c));
+    const fromApi = apiData?.memberCategories?.flatMap((c) => c.name ?? c.title ?? []);
     if (fromApi?.length) return [allLabel, ...fromApi];
     const unique = Array.from(new Set(members.map((m) => m.level).filter(Boolean)));
     return [allLabel, ...unique];
@@ -194,7 +82,7 @@ export default function SectionMembers({
         m.code,
         m.level,
         m.bio ?? "",
-        ...(m.tags ?? []),
+        ...m.tags,
       ]
         .map((x) => normalize(String(x)))
         .join(" | ");
@@ -361,10 +249,10 @@ export default function SectionMembers({
             <div className="mt-5 flex items-center justify-between text-xs text-red-100/40">
               <div className="flex items-center gap-2">
                 <span className="inline-block w-2 h-2 rounded-full bg-red-600/70 shadow-[0_0_12px_rgba(220,38,38,0.6)]" />
-                <span style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                  {inferredIsEn
+                <span role="status" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                  {!loadFailed && (inferredIsEn
                     ? `${filtered.length} of ${members.length} visible`
-                    : `${filtered.length} از ${members.length} عضو نمایش داده شد`}
+                    : `${filtered.length} از ${members.length} عضو نمایش داده شد`)}
                 </span>
               </div>
               <div className="hidden md:block" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
@@ -394,9 +282,9 @@ export default function SectionMembers({
                   <div className="py-16 text-center text-red-100/55">
                     <div className="text-5xl opacity-30">空</div>
                     <div className="mt-3 text-sm" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
-                      {inferredIsEn
-                        ? "No members match your search."
-                        : "عضوی با این جستجو پیدا نشد."}
+                      {loadFailed
+                        ? (inferredIsEn ? "Could not load the member list." : "فهرست اعضا بارگیری نشد.")
+                        : (inferredIsEn ? "No members match your search." : "عضوی با این جستجو پیدا نشد.")}
                     </div>
                   </div>
                 )}
@@ -494,7 +382,7 @@ export default function SectionMembers({
 
 function MemberCard({ member }: { member: Member }) {
   return (
-    <div
+    <article
       className="
         group relative overflow-hidden
         border border-black/10
@@ -509,50 +397,11 @@ function MemberCard({ member }: { member: Member }) {
       {/* paper texture */}
       <div className="absolute inset-0 opacity-[0.16] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-1.png')] mix-blend-multiply" />
 
-      {/* subtle Japanese crest (Mon) */}
-      <div className="absolute top-4 left-4 opacity-[0.08] pointer-events-none">
-        <Image src={'/mon.png'} alt="mon" width={52} height={52} />
-      </div>
-
       {/* tiny top seal */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-5 bg-red-800 shadow-sm" />
 
-      {/* Avatar zone */}
-      <div className="relative z-10 px-3 pt-6 flex-shrink-0">
-        <div className="relative mx-auto w-[90px] h-[90px] sm:w-[110px] sm:h-[110px]">
-          {/* Enso brush ring */}
-          <div
-            className="absolute inset-0 rounded-full opacity-90"
-            style={{
-              backgroundImage:
-                "url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Enso.svg/512px-Enso.svg.png')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "contrast(1.15)",
-            }}
-          />
-          <div className="absolute inset-[6px] rounded-full bg-black/5 blur-[1px]" />
-          {/* avatar */}
-          <div className="absolute inset-[14px] sm:inset-[16px] rounded-full overflow-hidden bg-white border border-black/10 shadow-[0_10px_25px_-18px_rgba(0,0,0,0.9)]">
-            <img
-              src={
-                member.avatar ||
-                `https://picsum.photos/seed/kenjutsu_${member.id}/500/500.jpg`
-              }
-              alt={member.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04] contrast-[1.08] brightness-[0.98]"
-              loading="lazy"
-              onError={(e) => {
-                e.currentTarget.src = `https://picsum.photos/seed/member_${member.id}/500/500.jpg`;
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/10" />
-          </div>
-        </div>
-      </div>
-
       {/* Text area */}
-      <div className="relative z-10 px-3 pt-3 text-center flex-1 min-w-0">
+      <div className="relative z-10 px-3 pt-8 pb-3 text-center flex-1 min-w-0">
         <div
           className="text-[13px] sm:text-[14px] font-bold text-black/80 line-clamp-1 leading-tight"
           style={{ fontFamily: "'Vazirmatn', sans-serif" }}
@@ -590,6 +439,6 @@ function MemberCard({ member }: { member: Member }) {
           {member.code}
         </span>
       </div>
-    </div>
+    </article>
   );
 }

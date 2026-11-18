@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
+import { fetchMembers } from "@/lib/members";
 import MembersPageClient from "./MembersPageClient";
 
 type Locale = "fa" | "en";
@@ -28,22 +29,12 @@ export default async function MembersPage({ params }: { params: Promise<{ locale
   const locale: Locale = isLocale(raw) ? raw : "fa";
 
   const [membersRes, catsRes] = await Promise.allSettled([
-    apiFetch<unknown>("/members", locale, { next: { revalidate: 60 } }),
+    fetchMembers(locale),
     apiFetch<unknown>("/member-categories", locale, { next: { revalidate: 3600 } }),
   ]);
 
-  const rawMembers = membersRes.status === "fulfilled" ? extractItems(membersRes.value.data) : [];
+  const members = membersRes.status === "fulfilled" ? membersRes.value : null;
   const rawCats = catsRes.status === "fulfilled" ? extractItems(catsRes.value.data) : [];
-
-  const members = rawMembers.map((m: any) => ({
-    id: m.id ?? 0,
-    name: m.name ?? "",
-    code: m.member_code ?? "",
-    level: m.category?.title ?? "",
-    bio: m.short_description ?? null,
-    tags: m.tag ? [m.tag] : [],
-    avatar: m.image ?? null,
-  }));
 
   const categories = rawCats.map((c: any) => ({
     id: c.id ?? 0,

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCards } from "swiper/modules";
+import Link from "next/link";
 
 import type { GlobalMessages } from "@/types/messages";
 import type { DojoApiData } from "@/types/api";
@@ -94,6 +95,10 @@ function isLikelyEnglish(text?: string) {
   return !!text && /[A-Za-z]/.test(text);
 }
 
+function slidePath(id: number) {
+  return String(id);
+}
+
 export default function Section8({
   exiting,
   messages,
@@ -115,6 +120,7 @@ export default function Section8({
       isLikelyEnglish(t?.master?.name)
     );
   }, [t?.header?.titlePart1, t?.header?.titlePart2, t?.master?.titlePrefix, t?.master?.name]);
+  const locale = inferredIsEn ? "en" : "fa";
 
   const SLIDE_DATA = useMemo(() => {
     const fromApi = apiData?.katoriData?.slides?.filter(Boolean).map((s: any, i: number) => ({
@@ -317,6 +323,7 @@ export default function Section8({
                         "linear-gradient(135deg, #1a0505 0%, #000000 100%)",
                     }}
                   >
+                    <Link href={`/${locale}/katori/${slidePath(slide.id)}`} className="block h-full">
                     <div className="h-full flex flex-col relative">
                       <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/leather.png')] mix-blend-overlay z-20"></div>
 
@@ -382,6 +389,7 @@ export default function Section8({
                         </div>
                       </div>
                     </div>
+                    </Link>
                   </SwiperSlide>
                 ))}
               </Swiper>

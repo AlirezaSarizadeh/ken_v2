@@ -2,6 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { GlobalMessages } from "@/types/messages";
 import type { DojoApiData } from "@/types/api";
 
@@ -15,6 +17,8 @@ const FALLBACK_TABS = [
 export default function Section2({ exiting, messages, apiData }: { exiting: boolean; messages?: GlobalMessages; apiData?: DojoApiData }) {
   const [activeTab, setActiveTab] = useState(0);
   const [isSectionOpen, setIsSectionOpen] = useState(false);
+  const pathname = usePathname();
+  const locale = pathname?.startsWith("/en") ? "en" : "fa";
   const t = messages?.Section2 as any;
   const about = apiData?.aboutData;
 
@@ -212,9 +216,8 @@ export default function Section2({ exiting, messages, apiData }: { exiting: bool
                   </p>
 
                   <div className="mt-8 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab((current) => (current + 1) % TABS_DATA.length)}
+                    <Link
+                      href={`/${locale}/about/${TABS_DATA[activeTab]?.id ?? 0}`}
                       className="group flex items-center gap-2 px-5 py-2 bg-red-900/20 text-red-400 border border-red-900/50 rounded hover:bg-red-900/40 transition-all duration-300"
                     >
                       <span className="text-sm" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
@@ -230,7 +233,7 @@ export default function Section2({ exiting, messages, apiData }: { exiting: bool
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                       </svg>
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </motion.div>

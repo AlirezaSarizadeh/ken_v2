@@ -94,6 +94,7 @@ export default function Section3({
   const socialLinks = [
     { id: "instagram", label: "Instagram", text: "@shihan.ashrafi", href: "https://www.instagram.com/shihan.ashrafi/", mark: "◎" },
     { id: "youtube", label: "YouTube", text: "Shihan Ashrafi", href: "https://www.youtube.com/channel/UCkJVBEN7vAE37XewCN8IidA", mark: "▶" },
+    { id: "medium", label: "Medium", text: "Shihan Ashrafi", href: "https://medium.com/@shihan.ashrafi/does-the-art-of-samurai-swordsmanship-still-matter-in-the-21st-century-or-beyond-42aa755fd960", mark: "M" },
     { id: "map", label: "Google Maps", text: "Iran Kenjutsu Academy — Tehran", href: "https://www.google.com/maps/search/?api=1&query=Iran+Kenjutsu+Academy+Ashrafi+Esfahani+Tehran", mark: "⌖" },
   ];
 
@@ -250,7 +251,7 @@ export default function Section3({
                   </div>
                 );
               })}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2">
                 {socialLinks.map((link) => (
                   <a
                     key={link.id}

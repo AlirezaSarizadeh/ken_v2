@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
 import { apiFetch } from "@/lib/api";
 import CoursesPageClient from "./CoursesPageClient";
+import type { GlobalMessages } from "../../../../types/messages";
 
 type Locale = "fa" | "en";
 function isLocale(x: string): x is Locale { return x === "fa" || x === "en"; }
+
+async function getMessages(locale: Locale): Promise<GlobalMessages> {
+  const result = locale === "en"
+    ? await import("../../../../messages/en.json")
+    : await import("../../../../messages/fa.json");
+  return result.default as GlobalMessages;
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: raw } = await params;
@@ -20,12 +28,15 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "fa";
 
-  const result = await apiFetch<unknown>("/courses", locale, { next: { revalidate: 60 } });
+  const [result, messages] = await Promise.all([
+    apiFetch<unknown>("/courses", locale, { next: { revalidate: 60 } }),
+    getMessages(locale),
+  ]);
 
   const raw_data = result.data as Record<string, unknown> | null;
   const rawItems = Array.isArray(raw_data?.items) ? (raw_data!.items as any[]) : [];
 
-  const courses = rawItems.map((c: any) => ({
+  const apiCourses = rawItems.map((c: any) => ({
     id: c.id ?? 0,
     title: c.title ?? "",
     kanji: c.japanese_title ?? null,
@@ -36,6 +47,22 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
     image: c.image ?? null,
     slug: c.slug ?? null,
   }));
+
+  // The home page defines the academy's two learning levels. Keep the full
+  // course page aligned with that editorial content instead of exposing
+  // unrelated/incomplete API records when they exist.
+  const configuredLevels = (messages.Section4 as any)?.levels;
+  const courses = Array.isArray(configuredLevels) && configuredLevels.length >= 2
+    ? configuredLevels.slice(0, 2).map((level: any, index: number) => ({
+        id: Number(level.id) > 0 ? Number(level.id) : index + 1,
+        title: level.title ?? "",
+        kanji: level.kanji ?? null,
+        description: level.description ?? null,
+        duration: level.duration ?? null,
+        image: level.image ?? null,
+        slug: level.slug ?? null,
+      }))
+    : apiCourses;
 
   return <CoursesPageClient courses={courses} locale={locale} />;
 }

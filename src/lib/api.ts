@@ -6,6 +6,21 @@ if (!BASE_URL && typeof window === "undefined") {
 
 const IS_DEV = process.env.NODE_ENV === "development";
 
+/** Keep Persian copy consistent even when older records still use the joined spelling. */
+function normalizePersianText(value: unknown, locale: string): unknown {
+  if (locale !== "fa") return value;
+  if (typeof value === "string") {
+    return value.replaceAll("کنجوتسو", "کن‌جوتسو").replaceAll("کن جوتسو", "کن‌جوتسو");
+  }
+  if (Array.isArray(value)) return value.map((item) => normalizePersianText(item, locale));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, normalizePersianText(item, locale)]),
+    );
+  }
+  return value;
+}
+
 type ApiResult<T> = { data: T; error: null } | { data: null; error: string };
 
 /**
@@ -143,7 +158,7 @@ export async function apiFetch<T>(
     }
 
     const obj = json as Record<string, unknown> | null;
-    const data: T = (obj && obj.data !== undefined ? obj.data : json) as T;
+    const data = normalizePersianText(obj && obj.data !== undefined ? obj.data : json, locale) as T;
     return { data, error: null };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Network error";

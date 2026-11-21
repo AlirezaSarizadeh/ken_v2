@@ -181,8 +181,7 @@ export default function GlobalLayout({
   const footerCopy =
     t.footer?.copyright ??
     "© 2026 Kenjutsu Academy. All rights reserved.";
-  const footerCredit =
-    t.footer?.credit ?? "Designed with Honor ⚔️ - Alireza Sarizadeh";
+  const footerCredit = t.footer?.credit ?? "";
 
   return (
     <div className="min-h-screen flex flex-col relative bg-[#050505] text-gray-200">
@@ -459,7 +458,7 @@ export default function GlobalLayout({
 
           <div className="text-xs text-gray-600 flex flex-col items-center md:items-end gap-1">
             <span>{footerCopy}</span>
-            <span className="font-mono">{footerCredit}</span>
+            {footerCredit ? <span className="font-mono">{footerCredit}</span> : null}
           </div>
         </div>
       </footer>

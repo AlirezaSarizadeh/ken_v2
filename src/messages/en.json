@@ -31,7 +31,7 @@
         "desc": "Artifacts & heritage"
       },
       "katuri": {
-        "title": "Katuri",
+        "title": "Katori",
         "kanji": "美術館",
         "desc": "Artifacts & heritage"
       },
@@ -156,7 +156,7 @@
   },
   "Katuri": {
     "master": {
-      "titlePrefix": "Katuri",
+      "titlePrefix": "Katori",
       "name": "Style",
       "quote": "In kenjutsu, speed matters—but precision matters more. Distance and timing decide before strength.",
       "imageAlt": "Shihan Kenjutsu"
@@ -213,14 +213,14 @@
       },
       {
         "id": 1,
-        "title": "Our Philosophy",
+        "title": "Dojo Philosophy",
         "kanji": "哲学",
         "content": "We emphasize the principles of Bushido—the way of the warrior: honesty, courage, respect, and loyalty. These principles shape both training and everyday life.",
         "image": "/philosophy.jpg"
       },
       {
         "id": 2,
-        "title": "Our Masters",
+        "title": "Dojo Masters",
         "kanji": "師範",
         "content": "Our team consists of experienced instructors with years of practice across various martial arts. Each master specializes in a specific discipline and teaches with passion.",
         "image": "/masters.jpg"
@@ -252,6 +252,8 @@
       "nameLabel": "Your name",
       "namePlaceholder": "Enter your name...",
       "emailLabel": "Email",
+      "subjectLabel": "Topic",
+      "subjectPlaceholder": "Message topic...",
       "messageLabel": "Message",
       "messagePlaceholder": "Write your message...",
       "submit": "Send",
@@ -436,8 +438,8 @@
     "footer": {
       "title": "Kenjutsu Academy",
       "quote": "The warrior’s path is not only mastery of the sword, but mastery of the self.",
-      "copyright": "© 2026 Kenjutsu Academy. All rights reserved.",
-      "credit": "Designed with Honor ⚔️ - Alireza Sarizadeh"
+      "copyright": "© 2026 Kenjutsu Academy Iran. All rights reserved.",
+      "credit": ""
     }
   },
   "JoinPage": {

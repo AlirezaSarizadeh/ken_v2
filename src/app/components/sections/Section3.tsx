@@ -58,7 +58,7 @@ export default function Section3({
   messages?: GlobalMessages;
   apiData?: DojoApiData;
 }) {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -92,6 +92,8 @@ export default function Section3({
   const namePlaceholder = t?.form?.namePlaceholder ?? "نام خود را وارد کنید...";
   const emailLabel = t?.form?.emailLabel ?? "ایمیل";
   const emailPlaceholder = t?.form?.emailPlaceholder ?? "example@mail.com";
+  const subjectLabel = t?.form?.subjectLabel ?? "موضوع / Topic";
+  const subjectPlaceholder = t?.form?.subjectPlaceholder ?? "موضوع پیام...";
   const messageLabel = t?.form?.messageLabel ?? "پیام";
   const messagePlaceholder = t?.form?.messagePlaceholder ?? "پیام خود را بنویسید...";
   const submitText = t?.form?.submit ?? "ارسال";
@@ -118,7 +120,7 @@ export default function Section3({
     setIsSubmitted(true);
     setTimeout(() => {
       setIsSubmitted(false);
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ name: "", email: "", subject: "", message: "" });
     }, 3000);
   };
 
@@ -274,6 +276,21 @@ export default function Section3({
                       required
                       className="w-full bg-transparent border-b-2 border-red-900/20 py-2 px-1 text-gray-800 focus:border-red-800 focus:outline-none transition-colors placeholder-red-900/20"
                       placeholder={namePlaceholder}
+                      style={{ fontFamily: "'Vazirmatn', sans-serif" }}
+                    />
+                  </div>
+
+                  <div className="group">
+                    <label className="block text-sm font-bold text-red-900/70 mb-2" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
+                      {subjectLabel}
+                    </label>
+                    <input
+                      type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-b-2 border-red-900/20 py-2 px-1 text-gray-800 focus:border-red-800 focus:outline-none transition-colors placeholder-red-900/20"
+                      placeholder={subjectPlaceholder}
                       style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                     />
                   </div>

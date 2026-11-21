@@ -33,6 +33,7 @@ export default function MembersPageClient({ members, categories, locale }: Props
 
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState(allLabel);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
   const levelOptions = useMemo(() => {
     if (categories.length) return [allLabel, ...categories.map((c) => c.title)];
@@ -118,12 +119,15 @@ export default function MembersPageClient({ members, categories, locale }: Props
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {filtered.map((member) => (
-              <article
+              <button
+                type="button"
+                onClick={() => setSelectedMember(member)}
+                aria-label={member.name}
                 key={member.id}
                 className="flex flex-col items-center bg-[#0a0a0a] border border-red-900/15 rounded-2xl p-4 hover:border-red-800/40 transition-colors duration-300"
               >
                 <h3
-                  className="text-sm font-bold text-red-100 text-center line-clamp-1 mb-0.5"
+                  className="text-sm font-bold text-red-100 text-center break-words mb-0.5"
                   style={{ fontFamily: "'Vazirmatn', sans-serif" }}
                 >
                   {member.name}
@@ -162,11 +166,24 @@ export default function MembersPageClient({ members, categories, locale }: Props
                     ))}
                   </div>
                 )}
-              </article>
+              </button>
             ))}
           </div>
         )}
       </main>
+      {selectedMember ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-4" onClick={() => setSelectedMember(null)}>
+          <div className="w-full max-w-md rounded-2xl border border-red-900/50 bg-[#0c0c0c] p-6 text-gray-100 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div><h3 className="text-xl font-bold break-words">{selectedMember.name}</h3><p className="mt-1 text-sm text-red-400 font-mono">{selectedMember.code}</p></div>
+              <button type="button" className="text-gray-400 hover:text-white" onClick={() => setSelectedMember(null)} aria-label={isRtl ? "بستن" : "Close"}>×</button>
+            </div>
+            {selectedMember.level ? <p className="mt-5 text-sm text-gray-300">{selectedMember.level}</p> : null}
+            {selectedMember.bio ? <p className="mt-3 whitespace-pre-line text-sm leading-7 text-gray-400">{selectedMember.bio}</p> : null}
+            {selectedMember.tags.length ? <div className="mt-4 flex flex-wrap gap-2">{selectedMember.tags.map((tag) => <span key={tag} className="rounded bg-red-950/40 px-2 py-1 text-xs text-red-200">{tag}</span>)}</div> : null}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -212,7 +212,11 @@ export default function Section2({ exiting, messages, apiData }: { exiting: bool
                   </p>
 
                   <div className="mt-8 flex justify-end">
-                    <button className="group flex items-center gap-2 px-5 py-2 bg-red-900/20 text-red-400 border border-red-900/50 rounded hover:bg-red-900/40 transition-all duration-300">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab((current) => (current + 1) % TABS_DATA.length)}
+                      className="group flex items-center gap-2 px-5 py-2 bg-red-900/20 text-red-400 border border-red-900/50 rounded hover:bg-red-900/40 transition-all duration-300"
+                    >
                       <span className="text-sm" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>
                         {moreInfo}
                       </span>

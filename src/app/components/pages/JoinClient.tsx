@@ -27,6 +27,7 @@ export default function JoinClient({
     lastName: "",
     email: "",
     phone: "",
+    nationalId: "",
     age: "",
     experience: "",
     motivation: "",
@@ -107,6 +108,8 @@ export default function JoinClient({
     v?.emailInvalid ?? (isRtl ? "ایمیل نامعتبر است" : "Invalid email");
   const requiredPhone =
     v?.phoneRequired ?? (isRtl ? "شماره تماس الزامی است" : "Phone is required");
+  const requiredNationalId = v?.nationalIdRequired ?? (isRtl ? "کد ملی الزامی است" : "National ID is required");
+  const invalidNationalId = v?.nationalIdInvalid ?? (isRtl ? "کد ملی باید دقیقاً ۱۰ رقم باشد" : "National ID must contain exactly 10 digits");
 
   const requiredPassword = v?.passwordRequired ?? (isRtl ? "رمز عبور الزامی است" : "Password is required");
   const shortPassword = v?.passwordShort ?? (isRtl ? "رمز عبور باید حداقل ۸ کاراکتر باشد" : "Password must be at least 8 characters");
@@ -122,6 +125,9 @@ export default function JoinClient({
     else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = invalidEmail;
 
     if (!formData.phone.trim()) newErrors.phone = requiredPhone;
+    const normalizedNationalId = formData.nationalId.replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)));
+    if (!normalizedNationalId.trim()) newErrors.nationalId = requiredNationalId;
+    else if (!/^\d{10}$/.test(normalizedNationalId)) newErrors.nationalId = invalidNationalId;
 
     if (!formData.password) newErrors.password = requiredPassword;
     else if (formData.password.length < 8) newErrors.password = shortPassword;
@@ -157,6 +163,7 @@ export default function JoinClient({
         name: fullName,
         email: formData.email.trim(),
         phone: formData.phone.trim(),
+        national_id: formData.nationalId.replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit))),
         password: formData.password,
         password_confirmation: formData.passwordConfirm,
       },
@@ -198,6 +205,7 @@ export default function JoinClient({
         lastName: "",
         email: "",
         phone: "",
+        nationalId: "",
         age: "",
         experience: "",
         motivation: "",
@@ -446,6 +454,23 @@ export default function JoinClient({
                   {errors.phone && (
                     <span className="text-xs text-red-600 mt-1 absolute">{errors.phone}</span>
                   )}
+                </div>
+
+                {/* Age */}
+                <div className={inputContainerClass}>
+                  <label className={labelClass}>{labels?.nationalId ?? (isRtl ? "کد ملی" : "National ID")}</label>
+                  <input
+                    type="text"
+                    name="nationalId"
+                    value={formData.nationalId}
+                    onChange={handleInputChange}
+                    inputMode="numeric"
+                    maxLength={10}
+                    dir="ltr"
+                    placeholder={placeholders?.nationalId ?? "۱۰ رقم"}
+                    className={[inputBase, "text-left", errors.nationalId ? "border-red-500 bg-red-50" : inputBorder].join(" ")}
+                  />
+                  {errors.nationalId && <span className="text-xs text-red-600 mt-1 absolute">{errors.nationalId}</span>}
                 </div>
 
                 {/* Age */}

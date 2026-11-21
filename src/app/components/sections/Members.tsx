@@ -25,6 +25,7 @@ export default function SectionMembers({
 }) {
   const t = messages?.SectionMembers;
   const [isSectionOpen, setIsSectionOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
   const inferredIsEn = useMemo(() => {
     return (
@@ -274,7 +275,7 @@ export default function SectionMembers({
               <div className="max-h-[62vh] md:max-h-[58vh] overflow-y-auto overflow-x-hidden no-scrollbar p-1">
                 <div className="grid gap-3 grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   {filtered.map((m) => (
-                    <MemberCard key={m.id} member={m} />
+                    <MemberCard key={m.id} member={m} onSelect={setSelectedMember} />
                   ))}
                 </div>
 
@@ -296,6 +297,23 @@ export default function SectionMembers({
           <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-900 to-transparent z-30 opacity-50" />
         </motion.div>
       </motion.div>
+
+      {selectedMember ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-4" onClick={() => setSelectedMember(null)}>
+          <div className="w-full max-w-md rounded-2xl border border-red-900/50 bg-[#0c0c0c] p-6 text-gray-100 shadow-2xl" dir={inferredIsEn ? "ltr" : "rtl"} onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold break-words" style={{ fontFamily: "'Vazirmatn', sans-serif" }}>{selectedMember.name}</h3>
+                <p className="mt-1 text-sm text-red-400 font-mono">{selectedMember.code}</p>
+              </div>
+              <button type="button" className="text-gray-400 hover:text-white" onClick={() => setSelectedMember(null)} aria-label={inferredIsEn ? "Close" : "بستن"}>×</button>
+            </div>
+            {selectedMember.level ? <p className="mt-5 text-sm text-gray-300">{selectedMember.level}</p> : null}
+            {selectedMember.bio ? <p className="mt-3 whitespace-pre-line text-sm leading-7 text-gray-400">{selectedMember.bio}</p> : null}
+            {selectedMember.tags.length ? <div className="mt-4 flex flex-wrap gap-2">{selectedMember.tags.map((tag) => <span key={tag} className="rounded bg-red-950/40 px-2 py-1 text-xs text-red-200">{tag}</span>)}</div> : null}
+          </div>
+        </div>
+      ) : null}
 
       {/* Floating Button Area */}
       <div className="w-full fixed bottom-[calc(72px+env(safe-area-inset-bottom))] md:bottom-8 left-0 right-0 flex flex-col items-center justify-end z-50 pointer-events-none">
@@ -380,9 +398,12 @@ export default function SectionMembers({
   );
 }
 
-function MemberCard({ member }: { member: Member }) {
+function MemberCard({ member, onSelect }: { member: Member; onSelect: (member: Member) => void }) {
   return (
-    <article
+    <button
+      type="button"
+      onClick={() => onSelect(member)}
+      aria-label={member.name}
       className="
         group relative overflow-hidden
         border border-black/10
@@ -403,7 +424,7 @@ function MemberCard({ member }: { member: Member }) {
       {/* Text area */}
       <div className="relative z-10 px-3 pt-8 pb-3 text-center flex-1 min-w-0">
         <div
-          className="text-[13px] sm:text-[14px] font-bold text-black/80 line-clamp-1 leading-tight"
+          className="text-[13px] sm:text-[14px] font-bold text-black/80 break-words leading-tight"
           style={{ fontFamily: "'Vazirmatn', sans-serif" }}
         >
           {member.name}
@@ -439,6 +460,6 @@ function MemberCard({ member }: { member: Member }) {
           {member.code}
         </span>
       </div>
-    </article>
+    </button>
   );
 }

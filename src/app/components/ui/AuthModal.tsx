@@ -30,6 +30,7 @@ const FA = {
   loggedInAs: "وارد شدید به عنوان",
   logoutBtn: "خروج",
   loginSuccess: "با موفقیت وارد شدید",
+  forgotPassword: "رمز عبور را فراموش کرده‌اید؟ با پشتیبانی تماس بگیرید",
   registerSuccess: "ثبت‌نام با موفقیت انجام شد",
 };
 
@@ -49,6 +50,7 @@ const EN = {
   loggedInAs: "Logged in as",
   logoutBtn: "Logout",
   loginSuccess: "Signed in successfully",
+  forgotPassword: "Forgot your password? Contact support",
   registerSuccess: "Registration successful",
 };
 
@@ -240,6 +242,13 @@ export default function AuthModal({ isOpen, onClose, locale = "fa" }: Props) {
                           error={fieldErrors.password}
                           isRtl={isRtl}
                         />
+                        <a
+                          href={`/${locale}#contact`}
+                          onClick={onClose}
+                          className="block text-xs text-red-400 hover:text-red-300 transition-colors"
+                        >
+                          {L.forgotPassword}
+                        </a>
                         <SubmitBtn loading={loading} label={loading ? L.submitting : L.login} />
                       </form>
                     ) : (

@@ -116,18 +116,19 @@ export default function SideNavigation({
   locale,
 }: SideNavigationProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const isRtl = locale === 'fa';
 
   // Hide on mobile
   if (isMobile) return null;
 
   return (
     <motion.aside
-      className="fixed left-0 top-1/2 -translate-y-1/2 z-30 pointer-events-auto"
+      className={`fixed ${isRtl ? 'right-0' : 'left-0'} top-1/2 -translate-y-1/2 z-30 pointer-events-auto`}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex flex-col gap-3 p-4 bg-gradient-to-b from-black/60 via-black/40 to-transparent backdrop-blur-lg rounded-r-2xl border-r border-t border-b border-red-900/20 shadow-2xl shadow-red-900/10">
+      <div className={`flex flex-col gap-3 p-4 bg-gradient-to-b from-black/60 via-black/40 to-transparent backdrop-blur-lg ${isRtl ? 'rounded-l-2xl border-l' : 'rounded-r-2xl border-r'} border-t border-b border-red-900/20 shadow-2xl shadow-red-900/10`}>
         {sections.map((section, idx) => {
           const iconConfig = SECTION_ICONS[idx];
           const isActive = idx === currentIndex;
@@ -190,7 +191,7 @@ export default function SideNavigation({
               <AnimatePresence>
                 {isHovered && (
                   <motion.div
-                    className="absolute left-16 top-1/2 -translate-y-1/2 px-3 py-2 bg-black/95 border border-red-900/50 rounded-lg text-sm font-medium text-white whitespace-nowrap z-50 pointer-events-none"
+                    className={`absolute ${isRtl ? 'right-16' : 'left-16'} top-1/2 -translate-y-1/2 px-3 py-2 bg-black/95 border border-red-900/50 rounded-lg text-sm font-medium text-white whitespace-nowrap z-50 pointer-events-none`}
                     initial={{ opacity: 0, x: -10, scale: 0.95 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     exit={{ opacity: 0, x: -10, scale: 0.95 }}
@@ -199,7 +200,7 @@ export default function SideNavigation({
                   >
                     {section.title}
                     {/* Arrow pointer */}
-                    <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-l-8 border-l-black/95 border-t-4 border-t-transparent border-b-4 border-b-transparent" />
+                    <div className={`absolute ${isRtl ? 'left-full border-r-8 border-r-black/95' : 'right-full border-l-8 border-l-black/95'} top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent`} />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -246,7 +247,7 @@ export default function SideNavigation({
           <AnimatePresence>
             {hoveredIndex === sections.length && (
               <motion.div
-                className="absolute left-16 top-1/2 -translate-y-1/2 px-3 py-2 bg-black/95 border border-sky-900/50 rounded-lg text-sm font-medium text-white whitespace-nowrap z-50 pointer-events-none"
+                className={`absolute ${isRtl ? 'right-16' : 'left-16'} top-1/2 -translate-y-1/2 px-3 py-2 bg-black/95 border border-sky-900/50 rounded-lg text-sm font-medium text-white whitespace-nowrap z-50 pointer-events-none`}
                 initial={{ opacity: 0, x: -10, scale: 0.95 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: -10, scale: 0.95 }}
@@ -254,7 +255,7 @@ export default function SideNavigation({
                 style={{ fontFamily: "'Vazirmatn', sans-serif" }}
               >
                 {BLOG_PAGE.label(locale)}
-                <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-l-8 border-l-black/95 border-t-4 border-t-transparent border-b-4 border-b-transparent" />
+                <div className={`absolute ${isRtl ? 'left-full border-r-8 border-r-black/95' : 'right-full border-l-8 border-l-black/95'} top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent`} />
               </motion.div>
             )}
           </AnimatePresence>

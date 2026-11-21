@@ -174,6 +174,8 @@
       "nameLabel": "نام شما",
       "namePlaceholder": "نام خود را وارد کنید...",
       "emailLabel": "ایمیل",
+      "subjectLabel": "موضوع",
+      "subjectPlaceholder": "موضوع پیام...",
       "messageLabel": "پیام",
       "messagePlaceholder": "پیام خود را بنویسید...",
       "submit": "ارسال",
@@ -460,7 +462,7 @@
     ]
   },
   "GlobalLayout": {
-    "brand": { "title": "آکادمی کنجوتسو", "subtitle": "Kenjutso Academy" },
+    "brand": { "title": "آکادمی کنجوتسو", "subtitle": "Kenjutsu Academy" },
     "navLinks": [
       { "name": "وبلاگ", "path": "/blog" },
       { "name": "عضویت", "path": "/join" },
@@ -471,8 +473,8 @@
     "footer": {
       "title": "آکادمی کنجوتسو",
       "quote": "مسیر جنگجو تنها تسلط بر شمشیر نیست، بلکه تسلط بر نفس است.",
-      "copyright": "© 2026 Kenjutso Academy. All rights reserved.",
-      "credit": "Designed with Honor ⚔️ - Alireza Sarizadeh"
+      "copyright": "© 2026 Kenjutsu Academy Iran. All rights reserved.",
+      "credit": ""
     }
   },
   "JoinPage": {

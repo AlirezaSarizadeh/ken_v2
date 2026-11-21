@@ -40,9 +40,7 @@ export default function SectionMembers({
     t?.heading?.title ?? (inferredIsEn ? "Members" : "اعضای آکادمی");
   const headingSubtitle =
     t?.heading?.subtitle ??
-    (inferredIsEn
-      ? "All members, visible in a fast, responsive grid."
-      : "همه اعضا؛ نمایش سریع و ریسپانسیو در قالب گرید.");
+    "";
 
   const searchPlaceholder =
     t?.ui?.searchPlaceholder ??

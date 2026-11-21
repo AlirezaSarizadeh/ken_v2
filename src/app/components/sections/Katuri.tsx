@@ -9,6 +9,7 @@ import Link from "next/link";
 import type { GlobalMessages } from "@/types/messages";
 import type { DojoApiData } from "@/types/api";
 import SafeImg from "@/app/components/ui/SafeImg";
+import { KATORI_ARTICLE } from "@/content/longformContent";
 
 import "swiper/css";
 import "swiper/css/effect-cards";
@@ -123,17 +124,23 @@ export default function Section8({
   const locale = inferredIsEn ? "en" : "fa";
 
   const SLIDE_DATA = useMemo(() => {
+    const longform = KATORI_ARTICLE[inferredIsEn ? "en" : "fa"];
     const fromApi = apiData?.katoriData?.slides?.filter(Boolean).map((s: any, i: number) => ({
       id: s.id ?? i + 1,
-      title: s.title ?? "",
-      desc: s.desc ?? s.description ?? "",
+      title: i === 0 ? longform.title : s.title ?? "",
+      desc: i === 0 ? longform.content.slice(0, 260) + "…" : s.desc ?? s.description ?? "",
       image: s.image ?? s.thumbnail ?? "",
       kanji: s.kanji ?? "",
     }));
     if (fromApi?.length) return fromApi as Slide[];
-    const fromJson = t?.slides?.filter(Boolean);
+    const fromJson = t?.slides?.filter(Boolean).map((slide: any, i: number) => i === 0
+      ? { ...slide, id: slide.id ?? 1, title: longform.title, desc: longform.content.slice(0, 260) + "…" }
+      : slide);
     if (fromJson?.length) return fromJson;
-    return inferredIsEn ? FALLBACK_SLIDES_EN : FALLBACK_SLIDES_FA;
+    const fallbackSlides = inferredIsEn ? FALLBACK_SLIDES_EN : FALLBACK_SLIDES_FA;
+    return fallbackSlides.map((slide, i) => i === 0
+      ? { ...slide, title: longform.title, desc: longform.content.slice(0, 260) + "…" }
+      : slide);
   }, [apiData?.katoriData?.slides, t?.slides, inferredIsEn]);
 
   

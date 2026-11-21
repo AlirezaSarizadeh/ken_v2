@@ -396,7 +396,7 @@
   "SectionMembers": {
     "heading": {
       "title": "Members",
-      "subtitle": "All members, visible in a fast, responsive grid."
+      "subtitle": ""
     },
     "ui": {
       "searchPlaceholder": "Search name, code, level, tags...",

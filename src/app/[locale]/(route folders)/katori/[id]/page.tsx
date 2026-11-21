@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "../../../../../lib/api";
+import { KATORI_ARTICLE } from "../../../../../content/longformContent";
 
 type Locale = "fa" | "en";
 type KatoriArticle = { id: number | string; title: string; content: string; image?: string | null; kanji?: string | null };
@@ -26,13 +27,15 @@ function isLocale(value: string): value is Locale { return value === "fa" || val
 async function getArticles(locale: Locale): Promise<KatoriArticle[]> {
   const result = await apiFetch<any>("/katori", locale, { next: { revalidate: 60 } });
   const articles = Array.isArray(result.data?.articles) ? result.data.articles : [];
-  return articles.length ? articles.map((article: any) => ({
+  const mapped: KatoriArticle[] = (articles.length ? articles.map((article: any) => ({
     id: article.id,
     title: article.title ?? "",
     content: article.content ?? article.description ?? article.short_description ?? "",
     image: article.image ?? null,
     kanji: article.japanese_title ?? null,
-  })) : fallback[locale];
+  })) : fallback[locale]) as KatoriArticle[];
+  const longform = KATORI_ARTICLE[locale];
+  return [longform, ...mapped.filter((article) => String(article.id) !== String(longform.id))];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }): Promise<Metadata> {

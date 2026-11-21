@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "../../../../../lib/api";
+import { SHIHAN_PROFILE } from "../../../../../content/longformContent";
 
 type Locale = "fa" | "en";
 type AboutSection = {
@@ -36,7 +37,7 @@ async function getSections(locale: Locale): Promise<AboutSection[]> {
       kanji: section.japanese_title ?? null,
       content: section.content ?? section.description ?? section.short_description ?? "",
       image: section.image ?? null,
-    }));
+    })).map((section: AboutSection) => String(section.id) === "1" ? { ...section, content: SHIHAN_PROFILE[locale] } : section);
   }
   return ((messages.Section2?.tabs ?? []) as any[]).map((section, index) => ({
     id: section.id ?? index,
@@ -44,7 +45,7 @@ async function getSections(locale: Locale): Promise<AboutSection[]> {
     kanji: section.kanji ?? null,
     content: section.content ?? "",
     image: section.image ?? null,
-  }));
+  })).map((section) => String(section.id) === "1" ? { ...section, content: SHIHAN_PROFILE[locale] } : section);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }): Promise<Metadata> {

@@ -18,6 +18,12 @@ interface MemberPage {
 const PAGE_SIZE = 50;
 const CONCURRENT_PAGES = 4;
 
+function normalizeMemberCode(code: string | null, id: number) {
+  const value = (code ?? "").trim();
+  if (!value) return `IR${id}`;
+  return value.replace(/^TEMP[-_]?/i, "IR");
+}
+
 async function loadMemberPage(locale: string, page: number): Promise<MemberPage> {
   const { data, error } = await apiFetch<MemberPage>(
     `/members?limit=${PAGE_SIZE}&page=${page}`,
@@ -59,7 +65,7 @@ const loadMembers = unstable_cache(
     return items.map((item) => ({
       id: item.id,
       name: item.name ?? "",
-      code: item.member_code ?? "",
+      code: normalizeMemberCode(item.member_code, item.id),
       level: item.category?.title ?? "",
       bio: item.short_description,
       tags: item.tag ? [item.tag] : [],

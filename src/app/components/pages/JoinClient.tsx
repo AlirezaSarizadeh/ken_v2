@@ -189,6 +189,7 @@ export default function JoinClient({
         name: fullName,
         email: formData.email.trim(),
         phone: formData.phone.trim(),
+        national_id: formData.nationalId.replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit))),
         age: formData.age ? Number(formData.age) : undefined,
         experience: formData.experience || undefined,
         motivation: formData.motivation || undefined,

@@ -66,6 +66,10 @@ export default function Section3({
 
   const t = (messages?.Section3 as any) ?? {};
   const contact = apiData?.contactData;
+  const isEnglish = /[A-Za-z]/.test(String(t?.heading?.title ?? ""));
+  const fallbackAddress = isEnglish
+    ? "Ashrafi Esfahani Expressway, official headquarters of Iran Kenjutsu Academy, Tehran"
+    : "تهران، بزرگراه اشرفی اصفهانی، ستاد رسمی آکادمی کنجوتسو ایران";
 
   const CONTACT_INFO: ContactInfoItem[] = useMemo(() => {
     const apiItems = contact?.contactInfo ?? contact?.items;
@@ -73,17 +77,25 @@ export default function Section3({
       id: item.id ?? idx + 1,
       kind: (item.kind ?? (item.type as ContactKind)) ?? undefined,
       label: item.label ?? "",
-      text: item.text ?? item.value ?? "",
+      text: item.kind === "address" && /^(تهران، ایران|tehran, iran)$/i.test(String(item.text ?? item.value ?? ""))
+        ? fallbackAddress
+        : item.text ?? item.value ?? "",
     }));
     if (fromApi?.length) return fromApi;
     const fromJson = (t?.contactInfo as ContactInfoItem[] | undefined)?.filter(Boolean);
     const fallback: ContactInfoItem[] = [
-      { id: 1, kind: "address", label: "آدرس", text: "تهران، خیابان ولیعصر، دوجو بوشیدو" },
+      { id: 1, kind: "address", label: "آدرس", text: fallbackAddress },
       { id: 2, kind: "phone", label: "تلفن", text: "+۹۸ ۲۱ ۸۸XX XXXX" },
       { id: 3, kind: "email", label: "ایمیل", text: "info@bushido-dojo.ir" },
     ];
     return fromJson?.length ? fromJson : fallback;
   }, [contact, t?.contactInfo]);
+
+  const socialLinks = [
+    { id: "instagram", label: "Instagram", text: "@shihan.ashrafi", href: "https://www.instagram.com/shihan.ashrafi/", mark: "◎" },
+    { id: "youtube", label: "YouTube", text: "Shihan Ashrafi", href: "https://www.youtube.com/channel/UCkJVBEN7vAE37XewCN8IidA", mark: "▶" },
+    { id: "map", label: "Google Maps", text: "Iran Kenjutsu Academy — Tehran", href: "https://www.google.com/maps/search/?api=1&query=Iran+Kenjutsu+Academy+Ashrafi+Esfahani+Tehran", mark: "⌖" },
+  ];
 
   const headingTitle = t?.heading?.title ?? "ارتباط با دوجو";
   const headingKanji = t?.heading?.kanji ?? "連絡";
@@ -227,7 +239,7 @@ export default function Section3({
                         {info.label}
                       </p>
                       <p
-                        className={`text-sm md:text-base text-gray-200 truncate ${
+                        className={`text-sm md:text-base text-gray-200 whitespace-normal break-words leading-6 ${
                           kind === "email" || kind === "phone" ? "dir-ltr text-start" : ""
                         }`}
                         style={{ fontFamily: "'Vazirmatn', sans-serif" }}
@@ -238,6 +250,23 @@ export default function Section3({
                   </div>
                 );
               })}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
+                {socialLinks.map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex items-center gap-2 rounded-lg border border-red-900/20 bg-red-950/20 p-3 text-gray-300 hover:border-red-700/60 hover:text-white transition-colors"
+                  >
+                    <span className="text-lg text-red-400" aria-hidden="true">{link.mark}</span>
+                    <span className="min-w-0">
+                      <span className="block text-xs text-gray-500">{link.label}</span>
+                      <span className="block truncate text-xs">{link.text}</span>
+                    </span>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
 

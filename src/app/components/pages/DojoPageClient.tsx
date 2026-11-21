@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import type { DojoApiData } from "@/types/api";
@@ -188,12 +189,8 @@ export default function DojoPageClient({
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const { isLoggedIn, user } = useAuth();
-  const locale =
-    typeof document !== "undefined"
-      ? document.documentElement.lang === "en"
-        ? "en"
-        : "fa"
-      : "fa";
+  const params = useParams<{ locale?: string }>();
+  const locale = params?.locale === "en" ? "en" : "fa";
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);

@@ -58,12 +58,16 @@ export default function JoinClient({
           "دسترسی به تجهیزات و سلاح‌های سنتی",
           "شرکت در آزمون‌های ارتقاء درجه (Kyu/Dan)",
           "محیطی مبتنی بر احترام و انضباط (Rei)",
+          "یادگیری اصولی تامشیگیری",
+          "آموزش مکتب کاتوری شینتو ریو (تنها با صلاح‌دید شیهان اشرفی)",
         ]
       : [
           "Training under senior masters (Shihan)",
           "Access to traditional gear and weapons",
           "Rank exams (Kyu/Dan)",
           "A culture of respect and discipline (Rei)",
+          "Structured tameshigiri training",
+          "Katori Shinto-ryu training (only at Shihan Ashrafi’s discretion)",
         ]);
 
   const conductLabel = t?.ui?.conductLabel ?? (isRtl ? "آیین‌نامه" : "Code of Conduct");

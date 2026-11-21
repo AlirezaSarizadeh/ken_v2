@@ -20,6 +20,7 @@ const FA = {
   name: "نام کامل",
   email: "ایمیل",
   phone: "شماره موبایل",
+  nationalId: "کد ملی",
   password: "رمز عبور",
   passwordConfirm: "تکرار رمز عبور",
   loginField: "ایمیل یا موبایل",
@@ -40,6 +41,7 @@ const EN = {
   name: "Full Name",
   email: "Email",
   phone: "Phone",
+  nationalId: "National ID",
   password: "Password",
   passwordConfirm: "Confirm Password",
   loginField: "Email or Phone",
@@ -71,6 +73,7 @@ export default function AuthModal({ isOpen, onClose, locale = "fa" }: Props) {
     name: "",
     email: "",
     phone: "",
+    national_id: "",
     password: "",
     password_confirmation: "",
   });
@@ -275,6 +278,14 @@ export default function AuthModal({ isOpen, onClose, locale = "fa" }: Props) {
                           value={registerForm.phone}
                           onChange={(v) => setRegisterForm((f) => ({ ...f, phone: v }))}
                           error={fieldErrors.phone}
+                          isRtl={isRtl}
+                        />
+                        <Field
+                          label={L.nationalId}
+                          type="text"
+                          value={registerForm.national_id}
+                          onChange={(v) => setRegisterForm((f) => ({ ...f, national_id: v.replace(/[^0-9۰-۹]/g, "").slice(0, 10) }))}
+                          error={fieldErrors.national_id}
                           isRtl={isRtl}
                         />
                         <Field

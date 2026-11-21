@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Member } from "@/types/api";
+import SafeImg from "@/app/components/ui/SafeImg";
 
 interface Category {
   id: number;
@@ -23,7 +24,7 @@ export default function MembersPageClient({ members, categories, locale }: Props
   const isRtl = locale === "fa";
 
   const headingTitle = isRtl ? "اعضای آکادمی" : "Academy Members";
-  const headingSubtitle = isRtl ? "جنگجویان آموزش‌دیده در مسیر کنجوتسو" : "Warriors trained in the path of Kenjutsu";
+  const headingSubtitle = isRtl ? "جنگجویان آموزش‌دیده در مسیر کن‌جوتسو" : "Warriors trained in the path of Kenjutsu";
   const searchPlaceholder = isRtl ? "جستجو: نام، کد، سطح..." : "Search name, code, level...";
   const allLabel = isRtl ? "همه" : "All";
   const levelLabel = isRtl ? "سطح" : "Level";
@@ -126,6 +127,13 @@ export default function MembersPageClient({ members, categories, locale }: Props
                 key={member.id}
                 className="flex flex-col items-center bg-[#0a0a0a] border border-red-900/15 rounded-2xl p-4 hover:border-red-800/40 transition-colors duration-300"
               >
+                {member.image ? (
+                  <SafeImg
+                    src={member.image}
+                    alt={member.name}
+                    className="mb-3 h-20 w-20 rounded-full border border-red-900/30 object-cover"
+                  />
+                ) : null}
                 <h3
                   className="text-sm font-bold text-red-100 text-center break-words mb-0.5"
                   style={{ fontFamily: "'Vazirmatn', sans-serif" }}

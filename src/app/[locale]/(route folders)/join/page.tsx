@@ -30,7 +30,7 @@ export async function generateMetadata({
   const title = t?.title ?? (locale === "fa" ? "عضویت | پیمان‌نامه" : "Join | The Pact");
   const description =
     locale === "fa"
-      ? "فرم عضویت هنرجو برای پیوستن به آکادمی کنجوتسو."
+      ? "فرم عضویت هنرجو برای پیوستن به آکادمی کن‌جوتسو."
       : "Student registration form to join Kenjutsu Academy.";
 
   return { title, description };

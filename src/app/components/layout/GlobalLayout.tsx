@@ -158,7 +158,7 @@ export default function GlobalLayout({
 
   const t = messages.GlobalLayout ?? {};
 
-  const brandTitle = t.brand?.title ?? "آکادمی کنجوتسو";
+  const brandTitle = t.brand?.title ?? "آکادمی کن‌جوتسو";
   const brandSubtitle = t.brand?.subtitle ?? "Kenjutsu Academy";
 
   const navLinks = useMemo(
@@ -174,7 +174,7 @@ export default function GlobalLayout({
 
   const backHomeText = t.backHome ?? "بازگشت به خانه";
 
-  const footerTitle = t.footer?.title ?? "آکادمی کنجوتسو";
+  const footerTitle = t.footer?.title ?? "آکادمی کن‌جوتسو";
   const footerQuote =
     t.footer?.quote ??
     "مسیر جنگجو تنها تسلط بر شمشیر نیست، بلکه تسلط بر نفس است.";

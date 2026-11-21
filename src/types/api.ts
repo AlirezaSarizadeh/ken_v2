@@ -188,6 +188,7 @@ export interface Member {
   level: string;
   bio: string | null;
   tags: string[];
+  image?: string | null;
 }
 
 // ── Katori ────────────────────────────────────────────────────────────────────

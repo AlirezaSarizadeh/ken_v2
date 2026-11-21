@@ -161,7 +161,7 @@ export default function SectionShop({
     return fromJson?.length ? fromJson : (FALLBACK_ITEMS_FA as ShopItem[]);
   }, [apiData?.products, t?.items]);
 
-  const headingTitle: string = t?.heading?.title ?? "فروشگاه ابزار کنجوتسو";
+  const headingTitle: string = t?.heading?.title ?? "فروشگاه ابزار کن‌جوتسو";
   const headingSubtitle: string = t?.heading?.subtitle ?? "Kenjutsu Gear Shop";
 
   const ui = {

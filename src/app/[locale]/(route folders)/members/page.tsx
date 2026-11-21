@@ -10,9 +10,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "fa";
   return {
-    title: locale === "fa" ? "اعضای آکادمی | کنجوتسو" : "Academy Members | Kenjutsu",
+    title: locale === "fa" ? "اعضای آکادمی | کن‌جوتسو" : "Academy Members | Kenjutsu",
     description: locale === "fa"
-      ? "آشنایی با اعضا و هنرجویان آکادمی کنجوتسو"
+      ? "آشنایی با اعضا و هنرجویان آکادمی کن‌جوتسو"
       : "Meet the members and students of Kenjutsu Academy",
   };
 }

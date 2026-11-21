@@ -69,7 +69,7 @@ export default function Section3({
   const isEnglish = /[A-Za-z]/.test(String(t?.heading?.title ?? ""));
   const fallbackAddress = isEnglish
     ? "Ashrafi Esfahani Expressway, official headquarters of Iran Kenjutsu Academy, Tehran"
-    : "تهران، بزرگراه اشرفی اصفهانی، ستاد رسمی آکادمی کنجوتسو ایران";
+    : "تهران، بزرگراه اشرفی اصفهانی، ستاد رسمی آکادمی کن‌جوتسو ایران";
 
   const CONTACT_INFO: ContactInfoItem[] = useMemo(() => {
     const apiItems = contact?.contactInfo ?? contact?.items;

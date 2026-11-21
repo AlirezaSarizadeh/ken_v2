@@ -17,9 +17,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "fa";
   return {
-    title: locale === "fa" ? "دوره‌ها | آکادمی کنجوتسو" : "Courses | Kenjutsu Academy",
+    title: locale === "fa" ? "دوره‌ها | آکادمی کن‌جوتسو" : "Courses | Kenjutsu Academy",
     description: locale === "fa"
-      ? "دوره‌های آموزشی آکادمی کنجوتسو — از مبتدی تا استاد"
+      ? "دوره‌های آموزشی آکادمی کن‌جوتسو — از مبتدی تا استاد"
       : "Kenjutsu Academy training courses — from beginner to master",
   };
 }

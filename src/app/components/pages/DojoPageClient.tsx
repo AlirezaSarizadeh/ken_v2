@@ -116,7 +116,7 @@ export default function DojoPageClient({
         id: 1,
         component: Section1,
         video: "/transitions_mp4/video3.mp4",
-        title: s?.academy?.title ?? "آکادمی کنجوتسو",
+        title: s?.academy?.title ?? "آکادمی کن‌جوتسو",
         kanji: s?.academy?.kanji ?? "師範",
         desc: s?.academy?.desc ?? "",
       },

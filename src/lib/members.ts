@@ -10,6 +10,7 @@ interface MemberPage {
     category: { title: string | null } | null;
     short_description: string | null;
     tag: string | null;
+    image?: string | null;
   }[];
   pagination: { current_page: number; last_page: number; total: number };
 }
@@ -62,6 +63,7 @@ const loadMembers = unstable_cache(
       level: item.category?.title ?? "",
       bio: item.short_description,
       tags: item.tag ? [item.tag] : [],
+      image: item.image ?? null,
     }));
   },
   ["academy-members"],

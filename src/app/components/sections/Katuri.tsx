@@ -144,8 +144,8 @@ export default function Section8({
     t?.master?.quote ??
     (inferredIsEn
       ? "In kenjutsu, speed matters—but precision matters more. Distance and timing decide before strength."
-      : "در کنجوتسو، سرعت مهم است؛ اما دقت مهم‌تر. فاصله و زمان‌بندی، قبل از قدرت تصمیم می‌گیرند.");
-  const masterAlt = t?.master?.imageAlt ?? (inferredIsEn ? "Shihan Kenjutsu" : "شیهان کنجوتسو");
+      : "در کن‌جوتسو، سرعت مهم است؛ اما دقت مهم‌تر. فاصله و زمان‌بندی، قبل از قدرت تصمیم می‌گیرند.");
+  const masterAlt = t?.master?.imageAlt ?? (inferredIsEn ? "Shihan Kenjutsu" : "شیهان کن‌جوتسو");
 
   const headerP1 = t?.header?.titlePart1 ?? (inferredIsEn ? "Style" : "سبک");
   const headerP2 = t?.header?.titlePart2 ?? (inferredIsEn ? "Katori" : "کاتوری");

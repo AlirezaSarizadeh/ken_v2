@@ -89,7 +89,7 @@ export async function generateMetadata({
 
   return {
     title: name ? `${name} | ${t?.brand ?? "Kenjutsu Academy"}` : (t?.title ?? fallbackTitle),
-    description: description ?? t?.description ?? (locale === "fa" ? "جزئیات محصول در فروشگاه ابزار کنجوتسو." : "Product details in the Kenjutsu gear shop."),
+    description: description ?? t?.description ?? (locale === "fa" ? "جزئیات محصول در فروشگاه ابزار کن‌جوتسو." : "Product details in the Kenjutsu gear shop."),
   };
 }
 

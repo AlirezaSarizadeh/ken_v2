@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { GlobalMessages } from "@/types/messages";
 import type { DojoApiData, Member } from "@/types/api";
+import SafeImg from "@/app/components/ui/SafeImg";
 
 function isLikelyEnglish(text?: string) {
   return !!text && /[A-Za-z]/.test(text);
@@ -422,6 +423,13 @@ function MemberCard({ member, onSelect }: { member: Member; onSelect: (member: M
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-5 bg-red-800 shadow-sm" />
 
       {/* Text area */}
+      {member.image ? (
+        <SafeImg
+          src={member.image}
+          alt={member.name}
+          className="relative z-10 mx-auto mt-7 h-24 w-24 rounded-full border-2 border-red-900/30 object-cover shadow-lg"
+        />
+      ) : null}
       <div className="relative z-10 px-3 pt-8 pb-3 text-center flex-1 min-w-0">
         <div
           className="text-[13px] sm:text-[14px] font-bold text-black/80 break-words leading-tight"

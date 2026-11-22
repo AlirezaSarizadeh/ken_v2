@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Member } from "@/types/api";
 import SafeImg from "@/app/components/ui/SafeImg";
 
@@ -22,6 +23,8 @@ function normalize(s: string) {
 
 export default function MembersPageClient({ members, categories, locale }: Props) {
   const isRtl = locale === "fa";
+  const searchParams = useSearchParams();
+  const requestedGroup = searchParams.get("group");
 
   const headingTitle = isRtl ? "اعضای آکادمی" : "Academy Members";
   const headingSubtitle = isRtl ? "جنگجویان آموزش‌دیده در مسیر کن‌جوتسو" : "Warriors trained in the path of Kenjutsu";
@@ -41,6 +44,18 @@ export default function MembersPageClient({ members, categories, locale }: Props
     const unique = Array.from(new Set((members ?? []).map((m) => m.level).filter(Boolean)));
     return [allLabel, ...unique];
   }, [categories, members, allLabel]);
+
+  useEffect(() => {
+    if (requestedGroup !== "academy" && requestedGroup !== "students") {
+      setLevelFilter(allLabel);
+      return;
+    }
+    const target = requestedGroup === "academy"
+      ? (isRtl ? "اعضای آکادمی" : "Academy Members")
+      : (isRtl ? "هنرجویان" : "Students");
+    const matched = levelOptions.find((level) => normalize(level) === normalize(target));
+    setLevelFilter(matched ?? target);
+  }, [allLabel, isRtl, levelOptions, requestedGroup]);
 
   const filtered = useMemo(() => {
     const q = normalize(query);

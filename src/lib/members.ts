@@ -20,8 +20,8 @@ const CONCURRENT_PAGES = 4;
 
 function normalizeMemberCode(code: string | null) {
   const value = (code ?? "").trim();
-  if (!value) return "";
-  return value.replace(/^TEMP[-_]?/i, "IR");
+  if (!value || /^TEMP[-_]?/i.test(value)) return "";
+  return /^IR/i.test(value) ? value : `IR${value.replace(/\D/g, "")}`;
 }
 
 async function loadMemberPage(locale: string, page: number): Promise<MemberPage> {

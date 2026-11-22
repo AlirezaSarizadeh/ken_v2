@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import type { Member } from "@/types/api";
 import SafeImg from "@/app/components/ui/SafeImg";
 
@@ -23,8 +22,7 @@ function normalize(s: string) {
 
 export default function MembersPageClient({ members, categories, locale }: Props) {
   const isRtl = locale === "fa";
-  const searchParams = useSearchParams();
-  const requestedGroup = searchParams.get("group");
+  const [requestedGroup, setRequestedGroup] = useState<string | null>(null);
 
   const headingTitle = isRtl ? "اعضای آکادمی" : "Academy Members";
   const headingSubtitle = isRtl ? "جنگجویان آموزش‌دیده در مسیر کن‌جوتسو" : "Warriors trained in the path of Kenjutsu";
@@ -38,6 +36,10 @@ export default function MembersPageClient({ members, categories, locale }: Props
   const [query, setQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState(allLabel);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+
+  useEffect(() => {
+    setRequestedGroup(new URLSearchParams(window.location.search).get("group"));
+  }, []);
 
   const levelOptions = useMemo(() => {
     if (categories.length) return [allLabel, ...categories.map((c) => c.title)];

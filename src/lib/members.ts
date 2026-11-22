@@ -18,9 +18,9 @@ interface MemberPage {
 const PAGE_SIZE = 50;
 const CONCURRENT_PAGES = 4;
 
-function normalizeMemberCode(code: string | null, id: number) {
+function normalizeMemberCode(code: string | null) {
   const value = (code ?? "").trim();
-  if (!value) return `IR${id}`;
+  if (!value) return "";
   return value.replace(/^TEMP[-_]?/i, "IR");
 }
 
@@ -65,7 +65,7 @@ const loadMembers = unstable_cache(
     return items.map((item) => ({
       id: item.id,
       name: item.name ?? "",
-      code: normalizeMemberCode(item.member_code, item.id),
+      code: normalizeMemberCode(item.member_code),
       level: item.category?.title ?? "",
       bio: item.short_description,
       tags: item.tag ? [item.tag] : [],
